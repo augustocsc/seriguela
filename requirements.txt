@@ -1,0 +1,28 @@
+--find-links https://download.pytorch.org/whl/torch_stable.html
+# Core Hugging Face e Deep Learning
+transformers==4.51.3
+torch==2.6.0+cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+accelerate==1.6.0
+datasets==3.5.0
+evaluate==0.4.1
+huggingface-hub==0.30.2
+
+# Parameter-Efficient Fine-Tuning (PEFT)
+peft==0.15.1
+
+# Avaliação e utilitários
+scikit-learn==1.6.1
+numpy==1.26.4
+pandas==2.2.1
+tqdm==4.67.1
+sympy==1.13.1
+regex==2024.11.6
+
+# Logging e visualização
+tensorboard==2.16.2
+wandb==0.19.9
+
+# Fine-tuning avançado (SFT, DPO, etc.)
+trl==0.16.1

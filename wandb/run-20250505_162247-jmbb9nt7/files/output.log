@@ -1,0 +1,1375 @@
+  0%|                                                                               | 0/23700 [00:00<?, ?it/s]`loss_type=None` was set in the config but it is unrecognised.Using the default loss: `ForCausalLMLoss`.
+  1%|▋                                                                    | 237/23700 [00:17<22:08, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.6236, 'grad_norm': 0.24812187254428864, 'learning_rate': 4.979113924050633e-05, 'epoch': 0.42}
+{'loss': 0.3784, 'grad_norm': 0.3268328011035919, 'learning_rate': 4.958016877637131e-05, 'epoch': 0.84}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  1%|▋                                                                    | 237/23700 [00:29<22:08, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.8699556589126587, 'eval_runtime': 12.0123, 'eval_samples_per_second': 132.115, 'eval_steps_per_second': 4.162, 'epoch': 1.0}
+  2%|█▍                                                                   | 474/23700 [00:46<21:36, 17.91it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.2492, 'grad_norm': 0.3612724840641022, 'learning_rate': 4.936919831223629e-05, 'epoch': 1.27}
+{'loss': 0.2082, 'grad_norm': 0.3140781819820404, 'learning_rate': 4.9158227848101266e-05, 'epoch': 1.69}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  2%|█▍                                                                   | 474/23700 [00:56<21:36, 17.91it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.6662965416908264, 'eval_runtime': 10.0358, 'eval_samples_per_second': 158.133, 'eval_steps_per_second': 4.982, 'epoch': 2.0}
+  3%|██                                                                   | 710/23700 [01:12<22:49, 16.79it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1877, 'grad_norm': 0.28333204984664917, 'learning_rate': 4.894725738396625e-05, 'epoch': 2.11}
+{'loss': 0.1767, 'grad_norm': 0.3042716085910797, 'learning_rate': 4.8736286919831226e-05, 'epoch': 2.53}
+{'loss': 0.173, 'grad_norm': 0.3198133111000061, 'learning_rate': 4.852531645569621e-05, 'epoch': 2.95}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  3%|██                                                                   | 711/23700 [01:22<22:49, 16.79it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.6128941178321838, 'eval_runtime': 10.1441, 'eval_samples_per_second': 156.446, 'eval_steps_per_second': 4.929, 'epoch': 3.0}
+  4%|██▊                                                                  | 948/23700 [01:38<21:09, 17.93it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.166, 'grad_norm': 0.3404228091239929, 'learning_rate': 4.8314345991561185e-05, 'epoch': 3.38}
+{'loss': 0.1645, 'grad_norm': 0.3929712474346161, 'learning_rate': 4.810337552742616e-05, 'epoch': 3.8}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  4%|██▊                                                                  | 948/23700 [01:48<21:09, 17.93it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5917592644691467, 'eval_runtime': 10.0091, 'eval_samples_per_second': 158.555, 'eval_steps_per_second': 4.995, 'epoch': 4.0}
+  5%|███▍                                                                | 1185/23700 [02:04<20:53, 17.97it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.157, 'grad_norm': 0.3159356117248535, 'learning_rate': 4.789240506329114e-05, 'epoch': 4.22}
+{'loss': 0.1586, 'grad_norm': 0.29873716831207275, 'learning_rate': 4.768143459915612e-05, 'epoch': 4.64}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  5%|███▍                                                                | 1185/23700 [02:14<20:53, 17.97it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5788952112197876, 'eval_runtime': 10.0333, 'eval_samples_per_second': 158.173, 'eval_steps_per_second': 4.983, 'epoch': 5.0}
+  6%|████                                                                | 1422/23700 [02:30<27:39, 13.42it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1569, 'grad_norm': 0.37312448024749756, 'learning_rate': 4.74704641350211e-05, 'epoch': 5.06}
+{'loss': 0.1556, 'grad_norm': 0.2949509024620056, 'learning_rate': 4.725949367088608e-05, 'epoch': 5.49}
+{'loss': 0.1501, 'grad_norm': 0.29053083062171936, 'learning_rate': 4.704852320675106e-05, 'epoch': 5.91}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  6%|████                                                                | 1422/23700 [02:40<27:39, 13.42it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5695953369140625, 'eval_runtime': 10.1108, 'eval_samples_per_second': 156.96, 'eval_steps_per_second': 4.945, 'epoch': 6.0}
+  7%|████▊                                                               | 1658/23700 [02:56<21:15, 17.29it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1485, 'grad_norm': 0.26415279507637024, 'learning_rate': 4.6837552742616034e-05, 'epoch': 6.33}
+{'loss': 0.152, 'grad_norm': 0.3094589412212372, 'learning_rate': 4.662658227848101e-05, 'epoch': 6.75}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  7%|████▊                                                               | 1659/23700 [03:06<21:14, 17.29it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5622082352638245, 'eval_runtime': 9.9953, 'eval_samples_per_second': 158.775, 'eval_steps_per_second': 5.002, 'epoch': 7.0}
+  8%|█████▍                                                              | 1896/23700 [03:22<20:09, 18.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1483, 'grad_norm': 0.3553684651851654, 'learning_rate': 4.641561181434599e-05, 'epoch': 7.17}
+{'loss': 0.1478, 'grad_norm': 0.2869003415107727, 'learning_rate': 4.6204641350210976e-05, 'epoch': 7.59}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  8%|█████▍                                                              | 1896/23700 [03:31<20:09, 18.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5554695129394531, 'eval_runtime': 9.9103, 'eval_samples_per_second': 160.136, 'eval_steps_per_second': 5.045, 'epoch': 8.0}
+  9%|██████                                                              | 2132/23700 [03:47<21:01, 17.09it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.148, 'grad_norm': 0.3084638714790344, 'learning_rate': 4.599367088607595e-05, 'epoch': 8.02}
+{'loss': 0.1442, 'grad_norm': 0.34460994601249695, 'learning_rate': 4.5782700421940936e-05, 'epoch': 8.44}
+{'loss': 0.1444, 'grad_norm': 0.3036159574985504, 'learning_rate': 4.5571729957805906e-05, 'epoch': 8.86}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+  9%|██████                                                              | 2133/23700 [03:57<21:01, 17.09it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5546590685844421, 'eval_runtime': 10.3535, 'eval_samples_per_second': 153.282, 'eval_steps_per_second': 4.829, 'epoch': 9.0}
+ 10%|██████▊                                                             | 2370/23700 [04:16<19:59, 17.78it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.146, 'grad_norm': 0.30722135305404663, 'learning_rate': 4.536075949367089e-05, 'epoch': 9.28}
+{'loss': 0.1417, 'grad_norm': 0.28335294127464294, 'learning_rate': 4.5149789029535865e-05, 'epoch': 9.7}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 10%|██████▊                                                             | 2370/23700 [04:25<19:59, 17.78it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5495495796203613, 'eval_runtime': 9.8896, 'eval_samples_per_second': 160.471, 'eval_steps_per_second': 5.056, 'epoch': 10.0}
+ 11%|███████▍                                                            | 2607/23700 [04:42<19:56, 17.63it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1421, 'grad_norm': 0.3008323609828949, 'learning_rate': 4.493881856540085e-05, 'epoch': 10.13}
+{'loss': 0.1419, 'grad_norm': 0.2316669374704361, 'learning_rate': 4.4727848101265825e-05, 'epoch': 10.55}
+{'loss': 0.1431, 'grad_norm': 0.3608700931072235, 'learning_rate': 4.451687763713081e-05, 'epoch': 10.97}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 11%|███████▍                                                            | 2607/23700 [04:52<19:56, 17.63it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5467948317527771, 'eval_runtime': 9.954, 'eval_samples_per_second': 159.433, 'eval_steps_per_second': 5.023, 'epoch': 11.0}
+ 12%|████████▏                                                           | 2843/23700 [05:08<20:23, 17.05it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.143, 'grad_norm': 0.37247222661972046, 'learning_rate': 4.430590717299578e-05, 'epoch': 11.39}
+{'loss': 0.1393, 'grad_norm': 0.32927778363227844, 'learning_rate': 4.409493670886076e-05, 'epoch': 11.81}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 12%|████████▏                                                           | 2844/23700 [05:18<20:22, 17.05it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5443792343139648, 'eval_runtime': 9.9444, 'eval_samples_per_second': 159.588, 'eval_steps_per_second': 5.028, 'epoch': 12.0}
+ 13%|████████▊                                                           | 3081/23700 [05:34<20:20, 16.90it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1405, 'grad_norm': 0.3118956387042999, 'learning_rate': 4.388396624472574e-05, 'epoch': 12.24}
+{'loss': 0.1415, 'grad_norm': 0.2809535264968872, 'learning_rate': 4.367299578059072e-05, 'epoch': 12.66}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 13%|████████▊                                                           | 3081/23700 [05:44<20:20, 16.90it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5428259372711182, 'eval_runtime': 10.0802, 'eval_samples_per_second': 157.438, 'eval_steps_per_second': 4.96, 'epoch': 13.0}
+ 14%|█████████▌                                                          | 3318/23700 [06:00<19:14, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1404, 'grad_norm': 0.29465997219085693, 'learning_rate': 4.34620253164557e-05, 'epoch': 13.08}
+{'loss': 0.1376, 'grad_norm': 0.25762972235679626, 'learning_rate': 4.325105485232068e-05, 'epoch': 13.5}
+{'loss': 0.1393, 'grad_norm': 0.25111690163612366, 'learning_rate': 4.3040084388185656e-05, 'epoch': 13.92}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 14%|█████████▌                                                          | 3318/23700 [06:10<19:14, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5385158061981201, 'eval_runtime': 9.8573, 'eval_samples_per_second': 160.997, 'eval_steps_per_second': 5.072, 'epoch': 14.0}
+ 15%|██████████▏                                                         | 3554/23700 [06:26<25:08, 13.35it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1393, 'grad_norm': 0.24296443164348602, 'learning_rate': 4.282911392405063e-05, 'epoch': 14.35}
+{'loss': 0.1395, 'grad_norm': 0.29318809509277344, 'learning_rate': 4.2618143459915616e-05, 'epoch': 14.77}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 15%|██████████▏                                                         | 3555/23700 [06:36<25:08, 13.35it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5370553135871887, 'eval_runtime': 9.8814, 'eval_samples_per_second': 160.604, 'eval_steps_per_second': 5.06, 'epoch': 15.0}
+ 16%|██████████▉                                                         | 3792/23700 [06:53<18:59, 17.46it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1369, 'grad_norm': 0.31038355827331543, 'learning_rate': 4.240717299578059e-05, 'epoch': 15.19}
+{'loss': 0.1377, 'grad_norm': 0.22593280673027039, 'learning_rate': 4.2196202531645576e-05, 'epoch': 15.61}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 16%|██████████▉                                                         | 3792/23700 [07:02<18:59, 17.46it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5353353023529053, 'eval_runtime': 9.8805, 'eval_samples_per_second': 160.62, 'eval_steps_per_second': 5.06, 'epoch': 16.0}
+ 17%|███████████▌                                                        | 4028/23700 [07:18<19:14, 17.04it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1388, 'grad_norm': 0.2952766418457031, 'learning_rate': 4.198523206751055e-05, 'epoch': 16.03}
+{'loss': 0.138, 'grad_norm': 0.24916972219944, 'learning_rate': 4.177426160337553e-05, 'epoch': 16.46}
+{'loss': 0.1367, 'grad_norm': 0.324043869972229, 'learning_rate': 4.1563291139240505e-05, 'epoch': 16.88}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 17%|███████████▌                                                        | 4029/23700 [07:28<19:14, 17.04it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5346096754074097, 'eval_runtime': 9.9972, 'eval_samples_per_second': 158.745, 'eval_steps_per_second': 5.001, 'epoch': 17.0}
+ 18%|████████████▏                                                       | 4266/23700 [07:46<18:20, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1383, 'grad_norm': 0.3796030580997467, 'learning_rate': 4.135232067510549e-05, 'epoch': 17.3}
+{'loss': 0.1368, 'grad_norm': 0.24970413744449615, 'learning_rate': 4.1141350210970464e-05, 'epoch': 17.72}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 18%|████████████▏                                                       | 4266/23700 [07:56<18:20, 17.66it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5348186492919922, 'eval_runtime': 9.9105, 'eval_samples_per_second': 160.133, 'eval_steps_per_second': 5.045, 'epoch': 18.0}
+ 19%|████████████▉                                                       | 4502/23700 [08:12<18:50, 16.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1364, 'grad_norm': 0.2878650724887848, 'learning_rate': 4.093037974683545e-05, 'epoch': 18.14}
+{'loss': 0.135, 'grad_norm': 0.2638256549835205, 'learning_rate': 4.0719409282700424e-05, 'epoch': 18.57}
+{'loss': 0.1343, 'grad_norm': 0.2612335979938507, 'learning_rate': 4.05084388185654e-05, 'epoch': 18.99}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 19%|████████████▉                                                       | 4503/23700 [08:22<18:50, 16.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5318313241004944, 'eval_runtime': 9.9503, 'eval_samples_per_second': 159.493, 'eval_steps_per_second': 5.025, 'epoch': 19.0}
+ 20%|█████████████▌                                                      | 4740/23700 [08:38<17:36, 17.94it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1327, 'grad_norm': 0.22152553498744965, 'learning_rate': 4.0297468354430384e-05, 'epoch': 19.41}
+{'loss': 0.1367, 'grad_norm': 0.2353701889514923, 'learning_rate': 4.008649789029536e-05, 'epoch': 19.83}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 20%|█████████████▌                                                      | 4740/23700 [08:48<17:36, 17.94it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5285905003547668, 'eval_runtime': 9.9917, 'eval_samples_per_second': 158.832, 'eval_steps_per_second': 5.004, 'epoch': 20.0}
+ 21%|██████████████▎                                                     | 4976/23700 [09:03<20:56, 14.90it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1366, 'grad_norm': 0.28962674736976624, 'learning_rate': 3.987552742616034e-05, 'epoch': 20.25}
+{'loss': 0.1361, 'grad_norm': 0.31391018629074097, 'learning_rate': 3.966455696202532e-05, 'epoch': 20.68}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 21%|██████████████▎                                                     | 4977/23700 [09:16<20:56, 14.90it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5292910933494568, 'eval_runtime': 12.3197, 'eval_samples_per_second': 128.818, 'eval_steps_per_second': 4.059, 'epoch': 21.0}
+ 22%|██████████████▉                                                     | 5214/23700 [09:38<25:13, 12.22it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1346, 'grad_norm': 0.3547338843345642, 'learning_rate': 3.9453586497890296e-05, 'epoch': 21.1}
+{'loss': 0.135, 'grad_norm': 0.2335481345653534, 'learning_rate': 3.924261603375527e-05, 'epoch': 21.52}
+{'loss': 0.1339, 'grad_norm': 0.29012274742126465, 'learning_rate': 3.9031645569620256e-05, 'epoch': 21.94}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 22%|██████████████▉                                                     | 5214/23700 [09:50<25:13, 12.22it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5253177881240845, 'eval_runtime': 12.0642, 'eval_samples_per_second': 131.547, 'eval_steps_per_second': 4.145, 'epoch': 22.0}
+ 23%|███████████████▋                                                    | 5451/23700 [10:11<20:07, 15.11it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1354, 'grad_norm': 0.33097800612449646, 'learning_rate': 3.882067510548523e-05, 'epoch': 22.36}
+{'loss': 0.135, 'grad_norm': 0.18844948709011078, 'learning_rate': 3.8609704641350215e-05, 'epoch': 22.78}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 23%|███████████████▋                                                    | 5451/23700 [10:23<20:07, 15.11it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5248075127601624, 'eval_runtime': 12.2747, 'eval_samples_per_second': 129.291, 'eval_steps_per_second': 4.073, 'epoch': 23.0}
+ 24%|████████████████▎                                                   | 5687/23700 [10:47<22:35, 13.29it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1343, 'grad_norm': 0.2333720326423645, 'learning_rate': 3.839873417721519e-05, 'epoch': 23.21}
+{'loss': 0.1346, 'grad_norm': 0.2812071740627289, 'learning_rate': 3.818776371308017e-05, 'epoch': 23.63}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 24%|████████████████▎                                                   | 5688/23700 [11:00<22:35, 13.29it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5249997973442078, 'eval_runtime': 12.9764, 'eval_samples_per_second': 122.299, 'eval_steps_per_second': 3.853, 'epoch': 24.0}
+ 25%|████████████████▉                                                   | 5924/23700 [11:25<21:59, 13.47it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1334, 'grad_norm': 0.2596750259399414, 'learning_rate': 3.7976793248945144e-05, 'epoch': 24.05}
+{'loss': 0.1345, 'grad_norm': 0.23337778449058533, 'learning_rate': 3.776582278481013e-05, 'epoch': 24.47}
+{'loss': 0.136, 'grad_norm': 0.297873318195343, 'learning_rate': 3.7554852320675104e-05, 'epoch': 24.89}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 25%|█████████████████                                                   | 5925/23700 [11:38<21:59, 13.47it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5237154960632324, 'eval_runtime': 12.6277, 'eval_samples_per_second': 125.676, 'eval_steps_per_second': 3.96, 'epoch': 25.0}
+ 26%|█████████████████▋                                                  | 6162/23700 [12:00<17:55, 16.31it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1315, 'grad_norm': 0.28287339210510254, 'learning_rate': 3.734388185654009e-05, 'epoch': 25.32}
+{'loss': 0.1331, 'grad_norm': 0.27229541540145874, 'learning_rate': 3.713291139240507e-05, 'epoch': 25.74}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 26%|█████████████████▋                                                  | 6162/23700 [12:10<17:55, 16.31it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.52388995885849, 'eval_runtime': 9.995, 'eval_samples_per_second': 158.779, 'eval_steps_per_second': 5.002, 'epoch': 26.0}
+ 27%|██████████████████▎                                                 | 6398/23700 [12:26<16:49, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1318, 'grad_norm': 0.31104734539985657, 'learning_rate': 3.692194092827005e-05, 'epoch': 26.16}
+{'loss': 0.1309, 'grad_norm': 0.24806876480579376, 'learning_rate': 3.671097046413502e-05, 'epoch': 26.58}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 27%|██████████████████▎                                                 | 6399/23700 [12:36<16:49, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5212394595146179, 'eval_runtime': 10.1756, 'eval_samples_per_second': 155.962, 'eval_steps_per_second': 4.914, 'epoch': 27.0}
+ 28%|███████████████████                                                 | 6636/23700 [12:53<15:56, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.133, 'grad_norm': 0.2532954812049866, 'learning_rate': 3.65e-05, 'epoch': 27.0}
+{'loss': 0.1331, 'grad_norm': 0.20679283142089844, 'learning_rate': 3.628902953586498e-05, 'epoch': 27.43}
+{'loss': 0.1329, 'grad_norm': 0.23228207230567932, 'learning_rate': 3.607805907172996e-05, 'epoch': 27.85}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 28%|███████████████████                                                 | 6636/23700 [13:03<15:56, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5195558071136475, 'eval_runtime': 10.0968, 'eval_samples_per_second': 157.178, 'eval_steps_per_second': 4.952, 'epoch': 28.0}
+ 29%|███████████████████▋                                                | 6872/23700 [13:19<17:14, 16.26it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1345, 'grad_norm': 0.24570710957050323, 'learning_rate': 3.586708860759494e-05, 'epoch': 28.27}
+{'loss': 0.1333, 'grad_norm': 0.25233638286590576, 'learning_rate': 3.565611814345992e-05, 'epoch': 28.69}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 29%|███████████████████▋                                                | 6873/23700 [13:29<17:14, 16.26it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5194283127784729, 'eval_runtime': 9.9377, 'eval_samples_per_second': 159.695, 'eval_steps_per_second': 5.031, 'epoch': 29.0}
+ 30%|████████████████████▍                                               | 7110/23700 [13:45<15:29, 17.85it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1319, 'grad_norm': 0.23753085732460022, 'learning_rate': 3.5445147679324895e-05, 'epoch': 29.11}
+{'loss': 0.1326, 'grad_norm': 0.2888088822364807, 'learning_rate': 3.523417721518987e-05, 'epoch': 29.54}
+{'loss': 0.1313, 'grad_norm': 0.2600509226322174, 'learning_rate': 3.5023206751054855e-05, 'epoch': 29.96}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 30%|████████████████████▍                                               | 7110/23700 [13:55<15:29, 17.85it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5200852155685425, 'eval_runtime': 9.867, 'eval_samples_per_second': 160.839, 'eval_steps_per_second': 5.067, 'epoch': 30.0}
+ 31%|█████████████████████                                               | 7347/23700 [14:12<15:51, 17.18it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.132, 'grad_norm': 0.24721483886241913, 'learning_rate': 3.481223628691983e-05, 'epoch': 30.38}
+{'loss': 0.1322, 'grad_norm': 0.283672034740448, 'learning_rate': 3.4601265822784814e-05, 'epoch': 30.8}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 31%|█████████████████████                                               | 7347/23700 [14:22<15:51, 17.18it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5184381604194641, 'eval_runtime': 9.9349, 'eval_samples_per_second': 159.74, 'eval_steps_per_second': 5.033, 'epoch': 31.0}
+ 32%|█████████████████████▊                                              | 7583/23700 [14:37<15:42, 17.10it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1318, 'grad_norm': 0.23628227412700653, 'learning_rate': 3.439029535864979e-05, 'epoch': 31.22}
+{'loss': 0.1317, 'grad_norm': 0.2573208808898926, 'learning_rate': 3.417932489451477e-05, 'epoch': 31.65}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 32%|█████████████████████▊                                              | 7584/23700 [14:47<15:42, 17.10it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5193822383880615, 'eval_runtime': 9.9934, 'eval_samples_per_second': 158.804, 'eval_steps_per_second': 5.003, 'epoch': 32.0}
+ 33%|██████████████████████▍                                             | 7821/23700 [15:03<14:57, 17.70it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.131, 'grad_norm': 0.25350427627563477, 'learning_rate': 3.396835443037975e-05, 'epoch': 32.07}
+{'loss': 0.132, 'grad_norm': 0.24583366513252258, 'learning_rate': 3.375738396624473e-05, 'epoch': 32.49}
+{'loss': 0.1303, 'grad_norm': 0.26301440596580505, 'learning_rate': 3.354641350210971e-05, 'epoch': 32.91}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 33%|██████████████████████▍                                             | 7821/23700 [15:13<14:57, 17.70it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5194126963615417, 'eval_runtime': 10.0516, 'eval_samples_per_second': 157.886, 'eval_steps_per_second': 4.974, 'epoch': 33.0}
+ 34%|███████████████████████                                             | 8057/23700 [15:29<15:11, 17.16it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1307, 'grad_norm': 0.2334977090358734, 'learning_rate': 3.3335443037974686e-05, 'epoch': 33.33}
+{'loss': 0.1315, 'grad_norm': 0.30301395058631897, 'learning_rate': 3.312447257383966e-05, 'epoch': 33.76}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 34%|███████████████████████                                             | 8058/23700 [15:39<15:11, 17.16it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5174536108970642, 'eval_runtime': 10.0291, 'eval_samples_per_second': 158.24, 'eval_steps_per_second': 4.985, 'epoch': 34.0}
+ 35%|███████████████████████▊                                            | 8295/23700 [15:55<14:31, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1327, 'grad_norm': 0.22155067324638367, 'learning_rate': 3.291350210970464e-05, 'epoch': 34.18}
+{'loss': 0.1311, 'grad_norm': 0.3058246970176697, 'learning_rate': 3.270253164556962e-05, 'epoch': 34.6}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 35%|███████████████████████▊                                            | 8295/23700 [16:05<14:31, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5169572830200195, 'eval_runtime': 9.8542, 'eval_samples_per_second': 161.048, 'eval_steps_per_second': 5.074, 'epoch': 35.0}
+ 36%|████████████████████████▍                                           | 8532/23700 [16:21<14:27, 17.49it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1304, 'grad_norm': 0.25481709837913513, 'learning_rate': 3.24915611814346e-05, 'epoch': 35.02}
+{'loss': 0.1299, 'grad_norm': 0.28788483142852783, 'learning_rate': 3.228059071729958e-05, 'epoch': 35.44}
+{'loss': 0.1323, 'grad_norm': 0.2304627001285553, 'learning_rate': 3.206962025316456e-05, 'epoch': 35.86}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 36%|████████████████████████▍                                           | 8532/23700 [16:31<14:27, 17.49it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5152480006217957, 'eval_runtime': 9.965, 'eval_samples_per_second': 159.257, 'eval_steps_per_second': 5.018, 'epoch': 36.0}
+ 37%|█████████████████████████▏                                          | 8768/23700 [16:47<14:41, 16.94it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1335, 'grad_norm': 0.21299681067466736, 'learning_rate': 3.1858649789029535e-05, 'epoch': 36.29}
+{'loss': 0.1289, 'grad_norm': 0.23428337275981903, 'learning_rate': 3.164767932489451e-05, 'epoch': 36.71}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 37%|█████████████████████████▏                                          | 8769/23700 [16:57<14:41, 16.94it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5147188901901245, 'eval_runtime': 9.8529, 'eval_samples_per_second': 161.069, 'eval_steps_per_second': 5.075, 'epoch': 37.0}
+ 38%|█████████████████████████▊                                          | 9006/23700 [17:12<14:17, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1324, 'grad_norm': 0.2778739035129547, 'learning_rate': 3.1436708860759494e-05, 'epoch': 37.13}
+{'loss': 0.1304, 'grad_norm': 0.22862690687179565, 'learning_rate': 3.122573839662448e-05, 'epoch': 37.55}
+{'loss': 0.1298, 'grad_norm': 0.31421157717704773, 'learning_rate': 3.1014767932489454e-05, 'epoch': 37.97}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 38%|█████████████████████████▊                                          | 9006/23700 [17:22<14:17, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5156183242797852, 'eval_runtime': 9.9407, 'eval_samples_per_second': 159.646, 'eval_steps_per_second': 5.03, 'epoch': 38.0}
+ 39%|██████████████████████████▌                                         | 9242/23700 [17:38<14:13, 16.95it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1328, 'grad_norm': 0.23096685111522675, 'learning_rate': 3.080379746835444e-05, 'epoch': 38.4}
+{'loss': 0.1309, 'grad_norm': 0.24015459418296814, 'learning_rate': 3.059282700421941e-05, 'epoch': 38.82}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 39%|██████████████████████████▌                                         | 9243/23700 [17:48<14:12, 16.95it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5145264267921448, 'eval_runtime': 9.9386, 'eval_samples_per_second': 159.681, 'eval_steps_per_second': 5.031, 'epoch': 39.0}
+ 40%|███████████████████████████▏                                        | 9480/23700 [18:04<13:24, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1292, 'grad_norm': 0.24634164571762085, 'learning_rate': 3.038185654008439e-05, 'epoch': 39.24}
+{'loss': 0.1319, 'grad_norm': 0.23366330564022064, 'learning_rate': 3.0170886075949366e-05, 'epoch': 39.66}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 40%|███████████████████████████▏                                        | 9480/23700 [18:14<13:24, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5141634345054626, 'eval_runtime': 10.0019, 'eval_samples_per_second': 158.67, 'eval_steps_per_second': 4.999, 'epoch': 40.0}
+ 41%|███████████████████████████▉                                        | 9717/23700 [18:30<13:05, 17.81it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1295, 'grad_norm': 0.22052857279777527, 'learning_rate': 2.995991561181435e-05, 'epoch': 40.08}
+{'loss': 0.1309, 'grad_norm': 0.22430697083473206, 'learning_rate': 2.9748945147679326e-05, 'epoch': 40.51}
+{'loss': 0.1307, 'grad_norm': 0.24017687141895294, 'learning_rate': 2.9537974683544306e-05, 'epoch': 40.93}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 41%|███████████████████████████▉                                        | 9717/23700 [18:40<13:05, 17.81it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5120124816894531, 'eval_runtime': 9.8974, 'eval_samples_per_second': 160.345, 'eval_steps_per_second': 5.052, 'epoch': 41.0}
+ 42%|████████████████████████████▌                                       | 9953/23700 [18:56<13:29, 16.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1308, 'grad_norm': 0.24520152807235718, 'learning_rate': 2.9327004219409282e-05, 'epoch': 41.35}
+{'loss': 0.1288, 'grad_norm': 0.2653774619102478, 'learning_rate': 2.9116033755274262e-05, 'epoch': 41.77}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 42%|████████████████████████████▌                                       | 9954/23700 [19:06<13:29, 16.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5124675631523132, 'eval_runtime': 9.8345, 'eval_samples_per_second': 161.371, 'eval_steps_per_second': 5.084, 'epoch': 42.0}
+ 43%|████████████████████████████▊                                      | 10191/23700 [19:22<12:47, 17.59it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1305, 'grad_norm': 0.3455199599266052, 'learning_rate': 2.8905063291139238e-05, 'epoch': 42.19}
+{'loss': 0.1284, 'grad_norm': 0.23384955525398254, 'learning_rate': 2.869409282700422e-05, 'epoch': 42.62}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 43%|████████████████████████████▊                                      | 10191/23700 [19:32<12:47, 17.59it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5125271081924438, 'eval_runtime': 9.9475, 'eval_samples_per_second': 159.537, 'eval_steps_per_second': 5.026, 'epoch': 43.0}
+ 44%|█████████████████████████████▍                                     | 10427/23700 [19:48<12:57, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1303, 'grad_norm': 0.27810540795326233, 'learning_rate': 2.84831223628692e-05, 'epoch': 43.04}
+{'loss': 0.1285, 'grad_norm': 0.2456006109714508, 'learning_rate': 2.8272151898734178e-05, 'epoch': 43.46}
+{'loss': 0.1287, 'grad_norm': 0.2944088578224182, 'learning_rate': 2.806118143459916e-05, 'epoch': 43.88}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 44%|█████████████████████████████▍                                     | 10428/23700 [19:58<12:57, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5112375617027283, 'eval_runtime': 9.9145, 'eval_samples_per_second': 160.069, 'eval_steps_per_second': 5.043, 'epoch': 44.0}
+ 45%|██████████████████████████████▏                                    | 10665/23700 [20:14<12:14, 17.75it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1297, 'grad_norm': 0.2613295912742615, 'learning_rate': 2.7850210970464137e-05, 'epoch': 44.3}
+{'loss': 0.1295, 'grad_norm': 0.264039009809494, 'learning_rate': 2.7639240506329117e-05, 'epoch': 44.73}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 45%|██████████████████████████████▏                                    | 10665/23700 [20:24<12:14, 17.75it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5106124877929688, 'eval_runtime': 9.9164, 'eval_samples_per_second': 160.038, 'eval_steps_per_second': 5.042, 'epoch': 45.0}
+ 46%|██████████████████████████████▊                                    | 10902/23700 [20:40<11:57, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1296, 'grad_norm': 0.2501107156276703, 'learning_rate': 2.7428270042194093e-05, 'epoch': 45.15}
+{'loss': 0.1309, 'grad_norm': 0.22340825200080872, 'learning_rate': 2.7217299578059073e-05, 'epoch': 45.57}
+{'loss': 0.1275, 'grad_norm': 0.27626538276672363, 'learning_rate': 2.700632911392405e-05, 'epoch': 45.99}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 46%|██████████████████████████████▊                                    | 10902/23700 [20:50<11:57, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5109267830848694, 'eval_runtime': 10.0283, 'eval_samples_per_second': 158.252, 'eval_steps_per_second': 4.986, 'epoch': 46.0}
+ 47%|███████████████████████████████▍                                   | 11139/23700 [21:06<11:46, 17.78it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.129, 'grad_norm': 0.2718642055988312, 'learning_rate': 2.6795358649789033e-05, 'epoch': 46.41}
+{'loss': 0.1311, 'grad_norm': 0.3040945827960968, 'learning_rate': 2.658438818565401e-05, 'epoch': 46.84}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 47%|███████████████████████████████▍                                   | 11139/23700 [21:17<11:46, 17.78it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5115276575088501, 'eval_runtime': 10.1829, 'eval_samples_per_second': 155.85, 'eval_steps_per_second': 4.91, 'epoch': 47.0}
+ 48%|████████████████████████████████▏                                  | 11375/23700 [21:32<11:58, 17.16it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1295, 'grad_norm': 0.22127041220664978, 'learning_rate': 2.637341772151899e-05, 'epoch': 47.26}
+{'loss': 0.1291, 'grad_norm': 0.23156054317951202, 'learning_rate': 2.6162447257383965e-05, 'epoch': 47.68}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 48%|████████████████████████████████▏                                  | 11376/23700 [21:42<11:58, 17.16it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5102328658103943, 'eval_runtime': 10.0691, 'eval_samples_per_second': 157.612, 'eval_steps_per_second': 4.966, 'epoch': 48.0}
+ 49%|████████████████████████████████▊                                  | 11613/23700 [21:59<11:40, 17.24it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1286, 'grad_norm': 0.23377878963947296, 'learning_rate': 2.5951476793248945e-05, 'epoch': 48.1}
+{'loss': 0.1297, 'grad_norm': 0.2668815851211548, 'learning_rate': 2.574050632911392e-05, 'epoch': 48.52}
+{'loss': 0.1285, 'grad_norm': 0.23898853361606598, 'learning_rate': 2.5529535864978905e-05, 'epoch': 48.95}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 49%|████████████████████████████████▊                                  | 11613/23700 [22:09<11:40, 17.24it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5093936920166016, 'eval_runtime': 10.1206, 'eval_samples_per_second': 156.809, 'eval_steps_per_second': 4.94, 'epoch': 49.0}
+ 50%|█████████████████████████████████▌                                 | 11850/23700 [22:25<11:24, 17.30it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1314, 'grad_norm': 0.23389755189418793, 'learning_rate': 2.5318565400843885e-05, 'epoch': 49.37}
+{'loss': 0.1276, 'grad_norm': 0.24503521621227264, 'learning_rate': 2.510759493670886e-05, 'epoch': 49.79}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 50%|█████████████████████████████████▌                                 | 11850/23700 [22:35<11:24, 17.30it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5090300440788269, 'eval_runtime': 9.9383, 'eval_samples_per_second': 159.686, 'eval_steps_per_second': 5.031, 'epoch': 50.0}
+ 51%|██████████████████████████████████▏                                | 12087/23700 [22:51<10:56, 17.70it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1314, 'grad_norm': 0.2477179318666458, 'learning_rate': 2.489662447257384e-05, 'epoch': 50.21}
+{'loss': 0.1255, 'grad_norm': 0.24404647946357727, 'learning_rate': 2.4685654008438817e-05, 'epoch': 50.63}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 51%|██████████████████████████████████▏                                | 12087/23700 [23:01<10:56, 17.70it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.508478581905365, 'eval_runtime': 10.0525, 'eval_samples_per_second': 157.87, 'eval_steps_per_second': 4.974, 'epoch': 51.0}
+ 52%|██████████████████████████████████▊                                | 12323/23700 [23:17<11:33, 16.41it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1275, 'grad_norm': 0.19889794290065765, 'learning_rate': 2.4474683544303797e-05, 'epoch': 51.05}
+{'loss': 0.1306, 'grad_norm': 0.2551373243331909, 'learning_rate': 2.4263713080168777e-05, 'epoch': 51.48}
+{'loss': 0.127, 'grad_norm': 0.22815637290477753, 'learning_rate': 2.4052742616033757e-05, 'epoch': 51.9}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 52%|██████████████████████████████████▊                                | 12324/23700 [23:27<11:33, 16.41it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5083990693092346, 'eval_runtime': 10.1117, 'eval_samples_per_second': 156.946, 'eval_steps_per_second': 4.945, 'epoch': 52.0}
+ 53%|███████████████████████████████████▌                               | 12559/23700 [23:43<10:44, 17.27it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1283, 'grad_norm': 0.24739903211593628, 'learning_rate': 2.3841772151898736e-05, 'epoch': 52.32}
+{'loss': 0.1296, 'grad_norm': 0.19916895031929016, 'learning_rate': 2.3630801687763716e-05, 'epoch': 52.74}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 53%|███████████████████████████████████▌                               | 12561/23700 [23:53<10:44, 17.27it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5096410512924194, 'eval_runtime': 9.9746, 'eval_samples_per_second': 159.104, 'eval_steps_per_second': 5.013, 'epoch': 53.0}
+ 54%|████████████████████████████████████▏                              | 12798/23700 [24:09<10:10, 17.87it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1295, 'grad_norm': 0.24403148889541626, 'learning_rate': 2.3419831223628692e-05, 'epoch': 53.16}
+{'loss': 0.1292, 'grad_norm': 0.2532857060432434, 'learning_rate': 2.3208860759493672e-05, 'epoch': 53.59}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 54%|████████████████████████████████████▏                              | 12798/23700 [24:19<10:10, 17.87it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5081072449684143, 'eval_runtime': 9.9364, 'eval_samples_per_second': 159.715, 'eval_steps_per_second': 5.032, 'epoch': 54.0}
+ 55%|████████████████████████████████████▊                              | 13035/23700 [24:35<09:53, 17.97it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1277, 'grad_norm': 0.24778421223163605, 'learning_rate': 2.2997890295358652e-05, 'epoch': 54.01}
+{'loss': 0.1264, 'grad_norm': 0.24210309982299805, 'learning_rate': 2.278691983122363e-05, 'epoch': 54.43}
+{'loss': 0.1303, 'grad_norm': 0.258971244096756, 'learning_rate': 2.2575949367088608e-05, 'epoch': 54.85}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 55%|████████████████████████████████████▊                              | 13035/23700 [24:45<09:53, 17.97it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5074480772018433, 'eval_runtime': 9.924, 'eval_samples_per_second': 159.915, 'eval_steps_per_second': 5.038, 'epoch': 55.0}
+ 56%|█████████████████████████████████████▌                             | 13272/23700 [25:01<09:44, 17.84it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1291, 'grad_norm': 0.2352346032857895, 'learning_rate': 2.2364978902953588e-05, 'epoch': 55.27}
+{'loss': 0.1292, 'grad_norm': 0.21543286740779877, 'learning_rate': 2.2154008438818564e-05, 'epoch': 55.7}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 56%|█████████████████████████████████████▌                             | 13272/23700 [25:11<09:44, 17.84it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5073392987251282, 'eval_runtime': 9.8575, 'eval_samples_per_second': 160.994, 'eval_steps_per_second': 5.072, 'epoch': 56.0}
+ 57%|██████████████████████████████████████▏                            | 13508/23700 [25:27<09:57, 17.06it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1305, 'grad_norm': 0.24738146364688873, 'learning_rate': 2.1943037974683544e-05, 'epoch': 56.12}
+{'loss': 0.1283, 'grad_norm': 0.24619826674461365, 'learning_rate': 2.1732067510548524e-05, 'epoch': 56.54}
+{'loss': 0.1266, 'grad_norm': 0.20733805000782013, 'learning_rate': 2.15210970464135e-05, 'epoch': 56.96}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 57%|██████████████████████████████████████▏                            | 13509/23700 [25:37<09:57, 17.06it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5068811774253845, 'eval_runtime': 9.9929, 'eval_samples_per_second': 158.813, 'eval_steps_per_second': 5.004, 'epoch': 57.0}
+ 58%|██████████████████████████████████████▊                            | 13746/23700 [25:53<09:21, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1303, 'grad_norm': 0.24687603116035461, 'learning_rate': 2.131012658227848e-05, 'epoch': 57.38}
+{'loss': 0.1273, 'grad_norm': 0.23262138664722443, 'learning_rate': 2.1099156118143463e-05, 'epoch': 57.81}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 58%|██████████████████████████████████████▊                            | 13746/23700 [26:03<09:21, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5067374110221863, 'eval_runtime': 9.9768, 'eval_samples_per_second': 159.069, 'eval_steps_per_second': 5.012, 'epoch': 58.0}
+ 59%|███████████████████████████████████████▌                           | 13982/23700 [26:18<09:27, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1302, 'grad_norm': 0.271770179271698, 'learning_rate': 2.088818565400844e-05, 'epoch': 58.23}
+{'loss': 0.1265, 'grad_norm': 0.20180128514766693, 'learning_rate': 2.067721518987342e-05, 'epoch': 58.65}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 59%|███████████████████████████████████████▌                           | 13983/23700 [26:28<09:27, 17.13it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5080168843269348, 'eval_runtime': 10.0114, 'eval_samples_per_second': 158.519, 'eval_steps_per_second': 4.994, 'epoch': 59.0}
+ 60%|████████████████████████████████████████▏                          | 14220/23700 [26:45<08:49, 17.89it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1281, 'grad_norm': 0.23872368037700653, 'learning_rate': 2.04662447257384e-05, 'epoch': 59.07}
+{'loss': 0.1281, 'grad_norm': 0.2360360473394394, 'learning_rate': 2.0255274261603376e-05, 'epoch': 59.49}
+{'loss': 0.1283, 'grad_norm': 0.3092951774597168, 'learning_rate': 2.0044303797468356e-05, 'epoch': 59.92}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 60%|████████████████████████████████████████▏                          | 14220/23700 [26:55<08:49, 17.89it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5057591199874878, 'eval_runtime': 9.8823, 'eval_samples_per_second': 160.59, 'eval_steps_per_second': 5.06, 'epoch': 60.0}
+ 61%|████████████████████████████████████████▊                          | 14455/23700 [27:11<14:19, 10.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1279, 'grad_norm': 0.2322738915681839, 'learning_rate': 1.9833333333333335e-05, 'epoch': 60.34}
+{'loss': 0.128, 'grad_norm': 0.24848611652851105, 'learning_rate': 1.9622362869198312e-05, 'epoch': 60.76}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 61%|████████████████████████████████████████▊                          | 14457/23700 [27:21<14:19, 10.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.505967378616333, 'eval_runtime': 9.9695, 'eval_samples_per_second': 159.186, 'eval_steps_per_second': 5.015, 'epoch': 61.0}
+ 62%|█████████████████████████████████████████▌                         | 14694/23700 [27:37<08:22, 17.93it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1294, 'grad_norm': 0.2327011376619339, 'learning_rate': 1.941139240506329e-05, 'epoch': 61.18}
+{'loss': 0.1295, 'grad_norm': 0.2413649708032608, 'learning_rate': 1.920042194092827e-05, 'epoch': 61.6}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 62%|█████████████████████████████████████████▌                         | 14694/23700 [27:47<08:22, 17.93it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5047720670700073, 'eval_runtime': 10.1455, 'eval_samples_per_second': 156.424, 'eval_steps_per_second': 4.928, 'epoch': 62.0}
+ 63%|██████████████████████████████████████████▏                        | 14930/23700 [28:03<08:26, 17.31it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1302, 'grad_norm': 0.22867995500564575, 'learning_rate': 1.8989451476793248e-05, 'epoch': 62.03}
+{'loss': 0.1261, 'grad_norm': 0.20067183673381805, 'learning_rate': 1.8778481012658228e-05, 'epoch': 62.45}
+{'loss': 0.128, 'grad_norm': 0.22448784112930298, 'learning_rate': 1.8567510548523207e-05, 'epoch': 62.87}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 63%|██████████████████████████████████████████▏                        | 14931/23700 [28:13<08:26, 17.31it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5069864392280579, 'eval_runtime': 9.9957, 'eval_samples_per_second': 158.768, 'eval_steps_per_second': 5.002, 'epoch': 63.0}
+ 64%|██████████████████████████████████████████▉                        | 15168/23700 [28:29<08:03, 17.65it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1283, 'grad_norm': 0.2935572862625122, 'learning_rate': 1.8356540084388184e-05, 'epoch': 63.29}
+{'loss': 0.1286, 'grad_norm': 0.24722632765769958, 'learning_rate': 1.8145569620253167e-05, 'epoch': 63.71}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 64%|██████████████████████████████████████████▉                        | 15168/23700 [28:39<08:03, 17.65it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5056962370872498, 'eval_runtime': 10.145, 'eval_samples_per_second': 156.431, 'eval_steps_per_second': 4.929, 'epoch': 64.0}
+ 65%|███████████████████████████████████████████▌                       | 15405/23700 [28:55<07:55, 17.46it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1276, 'grad_norm': 0.21199579536914825, 'learning_rate': 1.7934599156118147e-05, 'epoch': 64.14}
+{'loss': 0.1284, 'grad_norm': 0.24744117259979248, 'learning_rate': 1.7723628691983123e-05, 'epoch': 64.56}
+{'loss': 0.1295, 'grad_norm': 0.2625081539154053, 'learning_rate': 1.7512658227848103e-05, 'epoch': 64.98}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 65%|███████████████████████████████████████████▌                       | 15405/23700 [29:05<07:55, 17.46it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5048224329948425, 'eval_runtime': 9.8778, 'eval_samples_per_second': 160.663, 'eval_steps_per_second': 5.062, 'epoch': 65.0}
+ 66%|████████████████████████████████████████████▏                      | 15642/23700 [29:21<07:33, 17.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1279, 'grad_norm': 0.22064010798931122, 'learning_rate': 1.7301687763713083e-05, 'epoch': 65.4}
+{'loss': 0.1268, 'grad_norm': 0.211271271109581, 'learning_rate': 1.709071729957806e-05, 'epoch': 65.82}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 66%|████████████████████████████████████████████▏                      | 15642/23700 [29:31<07:33, 17.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.504173994064331, 'eval_runtime': 9.9525, 'eval_samples_per_second': 159.458, 'eval_steps_per_second': 5.024, 'epoch': 66.0}
+ 67%|████████████████████████████████████████████▉                      | 15878/23700 [29:47<07:38, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1287, 'grad_norm': 0.26617079973220825, 'learning_rate': 1.687974683544304e-05, 'epoch': 66.24}
+{'loss': 0.1289, 'grad_norm': 0.2668045163154602, 'learning_rate': 1.666877637130802e-05, 'epoch': 66.67}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 67%|████████████████████████████████████████████▉                      | 15879/23700 [29:57<07:38, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5043336749076843, 'eval_runtime': 9.9743, 'eval_samples_per_second': 159.109, 'eval_steps_per_second': 5.013, 'epoch': 67.0}
+ 68%|█████████████████████████████████████████████▌                     | 16116/23700 [30:13<07:05, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.128, 'grad_norm': 0.20002378523349762, 'learning_rate': 1.6457805907172995e-05, 'epoch': 67.09}
+{'loss': 0.1276, 'grad_norm': 0.25573527812957764, 'learning_rate': 1.6246835443037975e-05, 'epoch': 67.51}
+{'loss': 0.1276, 'grad_norm': 0.24879254400730133, 'learning_rate': 1.6035864978902955e-05, 'epoch': 67.93}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 68%|█████████████████████████████████████████████▌                     | 16116/23700 [30:23<07:05, 17.83it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5041176080703735, 'eval_runtime': 10.3731, 'eval_samples_per_second': 152.991, 'eval_steps_per_second': 4.82, 'epoch': 68.0}
+ 69%|██████████████████████████████████████████████▏                    | 16352/23700 [30:40<07:16, 16.82it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1279, 'grad_norm': 0.23255190253257751, 'learning_rate': 1.582489451476793e-05, 'epoch': 68.35}
+{'loss': 0.1288, 'grad_norm': 0.207417294383049, 'learning_rate': 1.561392405063291e-05, 'epoch': 68.78}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 69%|██████████████████████████████████████████████▏                    | 16353/23700 [30:50<07:16, 16.82it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5044437646865845, 'eval_runtime': 10.0935, 'eval_samples_per_second': 157.23, 'eval_steps_per_second': 4.954, 'epoch': 69.0}
+ 70%|██████████████████████████████████████████████▉                    | 16590/23700 [31:06<06:42, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1293, 'grad_norm': 0.32364368438720703, 'learning_rate': 1.540295358649789e-05, 'epoch': 69.2}
+{'loss': 0.1266, 'grad_norm': 0.22678600251674652, 'learning_rate': 1.519198312236287e-05, 'epoch': 69.62}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 70%|██████████████████████████████████████████████▉                    | 16590/23700 [31:16<06:42, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5042365193367004, 'eval_runtime': 10.058, 'eval_samples_per_second': 157.785, 'eval_steps_per_second': 4.971, 'epoch': 70.0}
+ 71%|███████████████████████████████████████████████▌                   | 16827/23700 [31:32<06:27, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1278, 'grad_norm': 0.2571867108345032, 'learning_rate': 1.498101265822785e-05, 'epoch': 70.04}
+{'loss': 0.1277, 'grad_norm': 0.22278830409049988, 'learning_rate': 1.4770042194092828e-05, 'epoch': 70.46}
+{'loss': 0.1279, 'grad_norm': 0.2407691925764084, 'learning_rate': 1.4559071729957807e-05, 'epoch': 70.89}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 71%|███████████████████████████████████████████████▌                   | 16827/23700 [31:42<06:27, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5041913986206055, 'eval_runtime': 9.9517, 'eval_samples_per_second': 159.471, 'eval_steps_per_second': 5.024, 'epoch': 71.0}
+ 72%|████████████████████████████████████████████████▏                  | 17063/23700 [31:57<06:28, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1252, 'grad_norm': 0.23178932070732117, 'learning_rate': 1.4348101265822786e-05, 'epoch': 71.31}
+{'loss': 0.1265, 'grad_norm': 0.20734521746635437, 'learning_rate': 1.4137130801687764e-05, 'epoch': 71.73}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 72%|████████████████████████████████████████████████▏                  | 17064/23700 [32:07<06:28, 17.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5031439065933228, 'eval_runtime': 9.7596, 'eval_samples_per_second': 162.61, 'eval_steps_per_second': 5.123, 'epoch': 72.0}
+ 73%|████████████████████████████████████████████████▉                  | 17301/23700 [32:23<06:00, 17.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1289, 'grad_norm': 0.22747646272182465, 'learning_rate': 1.3926160337552743e-05, 'epoch': 72.15}
+{'loss': 0.129, 'grad_norm': 0.2093748152256012, 'learning_rate': 1.3715189873417722e-05, 'epoch': 72.57}
+{'loss': 0.1278, 'grad_norm': 0.2412724643945694, 'learning_rate': 1.35042194092827e-05, 'epoch': 73.0}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 73%|████████████████████████████████████████████████▉                  | 17301/23700 [32:33<06:00, 17.76it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5034624338150024, 'eval_runtime': 10.1922, 'eval_samples_per_second': 155.707, 'eval_steps_per_second': 4.906, 'epoch': 73.0}
+ 74%|█████████████████████████████████████████████████▌                 | 17537/23700 [32:50<06:00, 17.12it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1283, 'grad_norm': 0.32865259051322937, 'learning_rate': 1.3293248945147679e-05, 'epoch': 73.42}
+{'loss': 0.1267, 'grad_norm': 0.33593955636024475, 'learning_rate': 1.3082278481012658e-05, 'epoch': 73.84}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 74%|█████████████████████████████████████████████████▌                 | 17538/23700 [32:59<05:59, 17.12it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5031383037567139, 'eval_runtime': 9.8603, 'eval_samples_per_second': 160.948, 'eval_steps_per_second': 5.071, 'epoch': 74.0}
+ 75%|██████████████████████████████████████████████████▎                | 17775/23700 [33:16<05:35, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1264, 'grad_norm': 0.26881343126296997, 'learning_rate': 1.2871308016877636e-05, 'epoch': 74.26}
+{'loss': 0.1265, 'grad_norm': 0.2630649209022522, 'learning_rate': 1.2660337552742616e-05, 'epoch': 74.68}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 75%|██████████████████████████████████████████████████▎                | 17775/23700 [33:25<05:35, 17.67it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5041234493255615, 'eval_runtime': 9.8957, 'eval_samples_per_second': 160.372, 'eval_steps_per_second': 5.053, 'epoch': 75.0}
+ 76%|██████████████████████████████████████████████████▉                | 18012/23700 [33:41<05:15, 18.03it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1273, 'grad_norm': 0.20449872314929962, 'learning_rate': 1.2449367088607596e-05, 'epoch': 75.11}
+{'loss': 0.129, 'grad_norm': 0.20242124795913696, 'learning_rate': 1.2238396624472574e-05, 'epoch': 75.53}
+{'loss': 0.1303, 'grad_norm': 0.2769804894924164, 'learning_rate': 1.2027426160337552e-05, 'epoch': 75.95}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 76%|██████████████████████████████████████████████████▉                | 18012/23700 [33:51<05:15, 18.03it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5020148754119873, 'eval_runtime': 9.8115, 'eval_samples_per_second': 161.749, 'eval_steps_per_second': 5.096, 'epoch': 76.0}
+ 77%|███████████████████████████████████████████████████▌               | 18248/23700 [34:06<05:14, 17.36it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1262, 'grad_norm': 0.3037988245487213, 'learning_rate': 1.1816455696202532e-05, 'epoch': 76.37}
+{'loss': 0.1288, 'grad_norm': 0.18936103582382202, 'learning_rate': 1.1605485232067512e-05, 'epoch': 76.79}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 77%|███████████████████████████████████████████████████▌               | 18249/23700 [34:16<05:14, 17.36it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5027262568473816, 'eval_runtime': 9.9155, 'eval_samples_per_second': 160.052, 'eval_steps_per_second': 5.043, 'epoch': 77.0}
+ 78%|████████████████████████████████████████████████████▎              | 18486/23700 [34:31<04:49, 17.99it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1296, 'grad_norm': 0.2517811954021454, 'learning_rate': 1.139451476793249e-05, 'epoch': 77.22}
+{'loss': 0.1294, 'grad_norm': 0.25482359528541565, 'learning_rate': 1.118354430379747e-05, 'epoch': 77.64}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 78%|████████████████████████████████████████████████████▎              | 18486/23700 [34:41<04:49, 17.99it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5027691721916199, 'eval_runtime': 9.8674, 'eval_samples_per_second': 160.832, 'eval_steps_per_second': 5.067, 'epoch': 78.0}
+ 79%|████████████████████████████████████████████████████▉              | 18722/23700 [34:58<04:52, 17.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1252, 'grad_norm': 0.2377253770828247, 'learning_rate': 1.0972573839662448e-05, 'epoch': 78.06}
+{'loss': 0.1267, 'grad_norm': 0.21229411661624908, 'learning_rate': 1.0761603375527426e-05, 'epoch': 78.48}
+{'loss': 0.126, 'grad_norm': 0.24066519737243652, 'learning_rate': 1.0550632911392406e-05, 'epoch': 78.9}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 79%|████████████████████████████████████████████████████▉              | 18723/23700 [35:08<04:52, 17.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5028833150863647, 'eval_runtime': 10.047, 'eval_samples_per_second': 157.958, 'eval_steps_per_second': 4.977, 'epoch': 79.0}
+ 80%|█████████████████████████████████████████████████████▌             | 18960/23700 [35:24<04:29, 17.59it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1286, 'grad_norm': 0.218445286154747, 'learning_rate': 1.0339662447257384e-05, 'epoch': 79.32}
+{'loss': 0.1254, 'grad_norm': 0.23428086936473846, 'learning_rate': 1.0128691983122364e-05, 'epoch': 79.75}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 80%|█████████████████████████████████████████████████████▌             | 18960/23700 [35:35<04:29, 17.59it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.501990795135498, 'eval_runtime': 10.0772, 'eval_samples_per_second': 157.484, 'eval_steps_per_second': 4.962, 'epoch': 80.0}
+ 81%|██████████████████████████████████████████████████████▎            | 19197/23700 [35:51<04:15, 17.61it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.128, 'grad_norm': 0.25122201442718506, 'learning_rate': 9.917721518987343e-06, 'epoch': 80.17}
+{'loss': 0.1286, 'grad_norm': 0.23923368752002716, 'learning_rate': 9.706751054852321e-06, 'epoch': 80.59}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 81%|██████████████████████████████████████████████████████▎            | 19197/23700 [36:01<04:15, 17.61it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5016870498657227, 'eval_runtime': 9.9541, 'eval_samples_per_second': 159.432, 'eval_steps_per_second': 5.023, 'epoch': 81.0}
+ 82%|██████████████████████████████████████████████████████▉            | 19433/23700 [36:17<04:11, 17.00it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1282, 'grad_norm': 0.21519219875335693, 'learning_rate': 9.4957805907173e-06, 'epoch': 81.01}
+{'loss': 0.1282, 'grad_norm': 0.2063346654176712, 'learning_rate': 9.28481012658228e-06, 'epoch': 81.43}
+{'loss': 0.1271, 'grad_norm': 0.28273582458496094, 'learning_rate': 9.073839662447257e-06, 'epoch': 81.86}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 82%|██████████████████████████████████████████████████████▉            | 19434/23700 [36:27<04:10, 17.00it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5021008253097534, 'eval_runtime': 10.0102, 'eval_samples_per_second': 158.538, 'eval_steps_per_second': 4.995, 'epoch': 82.0}
+ 83%|███████████████████████████████████████████████████████▌           | 19671/23700 [36:43<03:50, 17.45it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1256, 'grad_norm': 0.17755141854286194, 'learning_rate': 8.862869198312236e-06, 'epoch': 82.28}
+{'loss': 0.1274, 'grad_norm': 0.21520555019378662, 'learning_rate': 8.651898734177215e-06, 'epoch': 82.7}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 83%|███████████████████████████████████████████████████████▌           | 19671/23700 [36:53<03:50, 17.45it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5018463730812073, 'eval_runtime': 10.205, 'eval_samples_per_second': 155.513, 'eval_steps_per_second': 4.9, 'epoch': 83.0}
+ 84%|████████████████████████████████████████████████████████▎          | 19907/23700 [37:09<03:42, 17.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1283, 'grad_norm': 0.23666587471961975, 'learning_rate': 8.440928270042195e-06, 'epoch': 83.12}
+{'loss': 0.1289, 'grad_norm': 0.24040798842906952, 'learning_rate': 8.229957805907173e-06, 'epoch': 83.54}
+{'loss': 0.1268, 'grad_norm': 0.21982960402965546, 'learning_rate': 8.018987341772153e-06, 'epoch': 83.97}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 84%|████████████████████████████████████████████████████████▎          | 19908/23700 [37:19<03:42, 17.02it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5011917948722839, 'eval_runtime': 9.8805, 'eval_samples_per_second': 160.62, 'eval_steps_per_second': 5.06, 'epoch': 84.0}
+ 85%|████████████████████████████████████████████████████████▉          | 20145/23700 [37:35<03:21, 17.68it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1261, 'grad_norm': 0.24268503487110138, 'learning_rate': 7.808016877637131e-06, 'epoch': 84.39}
+{'loss': 0.1282, 'grad_norm': 0.22424906492233276, 'learning_rate': 7.597046413502109e-06, 'epoch': 84.81}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 85%|████████████████████████████████████████████████████████▉          | 20145/23700 [37:45<03:21, 17.68it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5014854669570923, 'eval_runtime': 10.0327, 'eval_samples_per_second': 158.182, 'eval_steps_per_second': 4.984, 'epoch': 85.0}
+ 86%|█████████████████████████████████████████████████████████▌         | 20382/23700 [38:01<03:08, 17.64it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1258, 'grad_norm': 0.19035260379314423, 'learning_rate': 7.386075949367088e-06, 'epoch': 85.23}
+{'loss': 0.1262, 'grad_norm': 0.2310752272605896, 'learning_rate': 7.175105485232069e-06, 'epoch': 85.65}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 86%|█████████████████████████████████████████████████████████▌         | 20382/23700 [38:11<03:08, 17.64it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5014597773551941, 'eval_runtime': 10.0616, 'eval_samples_per_second': 157.729, 'eval_steps_per_second': 4.969, 'epoch': 86.0}
+ 87%|██████████████████████████████████████████████████████████▎        | 20618/23700 [38:27<03:01, 16.99it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1254, 'grad_norm': 0.24736495316028595, 'learning_rate': 6.964135021097047e-06, 'epoch': 86.08}
+{'loss': 0.128, 'grad_norm': 0.2395019680261612, 'learning_rate': 6.753164556962026e-06, 'epoch': 86.5}
+{'loss': 0.1279, 'grad_norm': 0.2121683806180954, 'learning_rate': 6.542194092827005e-06, 'epoch': 86.92}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 87%|██████████████████████████████████████████████████████████▎        | 20619/23700 [38:37<03:01, 16.99it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5017552375793457, 'eval_runtime': 9.803, 'eval_samples_per_second': 161.888, 'eval_steps_per_second': 5.1, 'epoch': 87.0}
+ 88%|██████████████████████████████████████████████████████████▉        | 20856/23700 [38:54<02:41, 17.60it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1262, 'grad_norm': 0.2525750696659088, 'learning_rate': 6.331223628691983e-06, 'epoch': 87.34}
+{'loss': 0.1254, 'grad_norm': 0.2350698858499527, 'learning_rate': 6.120253164556963e-06, 'epoch': 87.76}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 88%|██████████████████████████████████████████████████████████▉        | 20856/23700 [39:04<02:41, 17.60it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5015204548835754, 'eval_runtime': 9.9977, 'eval_samples_per_second': 158.737, 'eval_steps_per_second': 5.001, 'epoch': 88.0}
+ 89%|███████████████████████████████████████████████████████████▋       | 21092/23700 [39:20<02:34, 16.92it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1283, 'grad_norm': 0.21927101910114288, 'learning_rate': 5.909282700421942e-06, 'epoch': 88.19}
+{'loss': 0.125, 'grad_norm': 0.2946959137916565, 'learning_rate': 5.69831223628692e-06, 'epoch': 88.61}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 89%|███████████████████████████████████████████████████████████▋       | 21093/23700 [39:30<02:34, 16.92it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5015019774436951, 'eval_runtime': 10.1146, 'eval_samples_per_second': 156.902, 'eval_steps_per_second': 4.943, 'epoch': 89.0}
+ 90%|████████████████████████████████████████████████████████████▎      | 21330/23700 [39:46<02:18, 17.07it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1267, 'grad_norm': 0.22217407822608948, 'learning_rate': 5.487341772151899e-06, 'epoch': 89.03}
+{'loss': 0.1269, 'grad_norm': 0.2746361494064331, 'learning_rate': 5.276371308016878e-06, 'epoch': 89.45}
+{'loss': 0.1274, 'grad_norm': 0.34325408935546875, 'learning_rate': 5.065400843881857e-06, 'epoch': 89.87}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 90%|████████████████████████████████████████████████████████████▎      | 21330/23700 [39:56<02:18, 17.07it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5007725358009338, 'eval_runtime': 9.9845, 'eval_samples_per_second': 158.946, 'eval_steps_per_second': 5.008, 'epoch': 90.0}
+ 91%|████████████████████████████████████████████████████████████▉      | 21567/23700 [40:12<02:00, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1251, 'grad_norm': 0.20896951854228973, 'learning_rate': 4.8544303797468356e-06, 'epoch': 90.3}
+{'loss': 0.1248, 'grad_norm': 0.24444875121116638, 'learning_rate': 4.6434599156118145e-06, 'epoch': 90.72}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 91%|████████████████████████████████████████████████████████████▉      | 21567/23700 [40:22<02:00, 17.73it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5011950135231018, 'eval_runtime': 9.9115, 'eval_samples_per_second': 160.117, 'eval_steps_per_second': 5.045, 'epoch': 91.0}
+ 92%|█████████████████████████████████████████████████████████████▋     | 21803/23700 [40:38<01:53, 16.77it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1285, 'grad_norm': 0.24884186685085297, 'learning_rate': 4.4324894514767934e-06, 'epoch': 91.14}
+{'loss': 0.128, 'grad_norm': 0.2624359726905823, 'learning_rate': 4.221518987341772e-06, 'epoch': 91.56}
+{'loss': 0.127, 'grad_norm': 0.20500200986862183, 'learning_rate': 4.010548523206751e-06, 'epoch': 91.98}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 92%|███████████████████████████████████████████▏   | 21804/23700 [40:48<01:53, 16.77it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                                              
+{'eval_loss': 0.5009647011756897, 'eval_runtime': 9.9056, 'eval_samples_per_second': 160.213, 'eval_steps_per_second': 5.048, 'epoch': 92.0}
+ 93%|███████████████████████████████████████████▋   | 22041/23700 [41:03<01:32, 18.01it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1258, 'grad_norm': 0.20280611515045166, 'learning_rate': 3.7995780590717303e-06, 'epoch': 92.41}
+{'loss': 0.1259, 'grad_norm': 0.24666281044483185, 'learning_rate': 3.588607594936709e-06, 'epoch': 92.83}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 93%|███████████████████████████████████████████▋   | 22041/23700 [41:13<01:32, 18.01it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5008094310760498, 'eval_runtime': 9.9045, 'eval_samples_per_second': 160.23, 'eval_steps_per_second': 5.048, 'epoch': 93.0}
+ 94%|████████████████████████████████████████████▏  | 22277/23700 [41:29<01:22, 17.15it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1272, 'grad_norm': 0.2793182134628296, 'learning_rate': 3.3776371308016878e-06, 'epoch': 93.25}
+{'loss': 0.127, 'grad_norm': 0.21272963285446167, 'learning_rate': 3.166666666666667e-06, 'epoch': 93.67}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 94%|████████████████████████████████████████████▏  | 22278/23700 [41:39<01:22, 17.15it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5009893178939819, 'eval_runtime': 10.0189, 'eval_samples_per_second': 158.4, 'eval_steps_per_second': 4.991, 'epoch': 94.0}
+ 95%|████████████████████████████████████████████▋  | 22515/23700 [41:55<01:05, 18.01it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1267, 'grad_norm': 0.2252623736858368, 'learning_rate': 2.9556962025316456e-06, 'epoch': 94.09}
+{'loss': 0.1282, 'grad_norm': 0.2331949919462204, 'learning_rate': 2.7447257383966246e-06, 'epoch': 94.51}
+{'loss': 0.1256, 'grad_norm': 0.24354735016822815, 'learning_rate': 2.5337552742616035e-06, 'epoch': 94.94}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 95%|████████████████████████████████████████████▋  | 22515/23700 [42:05<01:05, 18.01it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5007709860801697, 'eval_runtime': 10.0058, 'eval_samples_per_second': 158.607, 'eval_steps_per_second': 4.997, 'epoch': 95.0}
+ 96%|█████████████████████████████████████████████  | 22752/23700 [42:21<00:52, 17.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.126, 'grad_norm': 0.3156166970729828, 'learning_rate': 2.3227848101265825e-06, 'epoch': 95.36}
+{'loss': 0.1252, 'grad_norm': 0.2465793937444687, 'learning_rate': 2.1118143459915614e-06, 'epoch': 95.78}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 96%|█████████████████████████████████████████████  | 22752/23700 [42:31<00:52, 17.98it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5007384419441223, 'eval_runtime': 9.9032, 'eval_samples_per_second': 160.252, 'eval_steps_per_second': 5.049, 'epoch': 96.0}
+ 97%|█████████████████████████████████████████████▌ | 22988/23700 [42:46<00:41, 17.22it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1257, 'grad_norm': 0.24410560727119446, 'learning_rate': 1.9008438818565404e-06, 'epoch': 96.2}
+{'loss': 0.1256, 'grad_norm': 0.23938196897506714, 'learning_rate': 1.689873417721519e-06, 'epoch': 96.62}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 97%|█████████████████████████████████████████████▌ | 22989/23700 [42:56<00:41, 17.22it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5005554556846619, 'eval_runtime': 10.016, 'eval_samples_per_second': 158.446, 'eval_steps_per_second': 4.992, 'epoch': 97.0}
+ 98%|██████████████████████████████████████████████ | 23226/23700 [43:12<00:29, 16.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1278, 'grad_norm': 0.2280714362859726, 'learning_rate': 1.478902953586498e-06, 'epoch': 97.05}
+{'loss': 0.1261, 'grad_norm': 0.27710071206092834, 'learning_rate': 1.2679324894514768e-06, 'epoch': 97.47}
+{'loss': 0.1276, 'grad_norm': 0.19955316185951233, 'learning_rate': 1.0569620253164557e-06, 'epoch': 97.89}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 98%|██████████████████████████████████████████████ | 23226/23700 [43:22<00:29, 16.08it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5004344582557678, 'eval_runtime': 9.9346, 'eval_samples_per_second': 159.745, 'eval_steps_per_second': 5.033, 'epoch': 98.0}
+ 99%|██████████████████████████████████████████████▌| 23462/23700 [43:38<00:13, 17.25it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1269, 'grad_norm': 0.250234454870224, 'learning_rate': 8.459915611814346e-07, 'epoch': 98.31}
+{'loss': 0.1252, 'grad_norm': 0.22006528079509735, 'learning_rate': 6.350210970464135e-07, 'epoch': 98.73}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+ 99%|██████████████████████████████████████████████▌| 23463/23700 [43:48<00:13, 17.25it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5004225373268127, 'eval_runtime': 9.9164, 'eval_samples_per_second': 160.037, 'eval_steps_per_second': 5.042, 'epoch': 99.0}
+100%|███████████████████████████████████████████████| 23700/23700 [44:03<00:00, 17.80it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+{'loss': 0.1296, 'grad_norm': 0.20573879778385162, 'learning_rate': 4.240506329113924e-07, 'epoch': 99.16}
+{'loss': 0.1267, 'grad_norm': 0.2471817582845688, 'learning_rate': 2.1308016877637131e-07, 'epoch': 99.58}
+{'loss': 0.1242, 'grad_norm': 0.25603288412094116, 'learning_rate': 2.109704641350211e-09, 'epoch': 100.0}
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+100%|███████████████████████████████████████████████| 23700/23700 [44:13<00:00, 17.80it/s]/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(                                                                          
+{'eval_loss': 0.5003876686096191, 'eval_runtime': 10.0326, 'eval_samples_per_second': 158.184, 'eval_steps_per_second': 4.984, 'epoch': 100.0}
+100%|███████████████████████████████████████████████| 23700/23700 [44:15<00:00,  8.92it/s]
+{'train_runtime': 2656.65, 'train_samples_per_second': 285.096, 'train_steps_per_second': 8.921, 'train_loss': 0.13617316817432515, 'epoch': 100.0}
+2025-05-05 17:07:13 - __main__ - INFO - Training finished.
+***** train metrics *****
+  epoch                    =      100.0
+  total_flos               = 46237550GF
+  train_loss               =     0.1362
+  train_runtime            = 0:44:16.65
+  train_samples_per_second =    285.096
+  train_steps_per_second   =      8.921
+2025-05-05 17:07:13 - __main__ - INFO - Saving final model and tokenizer to ./output
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/peft/utils/save_and_load.py:250: UserWarning: Setting `save_embedding_layers` to `True` as the embedding layer has been resized during finetuning.
+  warnings.warn(
+2025-05-05 17:07:17 - __main__ - INFO - Model and tokenizer saved successfully.
+2025-05-05 17:07:17 - __main__ - INFO - *** Evaluating Final Model ***
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/data_parallel.py:37: UserWarning:
+    There is an imbalance between your GPUs. You may want to exclude GPU 3 which
+    has less than 75% of the memory or cores of GPU 0. You can do so by setting
+    the device_ids argument to DataParallel, or by setting the CUDA_VISIBLE_DEVICES
+    environment variable.
+  warnings.warn(
+/home/augusto/symbo_repos/seringuela/.seriguela/lib/python3.11/site-packages/torch/nn/parallel/_functions.py:70: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn(
+100%|█████████████████████████████████████████████████████| 50/50 [00:09<00:00,  5.03it/s]
+2025-05-05 17:07:27 - __main__ - INFO - Perplexity: 1.6494
+2025-05-05 17:07:27 - __main__ - INFO - Evaluation metrics: {'eval_loss': 0.5003876686096191, 'eval_runtime': 10.1364, 'eval_samples_per_second': 156.565, 'eval_steps_per_second': 4.933, 'epoch': 100.0, 'perplexity': 1.6493605520894474}
+***** eval metrics *****
+  epoch                   =      100.0
+  eval_loss               =     0.5004
+  eval_runtime            = 0:00:10.13
+  eval_samples_per_second =    156.565
+  eval_steps_per_second   =      4.933
+  perplexity              =     1.6494
+2025-05-05 17:07:27 - __main__ - INFO - Pushing final model artifacts to Hub repository: augustocsc/Se124M10K
+2025-05-05 17:07:30 - __main__ - INFO - Model pushed successfully to the Hub.
+2025-05-05 17:07:30 - __main__ - INFO - --- Script Finished at 2025-05-05 17:07:30 ---
+2025-05-05 17:07:30 - __main__ - INFO - Total execution time: 0:44:46.561347

@@ -1,0 +1,67 @@
+{
+  "os": "Linux-4.18.0-553.8.1.el8_10.x86_64-x86_64-with-glibc2.28",
+  "python": "CPython 3.11.4",
+  "startedAt": "2025-05-05T21:08:52.141523Z",
+  "args": [
+    "--dataset_repo_id",
+    "augustocsc/sintetico",
+    "--data_dir",
+    "100k",
+    "--output_dir",
+    "./output",
+    "--push_to_hub",
+    "--hub_model_id",
+    "augustocsc/Se124M10K"
+  ],
+  "program": "/home/augusto/symbo_repos/seringuela/scripts/train_test.py",
+  "codePath": "scripts/train_test.py",
+  "email": "aceesar99@gmail.com",
+  "root": "/home/augusto/symbo_repos/seringuela",
+  "host": "gpg-boltzmann",
+  "executable": "/home/augusto/symbo_repos/seringuela/.seriguela/bin/python",
+  "codePathLocal": "scripts/train_test.py",
+  "cpu_count": 64,
+  "cpu_count_logical": 128,
+  "gpu": "NVIDIA A30",
+  "gpu_count": 4,
+  "disk": {
+    "/": {
+      "total": "932782227456",
+      "used": "849578332160"
+    }
+  },
+  "memory": {
+    "total": "540331122688"
+  },
+  "cpu": {
+    "count": 64,
+    "countLogical": 128
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA A30",
+      "memoryTotal": "25769803776",
+      "cudaCores": 3584,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A5000",
+      "memoryTotal": "25757220864",
+      "cudaCores": 8192,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA A100 80GB PCIe",
+      "memoryTotal": "85899345920",
+      "cudaCores": 6912,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A5000",
+      "memoryTotal": "25757220864",
+      "cudaCores": 8192,
+      "architecture": "Ampere"
+    }
+  ],
+  "cudaVersion": "12.0"
+}
