@@ -93,3 +93,5 @@ data/processed/*
 ehthumbs.db
 Thumbs.db
 .env
+
+wandb
