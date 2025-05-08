@@ -33,7 +33,7 @@ from transformers import (
 from peft import LoraConfig, get_peft_model, TaskType, PeftModel # Import PeftModel for type hint
 
 # --- Constants ---
-SPECIAL_TOKENS = ["<|startofex|>", "<|endofex|>"]
+SPECIAL_TOKENS = ["<startofex>", "<endofex>"]
 DEFAULT_MODEL_NAME = "gpt2"
 DEFAULT_BLOCK_SIZE = 128
 DEFAULT_EPOCHS = 3
@@ -95,6 +95,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--per_device_eval_batch_size", type=int, default=DEFAULT_BATCH_SIZE,
                         help="Batch size per device during evaluation.")
     parser.add_argument("--learning_rate", type=float, default=DEFAULT_LR, help="Learning rate.")
+    parser.add_argument("--lr_scheduler_type", type=str, default="linear", choices=["linear", "cosine", "cosine_with_restarts", "polynomial", "constant"],
+                        help="Learning rate scheduler type.")
     parser.add_argument("--weight_decay", type=float, default=DEFAULT_WEIGHT_DECAY, help="Weight decay.")
     parser.add_argument("--gradient_accumulation_steps", type=int, default=DEFAULT_GRAD_ACCUM_STEPS,
                         help="Steps for gradient accumulation.")
@@ -112,20 +114,21 @@ def parse_arguments() -> argparse.Namespace:
     # Logging, Saving & Evaluation Args
     parser.add_argument("--output_dir", type=str, required=True,
                         help="Directory to save the fine-tuned model, checkpoints, and logs.")
+    parser.add_argument("--overwrite_output_dir", action='store_true',
+                        help="Overwrite the content of the output directory if it exists.")
     parser.add_argument("--logging_steps", type=int, default=DEFAULT_LOGGING_STEPS, help="Log training metrics every N steps.")
     parser.add_argument("--eval_steps", type=int, default=DEFAULT_SAVE_EVAL_STEPS,
                         help="Evaluate every N steps (if eval_strategy='steps').")
     parser.add_argument("--save_steps", type=int, default=DEFAULT_SAVE_EVAL_STEPS,
                         help="Save checkpoint every N steps (if save_strategy='steps').")
-    parser.add_argument("--eval_strategy", type=str, default=DEFAULT_EVAL_STRATEGY, choices=["steps", "epoch", "no"],
-                        help="Evaluation strategy.")
+    parser.add_argument("--eval_strategy", type=str, default=DEFAULT_EVAL_STRATEGY, choices=["steps", "epoch", "no"], help="Evaluation strategy.")
     parser.add_argument("--save_strategy", type=str, default=DEFAULT_SAVE_STRATEGY, choices=["steps", "epoch", "no"],
                         help="Checkpoint saving strategy.")
     parser.add_argument("--save_total_limit", type=int, default=DEFAULT_SAVE_TOTAL_LIMIT,
                         help="Limit the total number of checkpoints saved.")
     parser.add_argument("--load_best_model_at_end", action='store_true',
                         help="Load the best model (based on evaluation loss) at the end.")
-    parser.add_argument("--early_stopping_patience", type=int, default=None, # Default to no early stopping
+    parser.add_argument("--early_stopping_patience", type=int, default=2, # Default to no early stopping
                         help="Number of evaluations with no improvement to trigger early stopping. Requires load_best_model_at_end.")
 
     # Technical Args
@@ -133,15 +136,14 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED, help="Random seed for reproducibility.")
     parser.add_argument("--report_to", type=str, default="tensorboard", choices=["tensorboard", "wandb", "none"],
                         help="Where to report metrics.")
+    parser.add_argument("--run_name", type=str, default="train_gpt2_equations",
+                        help="Name of the run for logging purposes.")
+    
 
     # Hugging Face Hub Args
     parser.add_argument("--push_to_hub", action='store_true', help="Push the final model to the Hugging Face Hub.")
     parser.add_argument("--hub_model_id", type=str, default=None,
                         help="Repository ID for pushing (e.g., 'username/gpt2-finetuned-equations'). Required if --push_to_hub.")
-    
-    # Deprecated/Unused Args from original (kept for reference or potential future use)
-    # parser.add_argument("--approach", default="infix_expr", type=str, required=True, help="Approach to be used for training (e.g., 'infix_expr', 'prefix_expr').") # NOTE: This seemed unused in the original data loading part. Replaced with --source_data_column.
-    # parser.add_argument("--data_column", type=str, default="text", help="Column name in the dataset to be used for training.") # NOTE: This is implicitly 'text' after preprocessing. Use --source_data_column instead.
 
 
     args = parser.parse_args()
@@ -218,8 +220,6 @@ def load_and_prepare_dataset(
   
         return tokenizer(examples[target_column], truncation=True, padding=False)
 
-    print(f"--------------- {processed_datasets}")
-
     tokenized_datasets = processed_datasets.map(
         tokenize_function,
         batched=True,
@@ -229,8 +229,7 @@ def load_and_prepare_dataset(
     )
     logger.info("Tokenization complete.")
 
-    print(f"--------------- {tokenized_datasets}")
-    
+   
     # 3. Group texts into blocks
     logger.info(f"Grouping texts into blocks of size: {block_size}")
 
@@ -261,10 +260,6 @@ def load_and_prepare_dataset(
         # 🎯 Step 4: Create labels (deep copy of input_ids)
         result["labels"] = [list(x) for x in result["input_ids"]]
 
-        # ✅ Optional Debug (Remove after validating)
-        for k, v in result.items():
-            print(f"{k}: {len(v)} blocks, block sizes: {[len(chunk) for chunk in v[:3]]}")
-
         return result
 
 
@@ -289,16 +284,21 @@ def load_tokenizer(model_name_or_path: str) -> PreTrainedTokenizerBase:
     try:
         tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
-        # Handle padding token for models like GPT-2
-        if tokenizer.pad_token is None and "gpt2" in model_name_or_path.lower():
-            logger.warning("GPT-2 tokenizer has no default pad token. Setting pad_token = eos_token.")
-            tokenizer.pad_token = tokenizer.eos_token
+        # Defina seus tokens especiais de forma clara
+        SPECIAL_TOKENS = {
+            "eos_token": "<endofex>",
+            "pad_token": "<pad>",
+            "additional_special_tokens": ["<startofex>"]
+        }
 
-        # Add special tokens
-        num_added_toks = tokenizer.add_special_tokens(
-            {"additional_special_tokens": SPECIAL_TOKENS, "pad_token": tokenizer.pad_token}
-        )
-        logger.info(f"Added {num_added_toks} special tokens: {SPECIAL_TOKENS} and pad_token='{tokenizer.pad_token}'")
+        # Adiciona os tokens especiais
+        num_added = tokenizer.add_special_tokens(SPECIAL_TOKENS)
+
+        # Reforça as definições (importante para compatibilidade com Trainer)
+        tokenizer.pad_token = "<pad>"
+        tokenizer.eos_token = "<endofex>"
+
+        logger.info(f"Added {num_added} special tokens: {SPECIAL_TOKENS}")
 
         return tokenizer
 
@@ -349,34 +349,6 @@ def load_model(model_name_or_path: str, tokenizer: PreTrainedTokenizerBase, args
     except Exception as e:
         logger.error(f"Failed to apply PEFT (LoRA) to the model: {e}", exc_info=True)
         sys.exit(1)
-
-# --- Training Configuration ---
-
-def configure_training_args(args: argparse.Namespace, token: str, has_validation_split: bool) -> TrainingArguments:
-    """Configures and returns TrainingArguments."""
-    logger.info("Configuring training arguments...")
-
-    # Determine evaluation strategy based on dataset and args
-    effective_eval_strategy = args.eval_strategy
-    if effective_eval_strategy != "no" and not has_validation_split:
-        logger.warning("Validation split not found or empty. Disabling evaluation ('eval_strategy' set to 'no').")
-        effective_eval_strategy = "no"
-
-    # Ensure load_best_model_at_end aligns with evaluation
-    load_best = args.load_best_model_at_end
-    if load_best and effective_eval_strategy == "no":
-        logger.warning("--load_best_model_at_end requires evaluation. Disabling it.")
-        load_best = False
-
-    # Load JSON file
-    with open("configs/training_args.json", "r") as f:
-        training_args_dict = json.load(f)
-
-    # Create TrainingArguments instance
-    training_args = TrainingArguments(**training_args_dict)
-    logger.info(f"Training Arguments: {training_args}")
-
-    return training_args
 
 # --- Trainer Initialization ---
 
@@ -450,13 +422,43 @@ def main():
     train_dataset = lm_datasets["train"]
     eval_dataset = lm_datasets.get("validation") # Returns None if 'validation' doesn't exist
     has_validation = eval_dataset is not None and len(eval_dataset) > 0
+    if not has_validation:
+        logger.warning("No validation dataset found. Skipping evaluation during training.")
+        eval_dataset = None
 
-
+    
     # 6. Load Model and Apply PEFT
     model = load_model(args.model_name_or_path, tokenizer, args)
-
+    
     # 7. Configure Training Arguments
-    training_args = configure_training_args(args, hf_token, has_validation)
+    training_args = TrainingArguments(
+        output_dir=args.output_dir,
+        num_train_epochs=args.num_train_epochs,
+        per_device_train_batch_size=args.per_device_train_batch_size,
+        per_device_eval_batch_size=args.per_device_eval_batch_size,
+        learning_rate=args.learning_rate,
+        lr_scheduler_type=args.lr_scheduler_type,
+        weight_decay=args.weight_decay,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
+        warmup_steps=args.warmup_steps,
+        fp16=args.fp16,
+        seed=args.seed,
+        eval_strategy=args.eval_strategy,
+        metric_for_best_model="eval_loss", # Or make this an arg
+        greater_is_better=False,         # Or make this an arg
+        load_best_model_at_end=args.load_best_model_at_end,
+        save_strategy=args.save_strategy, # Ensure this matches eval_strategy for early stopping
+        save_total_limit=args.save_total_limit,
+        logging_dir=os.path.join(args.output_dir, "logs"), # Example
+        logging_steps=args.logging_steps,
+        report_to=args.report_to,
+        run_name=args.run_name,
+        push_to_hub=args.push_to_hub,
+        hub_model_id=args.hub_model_id,
+        hub_token=hf_token if args.push_to_hub else None, # Assuming hf_token is loaded
+        overwrite_output_dir=args.overwrite_output_dir,
+        # Add any other relevant arguments from your parse_arguments function
+    )
 
     # 8. Initialize Trainer
     trainer = initialize_trainer(

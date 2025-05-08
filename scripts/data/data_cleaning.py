@@ -39,6 +39,7 @@ def replace_constants(equation):
     pattern = r'(?<![\w.])(?:[-+]?\d*\.\d+|\d+)(?![\w.])'
     return re.sub(pattern, 'C', equation)
 
+
 def augment_expression(equation, var_prefix='x', max_index=10, p=0.5):
     """
     1. Replace all standalone numeric constants (including scientific notation) with 'C'.

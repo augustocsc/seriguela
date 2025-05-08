@@ -2,7 +2,7 @@
 
 from joblib import Parallel, delayed
 import pandas as pd
-from .data_augmentation import generate_expression_instructions
+from .data_augmentation import generate_expression_instructions, generate_expression_instruction
 
 def augment_dataframe_parallel(df, expression_col="expression", n_jobs=-1):
     """
@@ -18,13 +18,14 @@ def augment_dataframe_parallel(df, expression_col="expression", n_jobs=-1):
     """
     expressions = df[expression_col].tolist()
     augmented_data = Parallel(n_jobs=n_jobs)(
-        delayed(generate_expression_instructions)(expr) for expr in expressions
+        delayed(generate_expression_instruction)(expr) for expr in expressions
     )
 
     df_aug = df.copy()
-    df_aug["simple"] = [item["Simple_Instruct"] for item in augmented_data]
-    df_aug["key_value"] = [item["Key_Value"] for item in augmented_data]
-    df_aug["delimiter"] = [item["Delimiter_Based"] for item in augmented_data]
-    df_aug["minimalist"] = [item["Minimalist"] for item in augmented_data]
+    df_aug["instruction"] = [item["instriction"] for item in augmented_data]
+    #df_aug["simple"] = [item["Simple_Instruct"] for item in augmented_data]
+    #df_aug["key_value"] = [item["Key_Value"] for item in augmented_data]
+    #df_aug["delimiter"] = [item["Delimiter_Based"] for item in augmented_data]
+    #df_aug["minimalist"] = [item["Minimalist"] for item in augmented_data]
 
     return df_aug
