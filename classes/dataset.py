@@ -16,6 +16,7 @@ class RegressionDataset:
             target_col (str): Name of the target column. If None, the last column is used.
         """
         self.data = pd.read_csv(f"{path}/{file_name}", delimiter=delimiter, header=header, encoding=encoding)
+        
         if self.data.empty:
             raise ValueError("CSV file is empty.")
         
@@ -26,6 +27,7 @@ class RegressionDataset:
             raise ValueError(f"CSV must contain a column named '{target_col}'.")
         
         self.X = self.data.drop(columns=[target_col]).apply(pd.to_numeric, errors='coerce').values
+        
         self.y = pd.to_numeric(self.data[target_col], errors='coerce').values
 
     def get_data(self):
@@ -42,7 +44,5 @@ class RegressionDataset:
         """
         return self.X, self.y
 
-#reg = RegressionDataset('./data/evaluate/srsd-feynman_easy/train', 'feynman-i.12.1.txt')
-                        
-#X, y = reg.get_data()
-#print(X.shape, y.shape)
+
+

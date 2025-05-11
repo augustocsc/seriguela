@@ -216,6 +216,12 @@ class Expression:
 
     def __str__(self):
         return f"Expression: {self.original_expression}, Max var index: {self.max_var}, Constant count: {self.constant_count}, Best constants: {self.best_constants}"
+    def sympy_str(self):
+        """
+        Returns the string representation of the sympy expression.
+        """
+        return str(self.sympy_expression)
+    
 
     def evaluate(self, x, constants=None):
         if constants is None:
@@ -237,60 +243,50 @@ class Expression:
         y = np.array(y)
 
         if self.constant_count == 0:
-            # Handle potential errors during evaluation
             try:
                 y_pred = np.array([self.evaluate(x) for x in X])
-                # Handle cases where all y_pred are the same (r2_score would be NaN or inf)
                 if np.all(y_pred == y_pred[0]):
-                     return 0.0 # Or handle as appropriate for your use case
+                    return 0.0
                 return r2_score(y, y_pred)
             except RuntimeError as e:
-                 print(f"Evaluation error during fit_constants (no constants): {e}")
-                 return -np.inf # Or handle as an invalid fit
+                print(f"Evaluation error during fit_constants (no constants): {e}")
+                return -np.inf
 
         def loss(constants):
             try:
                 y_pred = np.array([self.evaluate(x, constants) for x in X])
-                # Handle potential NaN or Inf values in y_pred resulting from evaluation
                 if np.any(np.isnan(y_pred)) or np.any(np.isinf(y_pred)):
-                    return np.inf # Indicate a very high loss for invalid outputs
+                    return np.inf
                 return np.mean((y - y_pred) ** 2)
             except RuntimeError as e:
-                # If evaluation fails during optimization, treat as high loss
-                # print(f"Evaluation error during optimization: {e}") # Optional: for debugging
                 return np.inf
 
-
-        # Define bounds for constants. If the original expression implies a power (using ** or ^),
-        # potentially bound the constant used as an exponent. This logic is tied to the string
-        # representation and might be fragile. A more robust way would be to analyze the sympy tree.
-        # Let's keep the original logic but note its limitation.
-        # The original code had bounds based on 'pow' or '^' in self.original_expression.
-        # Since we are replacing '^' with '**' internally, let's check for '**' or '^'
-        # in the original expression string for this specific constant handling logic.
-        bounds = [(2, 5) if ('**' in self.original_expression or '^' in self.original_expression) else (None, None)] * self.constant_count
+        # Define bounds for all constants: between -10 and 10
+        bounds = [(-1, 1)] * self.constant_count
 
         # Initial guess for constants
-        initial_guess = self.best_constants if self.best_constants and len(self.best_constants) == self.constant_count else [1.0] * self.constant_count
+        initial_guess = (
+            self.best_constants
+            if self.best_constants and len(self.best_constants) == self.constant_count
+            else [1.0] * self.constant_count
+        )
 
         result = minimize(loss, initial_guess, method='L-BFGS-B', bounds=bounds)
 
         if result.success:
             self.best_constants = result.x.tolist()
-            # Calculate R^2 with the optimized constants
             try:
-                 y_pred = np.array([self.evaluate(x) for x in X])
-                 if np.all(y_pred == y_pred[0]):
-                      return 0.0 # Or handle as appropriate
-                 return r2_score(y, y_pred)
+                y_pred = np.array([self.evaluate(x) for x in X])
+                if np.all(y_pred == y_pred[0]):
+                    return 0.0
+                return r2_score(y, y_pred)
             except RuntimeError as e:
-                 print(f"Evaluation error after optimization: {e}")
-                 return -np.inf # Indicate failure
+                print(f"Evaluation error after optimization: {e}")
+                return -np.inf
         else:
-            # Optimization failed, keep the initial constants or handle as an error
             print(f"Optimization failed: {result.message}")
-            # Optionally, recalculate R^2 with initial constants or return a specific error value
-            return -np.inf # Indicate optimization failure
+            return -np.inf
+
 
 
     def resolved_expression(self):
@@ -299,8 +295,9 @@ class Expression:
         """
         # Start from the sympy expression tree for a more robust substitution
         resolved_sympy_expr = self.sympy_expression
+        print(f"Original SymPy Expression: {resolved_sympy_expr}")
         c_symbols = sorted([s for s in resolved_sympy_expr.free_symbols if s.name == 'C'], key=lambda s: str(s)) # Ensure consistent order if multiple Cs
-
+        print(f"Found C symbols: {c_symbols}")
         if len(c_symbols) != self.constant_count:
             # This should ideally not happen if constant_count is calculated correctly
              print("Warning: Mismatch between 'C' symbols found and constant_count.")
@@ -320,6 +317,8 @@ class Expression:
         # We could also store a string representation if needed, but the sympy object is more useful
         self._resolved_sympy_expression = resolved_sympy_expr
         return self._resolved_sympy_expression
+
+
 
 
 '''
