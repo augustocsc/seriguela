@@ -75,7 +75,13 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Fine-tune GPT-2 model using PEFT (LoRA) on an equation dataset."
     )
-
+    parser.add_argument("--bf16", action='store_true', help="Use bfloat16 precision training.")
+    parser.add_argument("--dataloader_num_workers", type=int, default=8, help="Number of workers for data loading.")
+    parser.add_argument("--warmup_ratio", type=float, default=0.03, help="Ratio of total steps for learning rate warmup.")
+    parser.add_argument("--max_grad_norm", type=float, default=1.0, help="Maximum gradient norm for gradient clipping.")
+    parser.add_argument("--optim", type=str, default="adamw_torch_fused", choices=["adamw_torch_fused", "adamw_hf", "adamw_torch", "sgd"],
+                        help="Optimizer to use during training.")
+    
     # Model & Data Args
     parser.add_argument("--model_name_or_path", type=str, default=DEFAULT_MODEL_NAME,
                         help="Pretrained model name or path (e.g., 'gpt2', 'gpt2-medium').")
@@ -128,8 +134,10 @@ def parse_arguments() -> argparse.Namespace:
                         help="Limit the total number of checkpoints saved.")
     parser.add_argument("--load_best_model_at_end", action='store_true',
                         help="Load the best model (based on evaluation loss) at the end.")
-    parser.add_argument("--early_stopping_patience", type=int, default=2, # Default to no early stopping
+    parser.add_argument("--early_stopping_patience", type=int, default=None,
                         help="Number of evaluations with no improvement to trigger early stopping. Requires load_best_model_at_end.")
+    parser.add_argument("--special_tokens", nargs='+', default=SPECIAL_TOKENS,
+                        help="List of special tokens to add to the tokenizer (e.g., '<startofex>', '<endofex>').")
 
     # Technical Args
     parser.add_argument("--fp16", action='store_true', help="Use mixed precision training (FP16).")
@@ -180,6 +188,8 @@ def load_and_prepare_dataset(
     except Exception as e:
         logger.error(f"Failed to load dataset: {e}", exc_info=True)
         sys.exit(1)
+    
+    eos_text_token = tokenizer.eos_token  # Ex: "<|endoftext|>"
 
     # --- Preprocessing Steps ---
     # 1. Rename source column to target column (e.g., 'text')
@@ -189,7 +199,10 @@ def load_and_prepare_dataset(
         def rename_and_keep_column(example: Dict[str, Any]) -> Dict[str, Any]:
             if source_column not in example:
                 raise KeyError(f"Source column '{source_column}' not found in example: {list(example.keys())}")
-            return {target_column: example[source_column]}
+            
+            text = example[source_column]
+
+            return {target_column: text + eos_text_token} # Append EOS token to the text
 
         # Get all column names *before* mapping to correctly remove them
         column_names_to_remove = {}
@@ -216,9 +229,7 @@ def load_and_prepare_dataset(
     # 2. Tokenize
     logger.info("Tokenizing dataset...")
     def tokenize_function(examples: Dict[str, List[str]]) -> Dict[str, List[Any]]:
-        """Applies the tokenizer to the target text column."""
-  
-        return tokenizer(examples[target_column], truncation=True, padding=False)
+        return tokenizer(examples[target_column], truncation=True)
 
     tokenized_datasets = processed_datasets.map(
         tokenize_function,
@@ -229,51 +240,7 @@ def load_and_prepare_dataset(
     )
     logger.info("Tokenization complete.")
 
-   
-    # 3. Group texts into blocks
-    logger.info(f"Grouping texts into blocks of size: {block_size}")
-
-    def group_texts(examples: Dict[str, List[Any]]) -> Dict[str, List[Any]]:
-        """
-        Concatenates all input sequences and splits them into blocks of `block_size`,
-        with attention_mask and labels aligned for causal LM training.
-        """
-
-        # 🔄 Step 1: Concatenate all examples together for each field
-        concatenated = {k: sum(examples[k], []) for k in examples.keys()}
-        total_length = len(concatenated["input_ids"])
-
-        # 📏 Step 2: Trim to nearest multiple of block_size
-        if total_length >= block_size:
-            total_length = (total_length // block_size) * block_size
-        else:
-            logger.warning(
-                f"Total length ({total_length}) < block_size ({block_size}), might return empty batches."
-            )
-
-        # 🧱 Step 3: Split into chunks
-        result = {
-            k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
-            for k, t in concatenated.items()
-        }
-
-        # 🎯 Step 4: Create labels (deep copy of input_ids)
-        result["labels"] = [list(x) for x in result["input_ids"]]
-
-        return result
-
-
-
-    lm_datasets = tokenized_datasets.map(
-        group_texts,
-        batched=True,
-        #num_proc=os.cpu_count(), 
-        desc=f"Grouping texts into chunks of {block_size}", # Progress bar description
-    )
-    logger.info("Grouping complete.")
-    logger.info(f"Processed dataset structure: {lm_datasets}")
-
-    return lm_datasets
+    return tokenized_datasets
 
 
 # --- Tokenizer and Model Loading ---
@@ -286,17 +253,16 @@ def load_tokenizer(model_name_or_path: str) -> PreTrainedTokenizerBase:
 
         # Defina seus tokens especiais de forma clara
         SPECIAL_TOKENS = {
-            "eos_token": "<endofex>",
             "pad_token": "<pad>",
-            "additional_special_tokens": ["<startofex>"]
+            "additional_special_tokens": ["<startofex>", "<endofex>"]
+        
         }
 
         # Adiciona os tokens especiais
         num_added = tokenizer.add_special_tokens(SPECIAL_TOKENS)
 
-        # Reforça as definições (importante para compatibilidade com Trainer)
-        tokenizer.pad_token = "<pad>"
-        tokenizer.eos_token = "<endofex>"
+        # # Reforça as definições (importante para compatibilidade com Trainer)
+        #tokenizer.pad_token = "<pad>"
 
         logger.info(f"Added {num_added} special tokens: {SPECIAL_TOKENS}")
 
@@ -364,7 +330,13 @@ def initialize_trainer(
     logger.info("Initializing Trainer...")
 
     # Data collator for Causal LM (handles padding and labels)
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+    # data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer,
+        mlm=False, # Causal LM does not use masked language modeling
+        pad_to_multiple_of=8, # Optional: Helps with performance on some GPUs
+    )
+    
 
     # Callbacks
     callbacks: List[TrainerCallback] = []
@@ -426,7 +398,7 @@ def main():
         logger.warning("No validation dataset found. Skipping evaluation during training.")
         eval_dataset = None
 
-    
+
     # 6. Load Model and Apply PEFT
     model = load_model(args.model_name_or_path, tokenizer, args)
     
@@ -442,6 +414,7 @@ def main():
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         warmup_steps=args.warmup_steps,
         fp16=args.fp16,
+        bf16=args.bf16,
         seed=args.seed,
         eval_strategy=args.eval_strategy,
         metric_for_best_model="eval_loss", # Or make this an arg
@@ -457,7 +430,12 @@ def main():
         hub_model_id=args.hub_model_id,
         hub_token=hf_token if args.push_to_hub else None, # Assuming hf_token is loaded
         overwrite_output_dir=args.overwrite_output_dir,
-        # Add any other relevant arguments from your parse_arguments function
+        optim=args.optim,
+        dataloader_num_workers=args.dataloader_num_workers,
+        warmup_ratio=args.warmup_ratio,
+        max_grad_norm=args.max_grad_norm,
+
+        #label_smoothing_factor=0.1,
     )
 
     # 8. Initialize Trainer
@@ -529,7 +507,6 @@ def main():
     end_time = datetime.now()
     logger.info(f"--- Script Finished at {end_time.strftime('%Y-%m-%d %H:%M:%S')} ---")
     logger.info(f"Total execution time: {end_time - start_time}")
-
 
 if __name__ == "__main__":
     main()

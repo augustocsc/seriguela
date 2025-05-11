@@ -35,7 +35,7 @@ def generate_expression_instructions(expr_str):
     added_ops = random.sample(extra_ops, random.randint(1, len(extra_ops))) if extra_ops else []
     all_ops = sorted(set(used_ops + added_ops))
     constants = ['C']
-    wrapped_expr = f"<startofex<{expr_str}<endofex<"
+    wrapped_expr = f"{expr_str}"
 
     return {
         "Simple_Instruct": f"Instruction: Generate a mathematical expression using variables {variables} and operands {all_ops} and {constants} as constant.\nExpression: {wrapped_expr}",
@@ -54,10 +54,10 @@ def generate_expression_instruction(expr_str):
     added_ops = random.sample(extra_ops, random.randint(1, len(extra_ops))) if extra_ops else []
     all_ops = sorted(set(used_ops + added_ops))
     constants = ['C']
-    wrapped_expr = f"<startofex>{expr_str}<endofex>"
+    wrapped_expr = f"{expr_str}"
 
     return {
-        "instriction": f"{','.join(variables)}\n{', '.join(all_ops)}\n{', '.join(constants)}\n{wrapped_expr}"
-        #"instriction": f"vars: {', '.join(variables)}\noper: {', '.join(all_ops)}\ncons: {', '.join(constants)}\n{wrapped_expr}"
+        #"instriction": f"{','.join(variables)}\n{', '.join(all_ops)}\n{', '.join(constants)}\n{wrapped_expr}"
+        "instriction": f"vars: {', '.join(variables)}\noper: {', '.join(all_ops)}\ncons: {', '.join(constants)}\nexpr: {wrapped_expr}"
     }
 #print(generate_expression_instruction("x_1 - (x_4 - C)*(x_3 + exp(C*x_2) + C)"))
