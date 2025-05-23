@@ -1,21 +1,24 @@
 import sympy
 import numpy as np
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import mean_absolute_error
 from scipy.optimize import minimize
 import math
 import re
 
+    
 class Expression:
     SAFE_FUNCTIONS = {
-        'sqrt': math.sqrt,
-        'log': math.log,
-        'exp': math.exp,
-        'sin': math.sin,
-        'cos': math.cos,
-        'tan': math.tan,
-        'asin': math.asin,
-        'abs': abs,
-        'pow': pow  # Python's built-in pow function, equivalent to **
+        'sqrt': np.sqrt,
+        'log': np.log,
+        'exp': np.exp,
+        'sin': np.sin,
+        'cos': np.cos,
+        'tan': np.tan,
+        'asin': np.arcsin, # Corrected to np.arcsin
+        'abs': np.abs,
+        'pow': np.power, # Use np.power for vectorization and NaN handling
+        # '**' is handled by Python's eval; if operands are numpy arrays, np.power is used.
     }
 
     OPERATOR_ARITY = {
@@ -46,47 +49,6 @@ class Expression:
         'exp': sympy.exp
     }
 
-    @staticmethod
-    def prefix_to_infix(tokens):
-        """
-        Convert a prefix expression (list of tokens) to an infix expression string.
-        Supports standard math operators and functions. Uses '**' for power.
-        """
-        if not tokens:
-            raise ValueError("Unexpected end of input")
-
-        token = tokens.pop(0)
-
-        if token in Expression.OPERATOR_ARITY:
-            arity = Expression.OPERATOR_ARITY[token]
-            args = [Expression.prefix_to_infix(tokens) for _ in range(arity)]
-
-            if arity == 1:
-                return f"{token}({args[0]})"
-            elif arity == 2:
-                # Use the operator token directly in the infix string
-                return f"({args[0]} {token} {args[1]})"
-        else:
-            return token
-
-    @staticmethod
-    def parse_prefix(tokens):
-        if not tokens:
-            raise ValueError("Unexpected end of input")
-
-        token = tokens.pop(0)
-
-        if token in Expression.OPERATOR_ARITY:
-            arity = Expression.OPERATOR_ARITY[token]
-            args = [Expression.parse_prefix(tokens) for _ in range(arity)]
-            # Use OPERATOR_FUNCS mapping which now includes '**'
-            return Expression.OPERATOR_FUNCS[token](*args)
-        else:
-            try:
-                return sympy.sympify(token)
-            except:
-                return sympy.Symbol(token)
-
     def __init__(self, expression, is_prefix=False):
         try:
             self.original_expression = expression  # Save original
@@ -96,8 +58,8 @@ class Expression:
                 tokens = expression.replace('^', '**').split()
                 self.sympy_expression = self.parse_prefix(tokens)
             else:
-                # sympy.sympify handles both '^' and '**' and converts them to sympy.Pow
-                self.sympy_expression = sympy.sympify(expression)
+                # Load the expression as a sympy expression without simplification
+                self.sympy_expression = sympy.sympify(expression, evaluate=False)
         except Exception as e:
             raise ValueError(f"Failed to parse expression: {e}")
 
@@ -110,133 +72,129 @@ class Expression:
                 except ValueError:
                     # Handle symbols that look like x_ but aren't x_number
                      pass # Or raise ValueError(f"Invalid variable name: {symbol.name}") if strict
-
-        computable_expression = str(self.sympy_expression)
-        # SymPy's str() method uses '**' for power, so no explicit '^' replacement is needed here.
+        
+        computable_expression = str(self.sympy_expression)          
 
         for i in range(1, self.max_var + 1):
             # Use regex to match whole words to avoid issues with x_1 followed by x_11
             computable_expression = re.sub(rf'\bx_{i}\b', f'x[{i-1}]', computable_expression)
+        
 
-        self.constant_count = computable_expression.count('C')
-
-        new_expression = ""
-        c_index = 0
-        i = 0
-        while i < len(computable_expression):
-            if computable_expression[i] == 'C':
-                new_expression += f'constants[{c_index}]'
-                c_index += 1
-                i += 1
-            else:
-                new_expression += computable_expression[i]
-                i += 1
-
-        self.computable_expression = new_expression
+        self.computable_expression = computable_expression.replace('**C', '**2')
+        
+        self.constant_count = self.computable_expression.count('C')
         self.best_constants = [1.0] * self.constant_count
 
-    @staticmethod
-    def infix_to_prefix(expression):
-        """
-        Convert an infix expression string to a prefix expression string.
-        Outputs prefix tokens using '**' for power.
-        """
-        def traverse(expr):
-            if expr.is_Atom:
-                return [str(expr)]
-            # Handle specific known SymPy functions
-            elif expr.func == sympy.Add:
-                # Corrected: concatenate the full lists from recursive calls
-                tokens = ['+']
-                for arg in expr.args:
-                    tokens.extend(traverse(arg))
-                return tokens
-            elif expr.func == sympy.Mul:
-                # Corrected: concatenate the full lists from recursive calls
-                tokens = ['*']
-                for arg in expr.args:
-                    tokens.extend(traverse(arg))
-                return tokens
-            elif expr.func == sympy.Pow:
-                # Corrected: concatenate the full lists from recursive calls
-                # Need to handle the base and exponent
-                if len(expr.args) == 2:
-                    base_tokens = traverse(expr.args[0])
-                    exp_tokens = traverse(expr.args[1])
-                    return ['**'] + base_tokens + exp_tokens
+        
+        if self.constant_count > 0:
+            split_expr = self.computable_expression.split('C')
+            new_expr = ""
+            for i in range(len(split_expr)-1):
+                if split_expr[i] == '' and i == 0:
+                    new_expr += f'constants[{i}]' + split_expr[i]
+                elif split_expr[i] == '' and i != 0:
+                    new_expr += split_expr[i] + f'constants[{i}]'
                 else:
-                    # Handle unexpected number of args for Pow, maybe raise error or fallback
-                    print(f"Warning: Unexpected number of arguments for Pow: {expr.args}")
-                    op = Expression._get_operator_symbol(expr.func)
-                    tokens = [op]
-                    for arg in expr.args:
-                        tokens.extend(traverse(arg))
-                    return tokens
-
-            elif expr.func in (sympy.sin, sympy.cos, sympy.tan, sympy.log, sympy.exp, sympy.sqrt, sympy.Abs):
-                op = Expression._get_operator_symbol(expr.func)
-                # Corrected: concatenate the full list for the single argument
-                return [op] + traverse(expr.args[0])
-            else:
-                # Handle other potential sympy functions or custom ones (like subtraction/division via Mul/Add)
-                op = Expression._get_operator_symbol(expr.func)
-                tokens = [op]
-                for arg in expr.args:
-                    # Corrected: concatenate the full lists for arguments
-                    tokens.extend(traverse(arg))
-                return tokens
+                    new_expr += split_expr[i] + f'constants[{i}]' + split_expr[i+1]
+                    i += 1            
+                i += 1
+            
+            self.computable_expression = new_expr
+            
 
 
-        expr_tree = sympy.sympify(expression)
-        prefix_tokens = traverse(expr_tree)
-        return ' '.join(prefix_tokens)
-
-    @staticmethod
-    def _get_operator_symbol(func):
-        # Reverse lookup from OPERATOR_FUNCS, prioritizing lambda functions if needed
-        for op, f in Expression.OPERATOR_FUNCS.items():
-            if isinstance(f, sympy.FunctionClass) and f == func:
-                 return op
-            # For lambda functions, we might need to check their __name__ or rely on the sympy type
-            if func == sympy.core.power.Pow and op == '**': return '**'
-            if func == sympy.core.mul.Mul and op == '*': return '*'
-            if func == sympy.core.add.Add and op == '+': return '+'
-            # Add checks for other common SymPy function types
-            if func == sympy.sin and op == 'sin': return 'sin'
-            if func == sympy.cos and op == 'cos': return 'cos'
-            if func == sympy.tan and op == 'tan': return 'tan'
-            if func == sympy.log and op == 'log': return 'log'
-            if func == sympy.exp and op == 'exp': return 'exp'
-            if func == sympy.sqrt and op == 'sqrt': return 'sqrt'
-            if func == sympy.Abs and op == 'abs': return 'abs'
-
-        # Fallback for other cases, might return the function name string
-        return str(func)
-
+        
 
     def __str__(self):
-        return f"Expression: {self.original_expression}, Max var index: {self.max_var}, Constant count: {self.constant_count}, Best constants: {self.best_constants}"
+        return f"Expression: {self.original_expression}, Best constants: {self.best_constants}"
     def sympy_str(self):
         """
         Returns the string representation of the sympy expression.
         """
         return str(self.sympy_expression)
     
+    def is_valid_on_dataset(self, X, test_constants_list=None):
+        """
+        Checks if the expression evaluates to valid (finite) values for all rows in X,
+        across one or more sets of test constants.
 
-    def evaluate(self, x, constants=None):
-        if constants is None:
-            constants = self.best_constants
+        Args:
+            X (np.ndarray): Input data, shape (n_samples, n_features)
+            test_constants_list (list of lists): Optional. Defaults to [[1.0]*count].
+                Example: [[1.0]*n, [0.5]*n, [2.0]*n] to test more thoroughly.
+
+        Returns:
+            bool: True if no evaluation returns nan/inf or crashes. False otherwise.
+        """
+        if test_constants_list is None:
+            test_constants_list = [[1.0] * self.constant_count]
+        
         try:
-            # The computable_expression string generated from sympy uses '**',
-            # and Python's eval understands '**'.
-            return eval(self.computable_expression, {"__builtins__": None}, {
-                "x": x,
-                "constants": constants,
-                **self.SAFE_FUNCTIONS
-            })
+            for constants in test_constants_list:
+                results = self.evaluate(X, constants)
+                
+                if not np.all(np.isfinite(results)):
+                    return False
+            
+            return True
+        except Exception:
+            return False
+
+    # Inside the Expression class
+    def evaluate(self, X, constants=None):
+        # with warnings.catch_warnings():
+        #     warnings.simplefilter("ignore", category=RuntimeWarning)  # Hide power/tan warnings
+        #     np.seterr(invalid='ignore', divide='ignore') 
+
+            
+
+        if constants is None:
+            # print("No constants provided, using best constants.") # Optional: uncomment for debugging
+            constants = self.best_constants
+
+        try:
+            local_env = {
+                "constants": np.array(constants), # Ensure constants is a numpy array for broadcasting
+                **self.SAFE_FUNCTIONS,
+                "__builtins__": None
+            }
+
+            if not isinstance(X, np.ndarray):
+                X = np.array(X) # Ensure X is a numpy array
+            
+            # Ensure X is 2D, even if it has only one sample
+            if X.ndim == 1:
+                X = X.reshape(1, -1)
+
+            # x becomes a list of columns (1D arrays of shape (n_samples,))
+            x_cols = [X[:, i] for i in range(X.shape[1])]
+            local_env["x"] = x_cols
+            
+            # The result will be a numpy array of shape (n_samples,)
+            
+            try:
+                y_pred_array = eval(self.computable_expression, local_env)
+
+            except FloatingPointError as e:
+                # print(f"FloatingPointError during eval: {e}")
+                # print(f"Expression: {self.computable_expression}")
+                # print(f"Constants: {constants}")
+                return np.full(X.shape[0], np.nan)  # Return NaNs to be caught by loss
+
+            except Exception as e:
+                # print(f"General exception during eval: {e}")
+                return np.full(X.shape[0], np.nan)
+
+            finally:
+                np.seterr(all='warn')  # 🔁 Reset to default behavior
+
+            # Ensure output is float to avoid issues with mixed types if some results are int
+            return np.asarray(y_pred_array, dtype=float)
+
         except Exception as e:
-            # Provide more context in the error message
-            raise RuntimeError(f"Evaluation failed for expression '{self.computable_expression}' with x={x} and constants={constants}: {e}")
+            # Return an array of NaNs of the expected shape to ensure loss calculation doesn't break
+            num_samples = X.shape[0] if X.ndim > 0 else 1
+            return np.full(num_samples, np.nan) # Return NaNs on error
 
     def fit_constants(self, X, y):
         X = np.array(X)
@@ -244,134 +202,153 @@ class Expression:
 
         if self.constant_count == 0:
             try:
-                y_pred = np.array([self.evaluate(x) for x in X])
-                if np.all(y_pred == y_pred[0]):
-                    return 0.0
+                y_pred = self.evaluate(X) # Vectorized call
+                if not np.all(np.isfinite(y_pred)): # Check for NaNs/Infs
+                    return -np.inf
+                if np.all(y_pred == y_pred[0]) and len(np.unique(y)) > 1: # Avoid R2 issues with constant prediction for non-constant y
+                    return 0.0 # Or handle as per specific requirements
                 return r2_score(y, y_pred)
-            except RuntimeError as e:
-                print(f"Evaluation error during fit_constants (no constants): {e}")
+            except Exception as e: # Broader catch for any eval issue
                 return -np.inf
 
-        def loss(constants):
+        def loss(current_constants):
+
             try:
-                y_pred = np.array([self.evaluate(x, constants) for x in X])
-                if np.any(np.isnan(y_pred)) or np.any(np.isinf(y_pred)):
-                    return np.inf
-                return np.mean((y - y_pred) ** 2)
-            except RuntimeError as e:
+                y_pred = self.evaluate(X, current_constants)
+                
+            except Exception as e:
+                print(f"Exception during evaluation: {e}")
                 return np.inf
+            
+            if not np.all(np.isfinite(y_pred)):
+                return np.inf 
+            
+            # MSE calculation
+            mse = np.mean((y - y_pred) ** 2)
+            
+            return mse
 
-        # Define bounds for all constants: between -10 and 10
-        bounds = [(-1, 1)] * self.constant_count
-
-        # Initial guess for constants
+        bounds = [(-2., 2.)] * self.constant_count
+                
         initial_guess = (
             self.best_constants
             if self.best_constants and len(self.best_constants) == self.constant_count
-            else [1.0] * self.constant_count
+            else [.0] * self.constant_count # Default to 1.0
         )
 
-        result = minimize(loss, initial_guess, method='L-BFGS-B', bounds=bounds)
+        # Ensure initial_guess is a flat numpy array
+        initial_guess = np.array(initial_guess, dtype=float).flatten()
+
+
+        # from scipy.optimize import differential_evolution
+        # # Step 1: Use Differential Evolution for global exploration
+        # print("\n--- Starting Differential Evolution ---")
+        # result_de = differential_evolution(loss, bounds,
+        #                                    popsize=70,      # Aumente para 50, 70, ou mais
+        #                                    maxiter=10000,   # Aumente para 5000, 10000, ou mais
+        #                                    strategy='rand1bin', # Tente 'rand1exp' se rand1bin não funcionar
+        #                                    tol=1e-7,        # Tolerância mais apertada
+        #                                    mutation=(0.8, 1.2), # Experimente valores mais altos
+        #                                    recombination=0.5, # Experimente valores mais baixos
+        #                                    seed=42,         # Mantém a reproducibilidade
+        #                                    disp=True,       # Exibe o progresso
+        #                                    polish=False) 
+
+        # if result_de.success:
+        #     print(f"\nDifferential Evolution finished successfully. Best raw constants: {result_de.x}, Best MSE: {result_de.fun}")
+        #     # Use the result from DE as initial guess for local optimizer
+        #     initial_guess_for_minimize = result_de.x
+            
+        #     # Step 2: (Optional but recommended) Refine with L-BFGS-B
+        #     # L-BFGS-B will be applied to the "raw" (non-rounded) values,
+        #     # but the loss function internally rounds for discrete ones.
+        #     # It might still struggle if the function is too "stepped" from rounding.
+        #     print("\n--- Starting L-BFGS-B refinement ---")
+        #     result_min = minimize(loss,
+        #                           x0=initial_guess_for_minimize,
+        #                           method='L-BFGS-B',
+        #                           bounds=bounds,
+        #                           options={'maxiter': 500, 'ftol': 1e-9, 'disp': True} # More iterations, tighter tolerance
+        #     )
+
+        #     if result_min.success:
+        #         print(f"\nL-BFGS-B refinement successful. Final raw constants: {result_min.x}, Final MSE: {result_min.fun}")
+        #         self.best_constants = list(result_min.x)
+        #     else:
+        #         print(f"\nL-BFGS-B refinement failed: {result_min.message}. Using Differential Evolution's result.")
+        #         self.best_constants = list(result_de.x)
+        # else:
+        #     print(f"\nDifferential Evolution did not converge successfully: {result_de.message}. Cannot proceed with optimization.")
+        #     return -np.inf # Indicate failure
+        
+        # try:
+        #     y_pred = self.evaluate(X) 
+        #     if not np.all(np.isfinite(y_pred)):
+        #         print("Final evaluation produced non-finite values for R2 score.")
+        #         return -np.inf
+        #     if len(np.unique(y)) == 1:
+        #         if np.allclose(y_pred, y[0]):
+        #             return 1.0
+        #         else:
+        #             return 0.0
+        #     return r2_score(y, y_pred)
+        # except Exception as e:
+        #     print(f"Error calculating final R2: {e}")
+        #     return -np.inf
+            
+        result = minimize(loss, 
+                        x0=initial_guess,
+                        method='L-BFGS-B',
+                        bounds=bounds,
+                        #options={'maxiter': 10, 'maxfun': 10, 'disp': True}
+        )
 
         if result.success:
             self.best_constants = result.x.tolist()
+            # print(f"Optimization successful. Final loss: {result.fun}") # Optional
             try:
-                y_pred = np.array([self.evaluate(x) for x in X])
-                if np.all(y_pred == y_pred[0]):
-                    return 0.0
+                y_pred = self.evaluate(X) # Uses self.best_constants (vectorized)
+                if not np.all(np.isfinite(y_pred)):
+                    return -np.inf
+                # Refined R2 calculation for edge cases
+                if len(np.unique(y)) == 1: # If y is constant
+                    if np.allclose(y_pred, y[0]):
+                        return 1.0 # Perfect prediction of a constant
+                    else:
+                        return 0.0 # Or some other metric for imperfect constant prediction
+                #return mean_squared_error(y, y_pred) # Use MSE for optimization
+                #return mean_absolute_error(y, y_pred) # Use MAE for robustness
                 return r2_score(y, y_pred)
-            except RuntimeError as e:
-                print(f"Evaluation error after optimization: {e}")
+            except Exception as e:
                 return -np.inf
         else:
-            print(f"Optimization failed: {result.message}")
             return -np.inf
 
+# from dataset import RegressionDataset
+
+# import numpy as np
+# import warnings
+
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore", category=RuntimeWarning)
+#     np.seterr(invalid='ignore')
+
+# #reg = RegressionDataset('../data/evaluate/srsd-feynman_hard/train', 'feynman-bonus.12.txt', delimiter=' ')
+# reg = RegressionDataset('./data/evaluate/srsd-feynman_easy/train', 'feynman-i.18.16.txt', delimiter=' ')
+# X, y = reg.get_numpy()
+
+# #x = np.array(X).T
+# expression = "x_1*x_2*sin(x_4)"
+# #expr = "0.5*x[0]*x[1]**2"
 
 
-    def resolved_expression(self):
-        """
-        Returns the sympy expression with constants (C) replaced by fitted values.
-        """
-        # Start from the sympy expression tree for a more robust substitution
-        resolved_sympy_expr = self.sympy_expression
-        print(f"Original SymPy Expression: {resolved_sympy_expr}")
-        c_symbols = sorted([s for s in resolved_sympy_expr.free_symbols if s.name == 'C'], key=lambda s: str(s)) # Ensure consistent order if multiple Cs
-        print(f"Found C symbols: {c_symbols}")
-        if len(c_symbols) != self.constant_count:
-            # This should ideally not happen if constant_count is calculated correctly
-             print("Warning: Mismatch between 'C' symbols found and constant_count.")
-             # Attempt to substitute based on count anyway, assuming the order is consistent
+# expr = Expression(expression)
+# print("Expression:", expr)
 
-        subs_dict = {}
-        for i, c_symbol in enumerate(c_symbols):
-             if i < len(self.best_constants):
-                subs_dict[c_symbol] = self.best_constants[i]
-             else:
-                 # If more C symbols than constants, substitute remaining with 1 or handle error
-                 subs_dict[c_symbol] = 1.0 # Default substitution
-
-        resolved_sympy_expr = resolved_sympy_expr.subs(subs_dict)
-
-        # Store and return the resulting sympy expression
-        # We could also store a string representation if needed, but the sympy object is more useful
-        self._resolved_sympy_expression = resolved_sympy_expr
-        return self._resolved_sympy_expression
-
-
-
-
-'''
-import numpy as np
-
-# Generate synthetic dataset
-np.random.seed(42)
-n_samples = 200
-X = np.random.rand(n_samples, 20) * 10  # 20 variables, range [0, 10]
-
-# Define a few target functions using variables and constants
-real_expressions = [
-    "1 * x_11+x_12",
-    "0.312 * sin(x_13) + 0.211 * log(x_4 + 1)",
-    "1.23 * x_5**3 + 0.088 * x_16 + 0.00001", # Using ** in real expression
-    "sqrt(abs(x_17)) + 0.112 * cos(x_18)",
-    "0.123 * exp(-x_19) + x_10"
-]
-
-# Goal expressions using C for constants and ** for power
-goal_expressions = [
-    "C * x_11+x_12",
-    "C * sin(x_13) + C * log(x_4 + 1)",
-    "C * x_5**C + C * x_16 + C", # Using ** in goal expression
-    "sqrt(abs(x_17)) + C * cos(x_18)",
-    "C * exp(-x_19) + x_10"
-]
-
-# Evaluate R^2 for each expression
-for real, goal in zip(real_expressions, goal_expressions):
-    print(f"Real Expression: {real}")
-    print(f"Goal Expression: {goal}")
-
-    # Generate target y using known constants
-    try:
-        expr_real = Expression(real)
-        y = np.array([expr_real.evaluate(x) for x in X])
-    except Exception as e:
-        print(f"Error evaluating real expression '{real}': {e}")
-        continue
-
-    try:
-        expr_goal = Expression(goal)
-        r2 = expr_goal.fit_constants(X, y)
-
-        print(f"Fitted Constants: {expr_goal.best_constants}")
-        print(f"Resolved Expression (SymPy): {expr_goal.resolved_expression()}")
-        print(f"R^2: {r2:.4f}") # Print the R^2 from the fit_constants method
-
-    except Exception as e:
-         print(f"Error processing goal expression '{goal}': {e}")
-
-
-    print("-" * 50)
-
-'''
+# if expr.is_valid_on_dataset(X):
+#     print("Expression is valid on dataset.")
+#     score = expr.fit_constants(X, y)
+#     print("Fitted constants:", expr.best_constants)
+#     print("R2 score:", score)
+# else:
+#     print("Expression is not valid on dataset.")
