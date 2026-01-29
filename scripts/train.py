@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import sys
 from transformers import EarlyStoppingCallback
 import numpy as np
+import wandb
 
 
 from datasets import load_dataset
@@ -73,8 +74,13 @@ def main():
     parser.add_argument("--dataset_repo_id", type=str, required=True, help="Hugging Face Hub repository ID for the dataset (e.g., 'username/my-equation-dataset').")
     parser.add_argument("--output_dir", type=str, required=True, help="Directory to save the fine-tuned model and checkpoints.")
     parser.add_argument("--data_dir", type=str, required=True, help="Directory containing the dataset files.")
-    parser.add_argument("--data_column", type=str, default="text", help="Column name in the dataset to be used for training.")
-    parser.add_argument("--approach", default="infix_expr", type=str, required=True, help="Approach to be used for training (e.g., 'infix_expr', 'prefix_expr').")
+    parser.add_argument("--data_column", type=str, default="i_prompt_n", help="Column name in the dataset to be used for training (e.g., 'i_prompt_n', 'p_prompt_n').")
+    parser.add_argument("--approach", default="infix", type=str, help="Approach to be used for training (e.g., 'infix', 'prefix').")
+
+    # Wandb arguments
+    parser.add_argument("--wandb_project", type=str, default="seriguela", help="Wandb project name.")
+    parser.add_argument("--wandb_run_name", type=str, default=None, help="Wandb run name. If not set, will be auto-generated.")
+    parser.add_argument("--wandb_entity", type=str, default=None, help="Wandb entity (team or username).")
     parser.add_argument("--block_size", type=int, default=128, help="Block size for tokenizing and chunking the dataset.")
     parser.add_argument("--num_train_epochs", type=int, default=3, help="Number of training epochs.")
     parser.add_argument("--per_device_train_batch_size", type=int, default=8, help="Batch size per device during training.")
@@ -108,17 +114,51 @@ def main():
     # Set seed for reproducibility
     set_seed(args.seed)
 
+    # Initialize wandb
+    wandb_run_name = args.wandb_run_name or f"{args.model_name_or_path}-{args.data_dir}-{args.approach}"
+    wandb.init(
+        project=args.wandb_project,
+        name=wandb_run_name,
+        entity=args.wandb_entity,
+        config={
+            "model": args.model_name_or_path,
+            "dataset": args.dataset_repo_id,
+            "data_dir": args.data_dir,
+            "data_column": args.data_column,
+            "approach": args.approach,
+            "block_size": args.block_size,
+            "epochs": args.num_train_epochs,
+            "batch_size": args.per_device_train_batch_size,
+            "learning_rate": args.learning_rate,
+            "seed": args.seed,
+        }
+    )
+    logger.info(f"Wandb initialized: project={args.wandb_project}, run={wandb_run_name}")
+
     logger.info(f"Starting fine-tuning with parameters: {args}")
 
     # 1. Load Dataset from Hub
     logger.info(f"Loading dataset from Hub: {args.dataset_repo_id}")
     try:
-        raw_datasets = load_dataset(args.dataset_repo_id, data_dir=args.data_dir)
-
-        # Keep only the 'arg.approach' column and rename it to 'text'
-        ds = ds.map(lambda x: {"text": x["i_simple"]}, remove_columns=ds["train"].column_names)
-
+        # Carrega dataset com arquivos específicos para cada split
+        raw_datasets = load_dataset(
+            args.dataset_repo_id,
+            data_files={
+                "train": f"{args.data_dir}/train_{args.data_dir}.csv",
+                "validation": f"{args.data_dir}/val_{args.data_dir}.csv",
+                "test": f"{args.data_dir}/test_{args.data_dir}.csv"
+            }
+        )
         logger.info(f"Dataset loaded: {raw_datasets}")
+
+        # Renomeia a coluna de dados para 'text'
+        logger.info(f"Renaming column '{args.data_column}' to 'text'")
+        raw_datasets = raw_datasets.map(
+            lambda x: {"text": x[args.data_column]},
+            remove_columns=raw_datasets["train"].column_names
+        )
+        logger.info(f"Dataset after column rename: {raw_datasets}")
+
         # Basic validation: Check for train/validation splits
         if "train" not in raw_datasets:
              raise ValueError("Dataset missing 'train' split.")
@@ -238,7 +278,8 @@ def main():
         metric_for_best_model="loss" if args.load_best_model_at_end else None, # Use loss for best model selection if evaluating
         greater_is_better=False if args.load_best_model_at_end else None,
         fp16=args.fp16,
-        report_to="wandb", #"tensorboard", # Or "wandb", "none"
+        report_to="wandb",
+        run_name=wandb_run_name,
         push_to_hub=args.push_to_hub,
         hub_model_id=args.hub_model_id if args.push_to_hub else None,
         hub_token=token if args.push_to_hub else None, # Use the obtained token
@@ -308,6 +349,8 @@ def main():
             except Exception as e:
                 logger.error(f"Failed to push model to Hub: {e}")
 
+    # Finish wandb run
+    wandb.finish()
     logger.info("--- Script Finished ---")
 
 

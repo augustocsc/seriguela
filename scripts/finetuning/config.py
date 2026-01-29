@@ -32,9 +32,16 @@ DEFAULT_LORA_BIAS = "none"
 DEFAULT_WARMUP_STEPS = 0
 DEFAULT_LR_SCHEDULER_TYPE = "linear"
 DEFAULT_EARLY_STOPPING_PATIENCE = 2 # Consistent naming
-DEFAULT_REPORT_TO = "tensorboard"
+DEFAULT_REPORT_TO = "wandb"
 DEFAULT_RUN_NAME = "train_gpt2_equations"
 
 # Source data column default from arguments
-DEFAULT_SOURCE_DATA_COLUMN = "i_simple"
-DEFAULT_DATA_DIR = "10k"
+DEFAULT_SOURCE_DATA_COLUMN = "i_prompt_n"
+DEFAULT_DATA_DIR = "700K"
+
+# Wandb defaults
+DEFAULT_WANDB_PROJECT = "seriguela"
+DEFAULT_WANDB_ENTITY = None
+
+# Dataset defaults
+DEFAULT_DATASET_REPO_ID = "augustocsc/sintetico_natural"
