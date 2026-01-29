@@ -258,6 +258,12 @@ def main():
 
     # 5. Configure Training Arguments
     logger.info("Configuring training arguments...")
+
+    # Determine effective values based on validation set availability
+    has_validation = "validation" in lm_datasets and lm_datasets["validation"]
+    effective_load_best = args.load_best_model_at_end and has_validation
+    effective_eval_strategy = args.eval_strategy if has_validation else "no"
+
     training_args = TrainingArguments(
         output_dir=args.output_dir,
         overwrite_output_dir=True, # Be careful with this in production
@@ -270,13 +276,13 @@ def main():
         warmup_steps=args.warmup_steps,
         logging_dir=os.path.join(args.output_dir, 'logs'), # Log Tensorboard data within output_dir
         logging_steps=args.logging_steps,
-        eval_strategy=args.eval_strategy if "validation" in lm_datasets and lm_datasets["validation"] else "no", # Check if validation set exists and is not empty
+        eval_strategy=effective_eval_strategy,
         save_strategy=args.save_strategy,
         save_steps=args.save_steps if args.save_strategy == "steps" else 500, # Default save_steps if strategy is steps but value not provided
         save_total_limit=args.save_total_limit,
-        load_best_model_at_end=args.load_best_model_at_end if "validation" in lm_datasets and lm_datasets["validation"] else False, # Requires eval_dataset
-        metric_for_best_model="loss" if args.load_best_model_at_end else None, # Use loss for best model selection if evaluating
-        greater_is_better=False if args.load_best_model_at_end else None,
+        load_best_model_at_end=effective_load_best,
+        metric_for_best_model="eval_loss" if effective_load_best else None,
+        greater_is_better=False if effective_load_best else None,
         fp16=args.fp16,
         report_to="wandb",
         run_name=wandb_run_name,
@@ -303,7 +309,7 @@ def main():
         tokenizer=tokenizer,
         data_collator=data_collator,
         #compute_metrics=compute_metrics, # Optional: Define a function for custom eval metrics besides loss/perplexity
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=2)], # Optional: Early stopping callback
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=2)] if effective_load_best else None,
     )
 
     # 7. Start Training
