@@ -148,37 +148,65 @@ def main():
 
     logger.info(f"Starting fine-tuning with parameters: {args}")
 
-    # 1. Load Dataset from Hub
-    logger.info(f"Loading dataset from Hub: {args.dataset_repo_id}")
-    try:
-        # Carrega dataset com arquivos específicos para cada split
-        raw_datasets = load_dataset(
-            args.dataset_repo_id,
-            data_files={
-                "train": f"{args.data_dir}/train_{args.data_dir}.csv",
-                "validation": f"{args.data_dir}/val_{args.data_dir}.csv",
-                "test": f"{args.data_dir}/test_{args.data_dir}.csv"
-            }
-        )
-        logger.info(f"Dataset loaded: {raw_datasets}")
+    # 1. Load Dataset from Hub or local files
+    # Check if local prepared data exists
+    local_data_dir = "./data/processed/700K_fixed"
+    local_train = os.path.join(local_data_dir, f"train_{args.data_dir}.csv")
 
-        # Renomeia a coluna de dados para 'text'
-        logger.info(f"Renaming column '{args.data_column}' to 'text'")
-        raw_datasets = raw_datasets.map(
-            lambda x: {"text": x[args.data_column]},
-            remove_columns=raw_datasets["train"].column_names
-        )
-        logger.info(f"Dataset after column rename: {raw_datasets}")
+    if os.path.exists(local_train):
+        logger.info(f"Loading dataset from LOCAL files: {local_data_dir}")
+        try:
+            raw_datasets = load_dataset(
+                'csv',
+                data_files={
+                    "train": os.path.join(local_data_dir, f"train_{args.data_dir}.csv"),
+                    "validation": os.path.join(local_data_dir, f"validation_{args.data_dir}.csv"),
+                    "test": os.path.join(local_data_dir, f"test_{args.data_dir}.csv")
+                }
+            )
+            logger.info(f"Dataset loaded from local CSV files: {raw_datasets}")
+        except Exception as e:
+            logger.error(f"Failed to load local dataset: {e}")
+            logger.info(f"Falling back to Hub: {args.dataset_repo_id}")
+            raw_datasets = load_dataset(
+                args.dataset_repo_id,
+                data_files={
+                    "train": f"{args.data_dir}/train_{args.data_dir}.csv",
+                    "validation": f"{args.data_dir}/val_{args.data_dir}.csv",
+                    "test": f"{args.data_dir}/test_{args.data_dir}.csv"
+                }
+            )
+            logger.info(f"Dataset loaded from Hub: {raw_datasets}")
+    else:
+        logger.info(f"Loading dataset from Hub: {args.dataset_repo_id}")
+        try:
+            # Carrega dataset com arquivos específicos para cada split
+            raw_datasets = load_dataset(
+                args.dataset_repo_id,
+                data_files={
+                    "train": f"{args.data_dir}/train_{args.data_dir}.csv",
+                    "validation": f"{args.data_dir}/val_{args.data_dir}.csv",
+                    "test": f"{args.data_dir}/test_{args.data_dir}.csv"
+                }
+            )
+            logger.info(f"Dataset loaded: {raw_datasets}")
+        except Exception as e:
+            logger.error(f"Failed to load dataset: {e}")
+            sys.exit(1)
 
-        # Basic validation: Check for train/validation splits
-        if "train" not in raw_datasets:
-             raise ValueError("Dataset missing 'train' split.")
-        if args.eval_strategy != "no" and "validation" not in raw_datasets:
-             raise ValueError("Dataset missing 'validation' split, required for evaluation.")
+    # Renomeia a coluna de dados para 'text'
+    logger.info(f"Renaming column '{args.data_column}' to 'text'")
+    raw_datasets = raw_datasets.map(
+        lambda x: {"text": x[args.data_column]},
+        remove_columns=raw_datasets["train"].column_names
+    )
+    logger.info(f"Dataset after column rename: {raw_datasets}")
 
-    except Exception as e:
-        logger.error(f"Failed to load dataset: {e}")
-        sys.exit(1)
+    # Basic validation: Check for train/validation splits
+    if "train" not in raw_datasets:
+         raise ValueError("Dataset missing 'train' split.")
+    if args.eval_strategy != "no" and "validation" not in raw_datasets:
+         raise ValueError("Dataset missing 'validation' split, required for evaluation.")
 
     # 2. Load Tokenizer
     logger.info(f"Loading tokenizer for model: {args.model_name_or_path}")
