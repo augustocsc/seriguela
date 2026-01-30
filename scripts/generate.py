@@ -7,12 +7,28 @@ import sys
 import re
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList
 from peft import PeftModel
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from classes.expression import Expression
+
+
+class ExpressionStoppingCriteria(StoppingCriteria):
+    """Stop generation at natural expression boundaries."""
+    def __init__(self, tokenizer, stop_sequences):
+        self.tokenizer = tokenizer
+        self.stop_ids = [tokenizer.encode(seq, add_special_tokens=False)
+                        for seq in stop_sequences]
+
+    def __call__(self, input_ids, scores, **kwargs):
+        # Check if any stop sequence appears in generated text
+        for stop_ids in self.stop_ids:
+            if len(stop_ids) > 0 and len(input_ids[0]) >= len(stop_ids):
+                if input_ids[0][-len(stop_ids):].tolist() == stop_ids:
+                    return True
+        return False
 
 
 def parse_args():
@@ -39,7 +55,7 @@ def parse_args():
     # Generation parameters
     parser.add_argument("--num_generations", type=int, default=5,
                         help="Number of expressions to generate")
-    parser.add_argument("--max_new_tokens", type=int, default=128,
+    parser.add_argument("--max_new_tokens", type=int, default=64,
                         help="Maximum new tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.7,
                         help="Sampling temperature (higher = more diverse)")
@@ -126,12 +142,24 @@ def load_model_and_tokenizer(model_path: str, base_model: str = None, device: st
 
 
 def generate_expressions(model, tokenizer, prompt: str, device: str,
-                         num_generations: int = 5, max_new_tokens: int = 128,
+                         num_generations: int = 5, max_new_tokens: int = 64,
                          temperature: float = 0.7, top_p: float = 0.9,
                          top_k: int = 50):
     """Generate expressions from a prompt."""
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
     inputs = {k: v.to(device) for k, v in inputs.items()}
+
+    # Get special token IDs - prefer <|endofex|> as EOS
+    end_token_id = tokenizer.convert_tokens_to_ids("<|endofex|>")
+    if end_token_id == tokenizer.unk_token_id:
+        print("Warning: <|endofex|> not in tokenizer, using default eos_token_id")
+        end_token_id = tokenizer.eos_token_id
+
+    # Create stopping criteria to stop at natural expression boundaries (backup)
+    stop_sequences = ["\nvars:", "\nVariables:", "\nOperators:", "\n\n"]
+    stopping_criteria = StoppingCriteriaList([
+        ExpressionStoppingCriteria(tokenizer, stop_sequences)
+    ])
 
     with torch.no_grad():
         outputs = model.generate(
@@ -143,7 +171,8 @@ def generate_expressions(model, tokenizer, prompt: str, device: str,
             do_sample=True,
             num_return_sequences=num_generations,
             pad_token_id=tokenizer.pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
+            eos_token_id=end_token_id,  # Use <|endofex|> as EOS
+            stopping_criteria=stopping_criteria,  # Keep as backup
         )
 
     generated = tokenizer.batch_decode(outputs, skip_special_tokens=False)
@@ -152,6 +181,7 @@ def generate_expressions(model, tokenizer, prompt: str, device: str,
 
 def extract_expression(output: str) -> str:
     """Extract the expression from generated output."""
+    # Try marker-based first
     start_marker = "<|startofex|>"
     end_marker = "<|endofex|>"
 
@@ -161,20 +191,34 @@ def extract_expression(output: str) -> str:
         if start_idx < end_idx:
             return output[start_idx:end_idx].strip()
 
-    # Fallback: try to find expression after startofex
+    # Fallback: Extract first complete expression after start marker
     if start_marker in output:
         start_idx = output.find(start_marker) + len(start_marker)
         remaining = output[start_idx:].strip()
-        # Take until end of line or end marker
-        end_idx = remaining.find("\n")
-        if end_idx > 0:
-            return remaining[:end_idx].strip()
-        end_idx = remaining.find("<")
-        if end_idx > 0:
-            return remaining[:end_idx].strip()
-        return remaining[:100].strip()  # Limit length
 
-    return ""
+        # Split at common boundaries
+        for boundary in ["\nvars:", "\nVariables:", "\nOperators:", "\n\n", "<|endoftext|>"]:
+            if boundary in remaining:
+                remaining = remaining.split(boundary)[0].strip()
+                break
+
+        # Remove any trailing incomplete text - take just the first line
+        remaining = remaining.split("\n")[0].strip()
+
+        # Limit length if unreasonably long
+        if len(remaining) > 150:
+            remaining = remaining[:150]
+
+        return remaining
+
+    # Last resort: look for "expr:" or "Expression:" pattern
+    match = re.search(r'(?:expr|Expression):\s*(.+?)(?:\n|$)', output, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+
+    # Give up: return first line, limited length
+    first_line = output.strip().split("\n")[0]
+    return first_line[:100] if len(first_line) > 100 else first_line
 
 
 def validate_expression(expr_str: str, is_prefix: bool = False) -> dict:

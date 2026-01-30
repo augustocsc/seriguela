@@ -11,6 +11,7 @@ import sys
 from transformers import EarlyStoppingCallback
 import numpy as np
 import wandb
+import random
 
 
 from datasets import load_dataset
@@ -99,6 +100,10 @@ def main():
     parser.add_argument("--fp16", action='store_true', help="Use mixed precision training (FP16). Requires CUDA.")
     parser.add_argument("--push_to_hub", action='store_true', help="Push the final model to the Hugging Face Hub.")
     parser.add_argument("--hub_model_id", type=str, default=None, help="Repository ID for pushing the model (e.g., 'username/gpt2-finetuned-equations'). Required if --push_to_hub is set.")
+    parser.add_argument("--run_name", type=str, default=None, help="Optional run name for this training (used in output_dir and hub_model_id).")
+    parser.add_argument("--lora_r", type=int, default=8, help="LoRA rank (dimension of adapter matrices).")
+    parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA alpha (scaling factor).")
+    parser.add_argument("--lora_dropout", type=float, default=0.05, help="Dropout probability for LoRA layers.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
 
     args = parser.parse_args()
@@ -110,6 +115,12 @@ def main():
     token = os.getenv("HF_TOKEN")
     if not token:
         raise ValueError("Token da Hugging Face não encontrado no .env.")
+
+    # Configure Wandb API key
+    wandb_api_key = os.getenv("WANDB_API_KEY")
+    if wandb_api_key:
+        os.environ["WANDB_API_KEY"] = wandb_api_key
+        wandb.login(key=wandb_api_key)
 
     # Set seed for reproducibility
     set_seed(args.seed)
@@ -182,6 +193,16 @@ def main():
         # Adding special tokens
         tokenizer.add_special_tokens({"additional_special_tokens": ["<|startofex|>", "<|endofex|>"]})
 
+        # Verify special tokens were added correctly
+        start_token_id = tokenizer.convert_tokens_to_ids("<|startofex|>")
+        end_token_id = tokenizer.convert_tokens_to_ids("<|endofex|>")
+
+        if start_token_id == tokenizer.unk_token_id or end_token_id == tokenizer.unk_token_id:
+            logger.error("Special tokens not properly added to tokenizer!")
+            sys.exit(1)
+
+        logger.info(f"Special token IDs: <|startofex|>={start_token_id}, <|endofex|>={end_token_id}")
+
     except Exception as e:
         logger.error(f"Failed to load tokenizer: {e}")
         sys.exit(1)
@@ -214,6 +235,26 @@ def main():
     if args.eval_strategy != "no" and not lm_datasets["validation"]:
         logger.warning("Validation dataset is empty after processing. Evaluation might fail or be skipped.")
 
+    # Validate that training data contains special tokens
+    logger.info("Validating special tokens in training data...")
+
+    sample_indices = random.sample(range(len(lm_datasets["train"])), min(10, len(lm_datasets["train"])))
+    valid_samples = 0
+
+    for idx in sample_indices:
+        sample = lm_datasets["train"][idx]
+        decoded = tokenizer.decode(sample["input_ids"])
+
+        if "<|endofex|>" in decoded:
+            valid_samples += 1
+
+    if valid_samples == 0:
+        logger.error("No training samples contain <|endofex|> marker!")
+        logger.error("Training data was not properly prepared. Use prepare_training_data_fixed.py")
+        sys.exit(1)
+
+    logger.info(f"Validation: {valid_samples}/{len(sample_indices)} samples contain end markers")
+
 
     # 4. Load Model
     logger.info(f"Loading pretrained model: {args.model_name_or_path}")
@@ -222,6 +263,12 @@ def main():
 
         # Update with tokenizer special tokens
         base_model.resize_token_embeddings(len(tokenizer))
+
+        # Configure model to use <|endofex|> as EOS for generation
+        end_token_id = tokenizer.convert_tokens_to_ids("<|endofex|>")
+        base_model.config.eos_token_id = end_token_id
+        logger.info(f"Configured model EOS token: {end_token_id} (<|endofex|>)")
+
     except Exception as e:
         logger.error(f"Failed to load model: {e}")
         sys.exit(1)
@@ -230,10 +277,10 @@ def main():
     # Define LoRA configuration
     lora_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM, # Specify task type
-        r=8,                          # LoRA rank (dimension of adapter matrices, e.g., 8, 16, 32)
-        lora_alpha=32,                # LoRA alpha (scaling factor, often 2*r)
+        r=args.lora_r,                # LoRA rank (dimension of adapter matrices, e.g., 8, 16, 32)
+        lora_alpha=args.lora_alpha,   # LoRA alpha (scaling factor, often 2*r)
         target_modules=["c_attn"],    # Modules to apply LoRA to in GPT-2. 'c_attn' often covers query/key/value projections. May need adjustment based on exact model variant.
-        lora_dropout=0.05,            # Dropout probability for LoRA layers
+        lora_dropout=args.lora_dropout, # Dropout probability for LoRA layers
         bias="none"                   # Usually set to 'none' or 'all'
         # ... other LoraConfig parameters
     )
