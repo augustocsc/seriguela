@@ -78,16 +78,31 @@ expr:"""
         ExpressionStoppingCriteria(tokenizer, ["<|endofex|>", "\n\nvars:"])
     ])
 
-    # Generation config (V2 optimal from FINAL_RESULTS)
-    gen_config = {
-        "temperature": 0.7,
-        "top_k": 0,
-        "top_p": 0.8,
-        "repetition_penalty": 1.0,
-        "max_new_tokens": 128,
-        "do_sample": True,
-        "pad_token_id": tokenizer.eos_token_id,
-    }
+    # Use OPTIMAL config for each model (from FINAL_RESULTS_V1_VS_V2.md)
+    if model_label == "V1":
+        # V1 optimal: 83.3% valid rate
+        gen_config = {
+            "temperature": 0.5,
+            "top_k": 40,
+            "top_p": 0.9,
+            "repetition_penalty": 1.15,
+            "max_new_tokens": 100,
+            "do_sample": True,
+            "pad_token_id": tokenizer.eos_token_id,
+        }
+        print("Using V1 optimal config: temp=0.5, top_k=40, rep_penalty=1.15")
+    else:  # V2
+        # V2 optimal: 90% valid rate
+        gen_config = {
+            "temperature": 0.7,
+            "top_k": 0,
+            "top_p": 0.8,
+            "repetition_penalty": 1.0,
+            "max_new_tokens": 128,
+            "do_sample": True,
+            "pad_token_id": tokenizer.eos_token_id,
+        }
+        print("Using V2 optimal config: temp=0.7, top_p=0.8 (nucleus sampling)")
 
     results = {
         "valid_count": 0,
