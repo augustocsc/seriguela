@@ -49,6 +49,57 @@ class Expression:
         'exp': sympy.exp
     }
 
+    def parse_prefix(self, tokens):
+        """Parse prefix notation expression to SymPy.
+
+        Example: ['*', 'x_1', '+', 'x_2', 'C'] -> x_1*(x_2 + C)
+        """
+        if not tokens:
+            raise ValueError("Empty token list")
+
+        # Define unary and binary operators
+        UNARY_OPS = {'sin', 'cos', 'tan', 'exp', 'log', 'sqrt', 'abs', 'asin'}
+        BINARY_OPS = {'+', '-', '*', '/', '**', '^'}
+
+        stack = []
+
+        # Process tokens in reverse order
+        for token in reversed(tokens):
+            if token in BINARY_OPS or token in UNARY_OPS:
+                # Operator: pop operands from stack
+                if token in UNARY_OPS:
+                    if len(stack) < 1:
+                        raise ValueError(f"Not enough operands for {token}")
+                    arg = stack.pop()
+                    if token in ['sin', 'cos', 'tan', 'exp', 'log', 'sqrt', 'abs', 'asin']:
+                        stack.append(f"{token}({arg})")
+                    else:
+                        raise ValueError(f"Unknown unary operator: {token}")
+                else:  # Binary operator
+                    if len(stack) < 2:
+                        raise ValueError(f"Not enough operands for {token}")
+                    right = stack.pop()
+                    left = stack.pop()
+
+                    # Handle operator mapping
+                    op_map = {'+': '+', '-': '-', '*': '*', '/': '/', '**': '**', '^': '**'}
+                    op = op_map.get(token, token)
+
+                    if op in ['**', '^']:
+                        stack.append(f"({left})**({right})")
+                    elif op == '/':
+                        stack.append(f"({left})/({right})")
+                    else:
+                        stack.append(f"({left}){op}({right})")
+            else:
+                # Operand: push to stack
+                stack.append(token)
+
+        if len(stack) != 1:
+            raise ValueError(f"Invalid prefix expression, {len(stack)} elements remaining")
+
+        return sympy.sympify(stack[0], evaluate=False)
+
     def __init__(self, expression, is_prefix=False):
         try:
             self.original_expression = expression  # Save original
@@ -85,20 +136,18 @@ class Expression:
         self.constant_count = self.computable_expression.count('C')
         self.best_constants = [1.0] * self.constant_count
 
-        
+
         if self.constant_count > 0:
+            # Replace 'C' with indexable constants
             split_expr = self.computable_expression.split('C')
-            new_expr = ""
-            for i in range(len(split_expr)-1):
-                if split_expr[i] == '' and i == 0:
-                    new_expr += f'constants[{i}]' + split_expr[i]
-                elif split_expr[i] == '' and i != 0:
-                    new_expr += split_expr[i] + f'constants[{i}]'
-                else:
-                    new_expr += split_expr[i] + f'constants[{i}]' + split_expr[i+1]
-                    i += 1            
-                i += 1
-            
+            new_expr = split_expr[0]  # Start with first part
+
+            for i in range(1, len(split_expr)):
+                # Add constant reference
+                new_expr += f'constants[{i-1}]'
+                # Add next part
+                new_expr += split_expr[i]
+
             self.computable_expression = new_expr
             
 

@@ -54,7 +54,7 @@ def parse_args():
 
 def extract_expression_from_output(output: str, is_prefix: bool = False) -> str:
     """Extract the expression from model output."""
-    # Look for expression between markers
+    # Try marker-based first
     start_marker = "<|startofex|>"
     end_marker = "<|endofex|>"
 
@@ -64,21 +64,34 @@ def extract_expression_from_output(output: str, is_prefix: bool = False) -> str:
         if start_idx < end_idx:
             return output[start_idx:end_idx].strip()
 
-    # Fallback: try to extract after the prompt pattern
-    # Look for expression after "Expression:" or similar
-    patterns = [
-        r"Expression:\s*(.+?)(?:\n|$)",
-        r"<\|startofex\|>(.+?)(?:<\|endofex\|>|$)",
-    ]
+    # Fallback: Extract first complete expression after start marker
+    if start_marker in output:
+        start_idx = output.find(start_marker) + len(start_marker)
+        remaining = output[start_idx:].strip()
 
-    for pattern in patterns:
-        match = re.search(pattern, output, re.DOTALL)
-        if match:
-            return match.group(1).strip()
+        # Split at common boundaries
+        for boundary in ["\nvars:", "\nVariables:", "\nOperators:", "\n\n", "<|endoftext|>"]:
+            if boundary in remaining:
+                remaining = remaining.split(boundary)[0].strip()
+                break
 
-    # Last resort: return everything after the last newline or the whole output
-    lines = output.strip().split('\n')
-    return lines[-1].strip() if lines else ""
+        # Remove any trailing incomplete text - take just the first line
+        remaining = remaining.split("\n")[0].strip()
+
+        # Limit length if unreasonably long
+        if len(remaining) > 150:
+            remaining = remaining[:150]
+
+        return remaining
+
+    # Last resort: look for "expr:" or "Expression:" pattern
+    match = re.search(r'(?:expr|Expression):\s*(.+?)(?:\n|$)', output, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+
+    # Give up: return first line, limited length
+    first_line = output.strip().split("\n")[0]
+    return first_line[:100] if len(first_line) > 100 else first_line
 
 
 def validate_expression(expr_str: str, is_prefix: bool = False) -> dict:

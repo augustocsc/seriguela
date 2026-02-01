@@ -24,7 +24,7 @@ regex==2024.11.6
 
 # Logging e visualização
 tensorboard==2.16.2
-wandb==0.19.9
+wandb>=0.24.1  # Versão atualizada para suportar novo formato de API key (wandb_v1_...)
 
 # Fine-tuning avançado (SFT, DPO, etc.)
 trl==0.16.1
