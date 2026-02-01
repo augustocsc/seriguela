@@ -1,0 +1,131 @@
+{
+  "nucleus_strict": {
+    "description": "Strict nucleus sampling (top-p=0.8)",
+    "valid_rate": 90.0,
+    "total_samples": 30,
+    "valid_count": 27,
+    "avg_tokens": 128.0,
+    "avg_time": 1.1327288150787354,
+    "common_issues": {
+      "": 27,
+      "repetition: ' + '": 2,
+      "repetition: 'x_1'": 1
+    }
+  },
+  "nucleus_relaxed": {
+    "description": "Relaxed nucleus sampling (top-p=0.95)",
+    "valid_rate": 90.0,
+    "total_samples": 30,
+    "valid_count": 27,
+    "avg_tokens": 128.0,
+    "avg_time": 1.0281842947006226,
+    "common_issues": {
+      "": 27,
+      "repetition: 'x_1'": 1,
+      "repetition: '**C'": 1
+    }
+  },
+  "high_temp": {
+    "description": "Higher temperature for more diversity",
+    "valid_rate": 53.333333333333336,
+    "total_samples": 30,
+    "valid_count": 16,
+    "avg_tokens": 125.96666666666667,
+    "avg_time": 1.1447229862213135,
+    "common_issues": {
+      "": 17,
+      "repetition: '(x_'": 3,
+      "repetition: 'x_1'": 2
+    }
+  },
+  "strong_repetition_penalty": {
+    "description": "Strong repetition penalty",
+    "valid_rate": 53.333333333333336,
+    "total_samples": 30,
+    "valid_count": 16,
+    "avg_tokens": 95.56666666666666,
+    "avg_time": 0.7950071970621745,
+    "common_issues": {
+      "": 16,
+      "repetition: ' + '": 4,
+      "repetition: 'sin'": 4
+    }
+  },
+  "with_repetition_penalty": {
+    "description": "With repetition penalty to avoid loops",
+    "valid_rate": 46.666666666666664,
+    "total_samples": 30,
+    "valid_count": 14,
+    "avg_tokens": 95.86666666666666,
+    "avg_time": 0.8061073462168376,
+    "common_issues": {
+      "": 14,
+      "repetition: '**C'": 9,
+      "repetition: ' + '": 3
+    }
+  },
+  "default": {
+    "description": "Default transformers settings",
+    "valid_rate": 43.333333333333336,
+    "total_samples": 30,
+    "valid_count": 13,
+    "avg_tokens": 126.6,
+    "avg_time": 1.244826086362203,
+    "common_issues": {
+      "": 14,
+      "repetition: 'x_1'": 4,
+      "repetition: '**C'": 2
+    }
+  },
+  "optimized": {
+    "description": "Optimized settings (balanced)",
+    "valid_rate": 36.666666666666664,
+    "total_samples": 30,
+    "valid_count": 11,
+    "avg_tokens": 95.9,
+    "avg_time": 0.8097201347351074,
+    "common_issues": {
+      "": 12,
+      "repetition: '**C'": 11,
+      "repetition: ' + '": 3
+    }
+  },
+  "short_generation": {
+    "description": "Shorter max length (64 tokens)",
+    "valid_rate": 6.666666666666667,
+    "total_samples": 30,
+    "valid_count": 2,
+    "avg_tokens": 63.43333333333333,
+    "avg_time": 0.5325164794921875,
+    "common_issues": {
+      "repetition: '**C'": 11,
+      "repetition: ' + '": 7,
+      "repetition: ' x_'": 5
+    }
+  },
+  "greedy": {
+    "description": "Greedy decoding (no sampling)",
+    "valid_rate": 0.0,
+    "total_samples": 30,
+    "valid_count": 0,
+    "avg_tokens": 128.0,
+    "avg_time": 1.061757747332255,
+    "common_issues": {
+      "repetition: ' + '": 18,
+      "repetition: 'x_1'": 12
+    }
+  },
+  "low_temp": {
+    "description": "Low temperature for more focused output",
+    "valid_rate": 0.0,
+    "total_samples": 30,
+    "valid_count": 0,
+    "avg_tokens": 128.0,
+    "avg_time": 1.1563066800435384,
+    "common_issues": {
+      "repetition: ' + '": 14,
+      "repetition: '**C'": 6,
+      "repetition: 'x_1'": 4
+    }
+  }
+}
