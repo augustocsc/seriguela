@@ -77,9 +77,16 @@ def group_texts(examples, block_size):
     return result
 
 
-def validate_data_format(dataset, tokenizer, end_marker, num_samples=10):
-    """Validate that training data contains the expected end marker."""
-    logger.info(f"Validating data contains '{end_marker}'...")
+def validate_data_format(dataset, tokenizer, end_marker, num_samples=10, is_json_format=False):
+    """Validate that training data is in the expected format."""
+    import json as json_module
+
+    if is_json_format:
+        logger.info("Validating JSON format data...")
+        marker_to_check = '"expr":'  # JSON format has expr field
+    else:
+        logger.info(f"Validating data contains '{end_marker}'...")
+        marker_to_check = end_marker
 
     sample_indices = random.sample(
         range(len(dataset)),
@@ -89,14 +96,24 @@ def validate_data_format(dataset, tokenizer, end_marker, num_samples=10):
     valid_count = 0
     for idx in sample_indices:
         text = dataset[idx]["text"]
-        if end_marker in text:
-            valid_count += 1
+        if is_json_format:
+            # For JSON format, validate it's valid JSON with expr field
+            try:
+                obj = json_module.loads(text)
+                if "expr" in obj and "vars" in obj:
+                    valid_count += 1
+            except:
+                pass
+        else:
+            # For EOS format, check marker presence
+            if marker_to_check in text:
+                valid_count += 1
 
     rate = valid_count / len(sample_indices) * 100
-    logger.info(f"Validation: {valid_count}/{len(sample_indices)} ({rate:.1f}%) contain '{end_marker}'")
+    logger.info(f"Validation: {valid_count}/{len(sample_indices)} ({rate:.1f}%) valid")
 
     if valid_count == 0:
-        logger.error(f"No samples contain '{end_marker}'! Data not properly prepared.")
+        logger.error("No valid samples found! Data not properly prepared.")
         sys.exit(1)
 
     return rate
@@ -120,6 +137,8 @@ def main():
                         help="End marker token (e.g., '<|endofex|>' or '<|endoftext|>')")
     parser.add_argument("--use_native_eos", action="store_true",
                         help="Use native GPT-2 EOS token instead of custom token")
+    parser.add_argument("--json_format", action="store_true",
+                        help="Data is in JSON format (for EXP-A)")
 
     # Optional data arguments
     parser.add_argument("--validation_file", type=str, default=None,
@@ -225,7 +244,8 @@ def main():
     validate_data_format(
         raw_datasets["train"],
         tokenizer=None,
-        end_marker=args.end_marker
+        end_marker=args.end_marker,
+        is_json_format=args.json_format
     )
 
     # Load tokenizer

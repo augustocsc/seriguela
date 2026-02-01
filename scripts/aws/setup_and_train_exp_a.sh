@@ -49,7 +49,8 @@ python scripts/train_experiment.py \
     --train_file ./data/experiments/exp_a_json/train.csv \
     --validation_file ./data/experiments/exp_a_json/validation.csv \
     --output_dir ./output/exp_a_json \
-    --end_marker "<|endofex|>" \
+    --json_format \
+    --end_marker '"}' \
     --num_train_epochs 3 \
     --per_device_train_batch_size 8 \
     --gradient_accumulation_steps 4 \
