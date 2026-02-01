@@ -78,6 +78,8 @@ output/*
 !output/.gitkeep # Não ignore um .gitkeep se precisar manter a pasta
 
 # Dados (podem ser grandes, usar Git LFS ou armazenar fora se necessário)
+# Note: CSV files in data/processed/ can be 100MB+ and are excluded from git
+# Run scripts/data/prepare_training_data_fixed.py on target system to generate them
 data/*
 data/raw/*
 data/processed/*
@@ -95,3 +97,11 @@ Thumbs.db
 .env
 
 wandb
+
+# AWS credentials and keys
+aws/keys/*.pem
+aws/keys/*.key
+aws/.env
+aws/credentials
+*.pem
+*.key
