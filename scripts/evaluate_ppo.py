@@ -71,6 +71,9 @@ class PPOEvaluator:
             from peft import PeftModel
             self.model = PeftModel.from_pretrained(self.model, model_name)
             print("V2 adapter loaded successfully (LoRA weights)")
+            print("Merging adapter into base model...")
+            self.model = self.model.merge_and_unload()
+            print("Adapter merged successfully")
         except Exception as e:
             print(f"Warning: Could not load as PEFT model: {e}")
             print("Attempting to load as full model...")
@@ -80,6 +83,8 @@ class PPOEvaluator:
                 torch_dtype=torch.float16,
                 device_map="auto"
             )
+
+        self.model.eval()
 
         # V2 optimal generation config (from FINAL_RESULTS)
         self.generation_config = {
