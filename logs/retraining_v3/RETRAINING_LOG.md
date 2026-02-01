@@ -78,18 +78,27 @@ Properly prepare training data with end markers → train with validation → ev
 
 ---
 
-## Phase 3: Git Commit (Pending)
+## Phase 3: Git Commit & Push
 
-**Planned Actions:**
-1. Update `.gitignore` to exclude large CSV files (>100MB GitHub limit)
-2. Stage all configuration and script changes
-3. Commit with descriptive message
-4. Push to GitHub for AWS deployment
+### [2026-02-01 00:11:30] Git Commit Completed
 
-**Note:** CSV files (437MB total) exceed GitHub limits, will need alternative approach:
-- Option A: Use Git LFS
-- Option B: Upload to HuggingFace Hub
-- Option C: Transfer directly to AWS, exclude from git
+**Status:** ✅ COMPLETED
+
+**Actions Taken:**
+1. Updated `.gitignore` with comments about large CSV exclusion
+2. Staged v3 configuration files and scripts
+3. Committed with comprehensive description
+4. Pushed to GitHub main branch
+
+**Files Committed:**
+- `configs/training_v3.json` - v3 training configuration
+- `scripts/aws/train_v3_model.sh` - AWS training script with validation
+- `logs/retraining_v3/RETRAINING_LOG.md` - This log file
+- `.gitignore` - Updated with CSV file comments
+
+**Commit:** `98a69bd`
+
+**Note:** CSV files (437MB total) are gitignored and will be generated on AWS using `prepare_training_data_fixed.py`
 
 ---
 
@@ -140,8 +149,70 @@ Properly prepare training data with end markers → train with validation → ev
 
 ---
 
+## Documentation & Next Steps
+
+### [2026-02-01 00:15:00] Automated Setup Complete
+
+**Status:** ✅ READY FOR AWS DEPLOYMENT
+
+**What's Been Completed:**
+1. ✅ Data preparation (947K examples with 100% validation)
+2. ✅ Training configuration created (configs/training_v3.json)
+3. ✅ AWS training script created (scripts/aws/train_v3_model.sh)
+4. ✅ Comprehensive logging infrastructure
+5. ✅ All changes committed and pushed to GitHub
+6. ✅ Detailed AWS deployment guide created
+
+**Documentation Created:**
+- `logs/retraining_v3/RETRAINING_LOG.md` - This comprehensive training log
+- `logs/retraining_v3/AWS_DEPLOYMENT_GUIDE.md` - Step-by-step AWS deployment instructions
+
+**Ready for Manual Execution:**
+
+The following phases require manual AWS deployment:
+
+**Phase 4: AWS Training**
+- Launch AWS g5.xlarge instance
+- Setup environment and clone repository
+- Prepare training data on AWS (run prepare_training_data_fixed.py)
+- Execute training script (scripts/aws/train_v3_model.sh)
+- Monitor training progress (2-3 hours)
+
+**Phase 5: Evaluation & Validation**
+- Run evaluation on trained model
+- Generate sample expressions
+- Download and analyze results
+- Validate against success criteria (>80% valid rate, proper stopping)
+
+**Phase 6: Deployment or Iteration**
+- If successful: Push to HuggingFace Hub, update docs, deploy
+- If needs work: Analyze failures, adjust parameters, retrain
+- Document final results and lessons learned
+
+**Quick Start:**
+```bash
+# See complete step-by-step instructions in:
+cat logs/retraining_v3/AWS_DEPLOYMENT_GUIDE.md
+
+# Quick command reference:
+# 1. Launch: bash scripts/aws/launch_evaluation_instance.sh --hf-token TOKEN
+# 2. SSH: ssh -i "C:/Users/madeinweb/chave-gpu.pem" ubuntu@PUBLIC_IP
+# 3. Setup: Follow AWS_DEPLOYMENT_GUIDE.md steps 3-7
+# 4. Monitor: ssh -i KEY ubuntu@IP "tail -f ~/seriguela/train_v3_output.log"
+```
+
+---
+
 ## Log Updates
 
 All timestamps in format: YYYY-MM-DD HH:MM:SS
 
-Last updated: 2026-02-01 00:07:02
+**Summary of Automated Phases:**
+- Phase 1 (Data Prep): 2026-02-01 00:03:11 to 00:07:02 (✅ Complete)
+- Phase 2 (Config): 2026-02-01 00:08:00 to 00:10:00 (✅ Complete)
+- Phase 3 (Git): 2026-02-01 00:11:00 to 00:12:00 (✅ Complete)
+
+**Next Manual Phase:**
+- Phase 4 (AWS Training): Awaiting manual execution
+
+Last updated: 2026-02-01 00:15:00
