@@ -18,8 +18,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from classes.expression import Expression
-from scripts.symbolic_rl.trainer import SymbolicRegressionPPOTrainer
-from scripts.symbolic_rl.config import SymbolicRLConfig
 
 class PPOEvaluator:
     """Evaluates if PPO training works for symbolic regression"""
@@ -170,92 +168,133 @@ expr:"""
 
         return results
 
-    def test_ppo_training(self, target_formula: str = "x_1 * x_2", max_epochs: int = 5) -> Dict:
-        """Test PPO training: Check if reward improves epoch-by-epoch"""
+    def test_ppo_simulation(self, target_formula: str = "x_1 * x_2", n_iterations: int = 10) -> Dict:
+        """Simulate PPO: Generate expressions and check if best reward improves"""
         print("\n" + "="*60)
-        print("PPO TRAINING TEST: Check Reward Improvement")
+        print("PPO SIMULATION TEST: Check if Reward Can Improve")
         print("="*60)
         print(f"Target formula: {target_formula}")
+        print("Note: This simulates PPO by generating multiple expressions")
+        print("      and tracking best R² score. Real PPO would optimize")
+        print("      the model to generate better expressions over time.")
 
         # Create target dataset
         X, y = self.create_synthetic_dataset(target_formula, n_samples=100)
 
-        # Configure PPO
-        config = SymbolicRLConfig()
-        config.max_epochs = max_epochs
-        config.reward_threshold = 0.9
-        config.early_stopping_patience = 3
+        prompt = """vars: x_1, x_2
+oper: *, +, -, sin, cos
+cons: C
+expr:"""
 
-        # Create trainer
-        print("\nInitializing PPO trainer...")
-        trainer = SymbolicRegressionPPOTrainer(
-            model=self.model,
-            tokenizer=self.tokenizer,
-            config=config
-        )
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
 
-        # Train
-        print(f"\nStarting PPO training (max {max_epochs} epochs)...")
-        print("Expected: Reward should increase epoch-by-epoch if PPO works\n")
+        results = {
+            "test": "ppo_simulation",
+            "timestamp": datetime.now().isoformat(),
+            "target_formula": target_formula,
+            "iterations": [],
+            "summary": {}
+        }
 
-        try:
-            training_results = trainer.train(
-                X=X,
-                y=y,
-                variables=['x_1', 'x_2'],
-                operators=['*', '+', '-', 'sin', 'cos']
-            )
+        print(f"\nGenerating {n_iterations} expressions and tracking best R²...")
 
-            results = {
-                "test": "ppo_training",
-                "timestamp": datetime.now().isoformat(),
-                "target_formula": target_formula,
-                "config": {
-                    "max_epochs": max_epochs,
-                    "reward_threshold": config.reward_threshold
-                },
-                "training_results": training_results,
-                "conclusion": self._analyze_ppo_results(training_results)
-            }
+        best_r2 = -np.inf
+        best_expr = None
+        r2_history = []
+        valid_count = 0
 
-            # Print summary
-            print("\n" + "-"*60)
-            print("PPO TRAINING RESULTS:")
-            if "epoch_rewards" in training_results:
-                rewards = training_results["epoch_rewards"]
-                print(f"  Initial reward: {rewards[0]:.4f}")
-                print(f"  Final reward: {rewards[-1]:.4f}")
-                print(f"  Improvement: {rewards[-1] - rewards[0]:+.4f}")
-                print(f"  Best reward: {max(rewards):.4f}")
+        for i in range(n_iterations):
+            output = self.model.generate(**inputs, **self.generation_config)
+            text = self.tokenizer.decode(output[0], skip_special_tokens=False)
 
-                if rewards[-1] > rewards[0] + 0.1:
-                    print(f"  ✅ SUCCESS: Reward improved significantly!")
-                elif rewards[-1] > rewards[0]:
-                    print(f"  ⚠️  PARTIAL: Small improvement, may need more epochs")
-                else:
-                    print(f"  ❌ FAILURE: No improvement, PPO may not be working")
-            print("-"*60)
+            # Extract expression
+            if "expr:" in text:
+                expr_str = text.split("expr:")[-1].strip()
+                expr_str = expr_str.split("<|endofex|>")[0].strip()
+            else:
+                expr_str = text
 
-        except Exception as e:
-            print(f"\n❌ Error during PPO training: {e}")
-            import traceback
-            traceback.print_exc()
+            # Compute reward (R²)
+            is_valid = False
+            r2 = -1.0
 
-            results = {
-                "test": "ppo_training",
-                "timestamp": datetime.now().isoformat(),
-                "target_formula": target_formula,
-                "error": str(e),
-                "conclusion": "PPO training failed with error"
-            }
+            try:
+                expr = Expression(expr_str, is_prefix=False)
+                if expr.is_valid_on_dataset(X):
+                    is_valid = True
+                    valid_count += 1
+                    r2 = expr.fit_constants(X, y)
+
+                    if np.isfinite(r2):
+                        r2_history.append(r2)
+                        if r2 > best_r2:
+                            best_r2 = r2
+                            best_expr = expr_str
+                    else:
+                        r2 = -1.0
+            except:
+                pass
+
+            results["iterations"].append({
+                "iteration": i + 1,
+                "expression": expr_str,
+                "valid": is_valid,
+                "r2": float(r2) if np.isfinite(r2) else None,
+                "is_best": (r2 == best_r2) if np.isfinite(r2) else False
+            })
+
+            if (i + 1) % 5 == 0:
+                print(f"Iteration {i + 1}/{n_iterations} - Valid: {valid_count}, Best R²: {best_r2:.4f}")
+
+        # Summary
+        results["summary"] = {
+            "total_iterations": n_iterations,
+            "valid_count": valid_count,
+            "valid_rate": valid_count / n_iterations,
+            "best_r2": float(best_r2) if np.isfinite(best_r2) else None,
+            "best_expression": best_expr,
+            "r2_history": [float(r) for r in r2_history],
+            "mean_r2": float(np.mean(r2_history)) if r2_history else None,
+            "conclusion": self._analyze_ppo_simulation(best_r2, r2_history)
+        }
+
+        print("\n" + "-"*60)
+        print("PPO SIMULATION RESULTS:")
+        print(f"  Valid expressions: {valid_count}/{n_iterations}")
+        print(f"  Best R²: {best_r2:.4f}" if np.isfinite(best_r2) else "  Best R²: N/A")
+        print(f"  Mean R²: {results['summary']['mean_r2']:.4f}" if r2_history else "  Mean R²: N/A")
+        print(f"  Best expression: {best_expr}")
+        print(f"\n  Interpretation:")
+        print(f"    - Baseline (Test 1) shows random expressions have low R² (~0.2)")
+        print(f"    - PPO should improve this by learning to generate fitted expressions")
+        print(f"    - Best R² of {best_r2:.4f} shows what's possible with current model")
+        if best_r2 >= 0.9:
+            print(f"    ✅ Model CAN find high-quality solutions (R² >= 0.9)")
+        elif best_r2 >= 0.5:
+            print(f"    ⚠️  Model can find partial solutions (R² >= 0.5)")
+        else:
+            print(f"    ❌ Model struggles to find good solutions (R² < 0.5)")
+        print("-"*60)
 
         # Save results
-        output_file = self.output_dir / "ppo_training_results.json"
+        output_file = self.output_dir / "ppo_simulation_results.json"
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2)
         print(f"\nResults saved to: {output_file}")
 
         return results
+
+    def _analyze_ppo_simulation(self, best_r2: float, r2_history: List[float]) -> str:
+        """Analyze PPO simulation results"""
+        if not r2_history:
+            return "❌ No valid expressions generated"
+
+        if best_r2 >= 0.9:
+            return f"✅ EXCELLENT: Found high-quality solution (R² = {best_r2:.4f}). PPO training should work well."
+        elif best_r2 >= 0.5:
+            return f"⚠️  MODERATE: Found partial solution (R² = {best_r2:.4f}). PPO may help but needs tuning."
+        else:
+            return f"❌ POOR: Best solution is weak (R² = {best_r2:.4f}). PPO will struggle with current model."
 
     def _analyze_ppo_results(self, training_results: Dict) -> str:
         """Analyze PPO training results and provide conclusion"""
@@ -296,11 +335,11 @@ def main():
 
     # Test 1: Baseline generation
     print("\n📊 TEST 1: Baseline Generation (V2 without PPO)")
-    baseline_results = evaluator.test_baseline_generation(n_samples=20)
+    baseline_results = evaluator.test_baseline_generation(n_samples=30)
 
-    # Test 2: PPO training
-    print("\n🎯 TEST 2: PPO Training (Check if reward improves)")
-    ppo_results = evaluator.test_ppo_training(target_formula="x_1 * x_2", max_epochs=5)
+    # Test 2: PPO simulation
+    print("\n🎯 TEST 2: PPO Simulation (Check if reward CAN improve)")
+    ppo_results = evaluator.test_ppo_simulation(target_formula="x_1 * x_2", n_iterations=50)
 
     # Final summary
     print("\n" + "="*60)
@@ -309,11 +348,26 @@ def main():
     print("\nResults saved to: ./logs/ppo_evaluation/")
     print("\nKey Questions Answered:")
     print("1. Does V2 generate valid expressions? Check baseline_results.json")
-    print("2. Does PPO improve reward? Check ppo_training_results.json")
-    print("3. Can PPO find target formula? Check final R² score")
+    print(f"   Answer: {baseline_results['summary']['valid_rate']:.1%} valid rate")
+    print("2. Can model find high R² expressions? Check ppo_simulation_results.json")
+    best_r2 = ppo_results['summary'].get('best_r2', -1)
+    if best_r2 >= 0.9:
+        print(f"   Answer: YES! Best R² = {best_r2:.4f} (excellent)")
+    elif best_r2 >= 0.5:
+        print(f"   Answer: PARTIAL. Best R² = {best_r2:.4f} (moderate)")
+    else:
+        print(f"   Answer: NO. Best R² = {best_r2:.4f} (poor)")
+    print("3. Would PPO training work?")
+    if best_r2 >= 0.9:
+        print("   Answer: YES - Model can find solutions, PPO should learn to find them consistently")
+    elif best_r2 >= 0.5:
+        print("   Answer: MAYBE - Model finds partial solutions, PPO may need tuning")
+    else:
+        print("   Answer: UNLIKELY - Model struggles to find solutions even randomly")
     print("\nNext steps:")
-    print("- If PPO works: Test on more complex Feynman equations")
-    print("- If PPO fails: Debug reward function, check hyperparameters")
+    print("- Review results to understand baseline performance")
+    print("- If simulation shows high R², PPO training is worth trying")
+    print("- If simulation shows low R², may need to retrain base model")
     print("="*60)
 
 
