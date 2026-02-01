@@ -16,8 +16,24 @@ from datetime import datetime
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, StoppingCriteria, StoppingCriteriaList
 from classes.expression import Expression
+
+
+class ExpressionStoppingCriteria(StoppingCriteria):
+    """Stop generation at natural expression boundaries."""
+    def __init__(self, tokenizer, stop_sequences):
+        self.tokenizer = tokenizer
+        self.stop_ids = [tokenizer.encode(seq, add_special_tokens=False)
+                        for seq in stop_sequences]
+
+    def __call__(self, input_ids, scores, **kwargs):
+        # Check if any stop sequence appears in generated text
+        for stop_ids in self.stop_ids:
+            if len(stop_ids) > 0 and len(input_ids[0]) >= len(stop_ids):
+                if input_ids[0][-len(stop_ids):].tolist() == stop_ids:
+                    return True
+        return False
 
 class PPOEvaluator:
     """Evaluates if PPO training works for symbolic regression"""
@@ -117,12 +133,21 @@ expr:"""
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
 
+        # Create stopping criteria for <|endofex|>
+        stopping_criteria = StoppingCriteriaList([
+            ExpressionStoppingCriteria(self.tokenizer, ["<|endofex|>", "\n\nvars:"])
+        ])
+
         valid_count = 0
         r2_scores = []
 
         print(f"\nGenerating {n_samples} expressions...")
         for i in range(n_samples):
-            output = self.model.generate(**inputs, **self.generation_config)
+            output = self.model.generate(
+                **inputs,
+                **self.generation_config,
+                stopping_criteria=stopping_criteria
+            )
             text = self.tokenizer.decode(output[0], skip_special_tokens=False)
 
             # Extract expression
@@ -218,6 +243,11 @@ expr:"""
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
 
+        # Create stopping criteria
+        stopping_criteria = StoppingCriteriaList([
+            ExpressionStoppingCriteria(self.tokenizer, ["<|endofex|>", "\n\nvars:"])
+        ])
+
         results = {
             "test": "ppo_simulation",
             "timestamp": datetime.now().isoformat(),
@@ -234,7 +264,11 @@ expr:"""
         valid_count = 0
 
         for i in range(n_iterations):
-            output = self.model.generate(**inputs, **self.generation_config)
+            output = self.model.generate(
+                **inputs,
+                **self.generation_config,
+                stopping_criteria=stopping_criteria
+            )
             text = self.tokenizer.decode(output[0], skip_special_tokens=False)
 
             # Extract expression
