@@ -65,8 +65,8 @@ class PPOEvaluator:
 
         # Evaluate true formula
         try:
-            expr = Expression.parse_infix(formula)
-            y = np.array([expr.evaluate({'x_1': x[0], 'x_2': x[1]}) for x in X])
+            expr = Expression(formula, is_prefix=False)
+            y = expr.evaluate(X)
             return X, y
         except Exception as e:
             print(f"Error creating dataset: {e}")
@@ -115,26 +115,19 @@ expr:"""
             r2 = -1.0
 
             try:
-                expr = Expression.parse_infix(expr_str)
-                if expr.validate():
+                expr = Expression(expr_str, is_prefix=False)
+                # Check if expression can be evaluated on dataset
+                if expr.is_valid_on_dataset(X):
                     is_valid = True
                     valid_count += 1
 
-                    # Try to fit to data and compute R²
+                    # Fit constants and compute R²
                     try:
-                        # Check if expression can be evaluated on dataset
-                        test_val = expr.evaluate({'x_1': X[0, 0], 'x_2': X[0, 1]})
-
-                        # Predict on all data
-                        y_pred = np.array([expr.evaluate({'x_1': x[0], 'x_2': x[1]})
-                                          for x in X])
-
-                        # Compute R²
-                        ss_res = np.sum((y - y_pred) ** 2)
-                        ss_tot = np.sum((y - np.mean(y)) ** 2)
-                        r2 = 1 - (ss_res / ss_tot) if ss_tot > 0 else -1.0
-                        r2_scores.append(r2)
-
+                        r2 = expr.fit_constants(X, y)
+                        if np.isfinite(r2):
+                            r2_scores.append(r2)
+                        else:
+                            r2 = -1.0
                     except:
                         r2 = -1.0
             except:
