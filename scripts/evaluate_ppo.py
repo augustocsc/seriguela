@@ -29,17 +29,41 @@ class PPOEvaluator:
 
         # Load V2 model with optimal inference config (90% valid rate)
         print(f"Loading model: {model_name}")
+
+        # Load base model first without adapters
+        print("Loading base GPT-2 model...")
+        self.model = AutoModelForCausalLM.from_pretrained(
+            "gpt2",
+            torch_dtype=torch.float16,
+            device_map="auto"
+        )
+
+        # Configure tokenizer with special tokens
+        print("Configuring tokenizer with special tokens...")
         self.tokenizer = AutoTokenizer.from_pretrained("gpt2")
         self.tokenizer.add_special_tokens({
             "additional_special_tokens": ["<|startofex|>", "<|endofex|>"]
         })
 
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16,
-            device_map="auto"
-        )
+        # Resize embeddings to match tokenizer
+        print(f"Resizing embeddings from {self.model.get_input_embeddings().weight.shape[0]} to {len(self.tokenizer)}...")
         self.model.resize_token_embeddings(len(self.tokenizer))
+
+        # Now load the V2 adapter weights
+        print(f"Loading V2 adapter from {model_name}...")
+        try:
+            from peft import PeftModel
+            self.model = PeftModel.from_pretrained(self.model, model_name)
+            print("V2 adapter loaded successfully (LoRA weights)")
+        except Exception as e:
+            print(f"Warning: Could not load as PEFT model: {e}")
+            print("Attempting to load as full model...")
+            # If not a PEFT model, load full weights
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype=torch.float16,
+                device_map="auto"
+            )
 
         # V2 optimal generation config (from FINAL_RESULTS)
         self.generation_config = {
