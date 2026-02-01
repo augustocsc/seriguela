@@ -8,11 +8,64 @@
 ## Resumo Executivo
 
 Projeto Seriguela tem 3 blocos:
-1. **Block 1 - Dados:** Preparação e análise ✅
+1. **Block 1 - Dados:** Preparação e análise ⚠️ **CAUSA RAIZ AQUI**
 2. **Block 2 - Treino Supervisionado:** Treinar LLM para gerar expressões ❌ PROBLEMA
 3. **Block 3 - PPO Finetuning:** Otimizar para symbolic regression ⛔ BLOQUEADO
 
-**Conclusão:** Os modelos V1 e V2 no HuggingFace Hub **NÃO funcionam** como documentado. Ambos geram 0% de expressões válidas. Precisa retreinar.
+**Causa raiz identificada:** Dados de treino **NÃO TÊM `<|endofex|>` markers**. 0% dos 758,255 exemplos têm o marker. Modelo nunca aprendeu a parar.
+
+---
+
+## Investigação da Causa Raiz (2026-02-01)
+
+### Descoberta 1: Validação Original Era Frouxa
+
+Script `test_inference_configs.py` reporta **95% válidas**, mas aceita:
+```
+✅ VALID: C*x_1 + C*x_6 - tan(x_9) - Cainers: C9999(x
+✅ VALID: C*x_1 + C*x_2 + C*x_1 + C Pressure, sin, sqrt, tan
+```
+
+Validação original só verifica:
+- Tem operador? ✓
+- Tem variável? ✓
+- Não tem "Buyable"? ✓
+
+**NÃO verifica:**
+- Se usa variáveis do prompt
+- Se pode ser parseada
+- Se tem outros garbage tokens
+
+### Descoberta 2: Dados de Treino SEM Markers
+
+```python
+# Dataset: augustocsc/sintetico_natural (700K)
+Total de exemplos: 758,255
+Exemplos com <|endofex|>: 0 (0.0%)
+Exemplos com <|startofex|>: 0 (0.0%)
+```
+
+**O modelo NUNCA viu `<|endofex|>` durante treino!**
+
+### Descoberta 3: Origem do Garbage
+
+Garbage tokens (Stockholm, Pressure, XP, etc.) vêm do **vocabulário GPT-2 base**.
+Como modelo não sabe parar, eventualmente gera tokens aleatórios.
+
+### Conclusão da Investigação
+
+| Problema | Causa |
+|----------|-------|
+| Modelo não para | Dados sem `<|endofex|>` |
+| Garbage tokens | GPT-2 base vaza sem stopping |
+| Variáveis erradas | Dados têm x_1-x_10, modelo não aprende restrição |
+| 95% vs 0% válidas | Validação original era frouxa |
+
+### Solução Necessária
+
+1. **Preparar dados** com `<|endofex|>` em 100% dos exemplos
+2. **Retreinar modelo** com dados corrigidos
+3. **Validação rigorosa** durante treino
 
 ---
 
