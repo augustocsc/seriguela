@@ -132,6 +132,12 @@ expr:"""
             else:
                 expr_str = text
 
+            # Debug: Show first few generations
+            if i < 3:
+                print(f"\n  DEBUG Sample {i+1}:")
+                print(f"    Raw output: {text[:200]}")
+                print(f"    Extracted: {expr_str[:100]}")
+
             # Validate and compute R²
             is_valid = False
             r2 = -1.0
@@ -374,7 +380,9 @@ def main():
     print("1. Does V2 generate valid expressions? Check baseline_results.json")
     print(f"   Answer: {baseline_results['summary']['valid_rate']:.1%} valid rate")
     print("2. Can model find high R² expressions? Check ppo_simulation_results.json")
-    best_r2 = ppo_results['summary'].get('best_r2', -1)
+    best_r2 = ppo_results['summary'].get('best_r2')
+    if best_r2 is None:
+        best_r2 = -1.0
     if best_r2 >= 0.9:
         print(f"   Answer: YES! Best R² = {best_r2:.4f} (excellent)")
     elif best_r2 >= 0.5:
