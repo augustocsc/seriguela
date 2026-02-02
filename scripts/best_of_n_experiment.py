@@ -118,12 +118,13 @@ class BestOfNSampler:
             # Find the end - look for closing "} pattern
             remaining = generated_text[expr_start:]
 
-            # Try to find proper JSON end first
+            # Try to find proper JSON end first - look for "} which closes the expr field
             if '"}' in remaining:
                 expr_end = remaining.index('"}')
-                return remaining[:expr_end].strip()
+                extracted = remaining[:expr_end].strip()
+                return extracted
 
-            # Fallback: find first quote
+            # Fallback: find first quote that ends the expression
             if '"' in remaining:
                 expr_end = remaining.index('"')
                 return remaining[:expr_end].strip()
@@ -131,7 +132,12 @@ class BestOfNSampler:
             return remaining.strip()
         except (ValueError, IndexError):
             pass
-        return generated_text.split('"expr"')[-1].strip(' ":}')
+        # Last resort fallback
+        fallback = generated_text.split('"expr"')[-1].strip(' ":}')
+        # Clean up any overflow
+        if '"}' in fallback:
+            fallback = fallback[:fallback.index('"}')]
+        return fallback
 
     def compute_r2(self, expression_str: str, X: np.ndarray, y: np.ndarray) -> float:
         """Compute R² score for an expression."""
