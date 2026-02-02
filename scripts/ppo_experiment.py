@@ -125,15 +125,21 @@ class PPOSymbolicRegression:
         """Load the JSON format model with LoRA adapters."""
         logger.info(f"Loading model from {self.model_path}")
 
+        # Load tokenizer from trained model (has special tokens)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+        logger.info(f"Tokenizer loaded with vocab size: {len(self.tokenizer)}")
+
         # Load base GPT-2
         base_model = AutoModelForCausalLM.from_pretrained(
             "gpt2",
             torch_dtype=torch.float32,  # PPO needs float32
         )
 
-        # Load tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained("gpt2")
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+        # Resize embeddings to match tokenizer (handles special tokens)
+        if len(self.tokenizer) != base_model.config.vocab_size:
+            logger.info(f"Resizing embeddings: {base_model.config.vocab_size} -> {len(self.tokenizer)}")
+            base_model.resize_token_embeddings(len(self.tokenizer))
 
         # Load LoRA adapter
         try:
