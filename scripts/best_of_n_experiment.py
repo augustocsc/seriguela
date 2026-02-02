@@ -124,8 +124,9 @@ class BestOfNSampler:
         if not expression_str or expression_str.isspace():
             return -np.inf
 
+        # Replace constant placeholder C with 1
         if 'C' in expression_str:
-            return -np.inf  # Skip expressions with constants
+            expression_str = expression_str.replace('C', '1')
 
         try:
             expr = Expression(expression_str, is_prefix=False)
@@ -195,7 +196,7 @@ class BestOfNSampler:
             results.append({
                 "expression": expr_str,
                 "r2": float(r2) if np.isfinite(r2) else None,
-                "is_valid": np.isfinite(r2) and r2 > -1,
+                "is_valid": bool(np.isfinite(r2) and r2 > -1),
             })
 
         # Sort by R²
