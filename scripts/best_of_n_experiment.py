@@ -177,6 +177,7 @@ class BestOfNSampler:
 
         expressions = []
 
+        debug_count = 0
         for _ in tqdm(range(n_samples), desc="Sampling expressions"):
             with torch.no_grad():
                 output = self.model.generate(
@@ -191,6 +192,13 @@ class BestOfNSampler:
 
             text = self.tokenizer.decode(output[0], skip_special_tokens=True)
             expr_str = self.extract_expression(text)
+
+            # Debug: print first 5 extractions
+            if debug_count < 5:
+                logger.info(f"DEBUG [{debug_count}] raw text (last 80 chars): ...{text[-80:]}")
+                logger.info(f"DEBUG [{debug_count}] extracted: '{expr_str}'")
+                debug_count += 1
+
             expressions.append(expr_str)
 
         return expressions
