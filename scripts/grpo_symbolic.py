@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-Improved REINFORCE for Symbolic Regression
+GRPO (Group Relative Policy Optimization) for Symbolic Regression
 
-Improvements over basic REINFORCE:
-1. Larger batch size with gradient accumulation
-2. Entropy bonus for exploration
-3. Better baseline (exponential moving average with warmup)
-4. Reward shaping (softer penalty for invalid expressions)
-5. Best-of-N sampling to find good expressions faster
-6. Learning rate scheduling
-7. Gradient clipping
-8. Detailed logging per epoch
+Based on DeepSeek-R1 approach:
+- Generate a group of N samples
+- Compute advantages relative to group mean/std
+- No external baseline needed
+
+Comparison with REINFORCE:
+- REINFORCE: advantage = reward - moving_average_baseline
+- GRPO: advantage = (reward - group_mean) / group_std
 """
 
 import os
@@ -20,8 +19,8 @@ import argparse
 import logging
 import datetime
 from pathlib import Path
-from typing import List, Tuple, Dict
-from collections import deque
+from typing import List, Dict, Tuple
+from copy import deepcopy
 
 import numpy as np
 import torch
@@ -46,19 +45,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class ImprovedREINFORCE:
-    """Improved REINFORCE algorithm for symbolic regression."""
+class GRPO:
+    """Group Relative Policy Optimization for symbolic regression."""
 
     def __init__(
         self,
         model_path: str,
         X: np.ndarray,
         y: np.ndarray,
-        output_dir: str = "./output/reinforce",
+        output_dir: str = "./output/grpo",
         learning_rate: float = 5e-5,
         device: str = None,
-        entropy_coef: float = 0.01,
-        baseline_decay: float = 0.95,
+        group_size: int = 8,  # Number of samples per group
+        kl_coef: float = 0.01,  # KL penalty coefficient
+        clip_range: float = 0.2,  # PPO-style clipping (optional)
     ):
         self.X = X
         self.y = y
@@ -66,8 +66,9 @@ class ImprovedREINFORCE:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.learning_rate = learning_rate
-        self.entropy_coef = entropy_coef
-        self.baseline_decay = baseline_decay
+        self.group_size = group_size
+        self.kl_coef = kl_coef
+        self.clip_range = clip_range
 
         # Device
         if device:
@@ -79,18 +80,21 @@ class ImprovedREINFORCE:
         # Load model
         self._load_model(model_path)
 
+        # Keep reference model for KL penalty
+        self.ref_model = None  # Will be set after first update
+
         # Build prompt
         self.prompt = self._build_prompt()
         self.prompt_ids = self.tokenizer(self.prompt, return_tensors="pt")["input_ids"].to(self.device)
 
-        # Optimizer with weight decay
+        # Optimizer
         self.optimizer = torch.optim.AdamW(
             self.model.parameters(),
             lr=learning_rate,
             weight_decay=0.01
         )
 
-        # Learning rate scheduler
+        # Scheduler
         self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
             self.optimizer, T_0=10, T_mult=2
         )
@@ -99,12 +103,6 @@ class ImprovedREINFORCE:
         self.best_r2 = -np.inf
         self.best_expression = None
         self.history = []
-
-        # Improved baseline: use recent rewards buffer
-        self.reward_buffer = deque(maxlen=50)
-        self.baseline = 0.0
-
-        # Track all discovered expressions
         self.discovered_expressions: Dict[str, float] = {}
 
     def _load_model(self, model_path: str):
@@ -128,11 +126,11 @@ class ImprovedREINFORCE:
             logger.info(f"LoRA load failed ({e}), loading as standalone model...")
             self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
-        # Add LoRA for training (reduced for memory efficiency)
+        # Add LoRA for training
         lora_config = LoraConfig(
-            r=8,  # Reduced for memory
+            r=8,
             lora_alpha=16,
-            target_modules=["c_attn"],  # Only attention
+            target_modules=["c_attn"],
             lora_dropout=0.05,
             bias="none",
         )
@@ -147,7 +145,6 @@ class ImprovedREINFORCE:
         """Build JSON format prompt."""
         vars_list = [f"x_{i+1}" for i in range(self.n_vars)]
 
-        # Default operators - includes all operators from training data
         if ops is None:
             ops_list = ["+", "-", "*", "/", "sin", "cos", "sqrt", "log", "exp", "pow"]
         else:
@@ -159,7 +156,7 @@ class ImprovedREINFORCE:
             "cons": "C",
             "expr": ""
         })
-        prompt = prompt[:-2]  # Remove closing "}
+        prompt = prompt[:-2]
         return prompt
 
     def extract_expression(self, text: str) -> str:
@@ -219,31 +216,15 @@ class ImprovedREINFORCE:
         except Exception:
             return -1.0, False
 
-    def shape_reward(self, r2: float, is_valid: bool) -> float:
-        """Shape reward to encourage exploration."""
-        if not is_valid:
-            return -0.1  # Small penalty instead of -1.0
-
-        # Transform R^2 to encourage improvement
-        if r2 < 0:
-            return r2 * 0.5  # Reduce negative penalty
-        elif r2 < 0.5:
-            return r2
-        elif r2 < 0.9:
-            return r2 * 1.5  # Bonus for good expressions
-        else:
-            return r2 * 2.0  # Big bonus for great expressions
-
-    def generate_batch(
+    def generate_group(
         self,
-        batch_size: int,
         temperature: float = 0.7,
         max_new_tokens: int = 50
     ) -> List[Dict]:
-        """Generate a batch of expressions with log probabilities."""
+        """Generate a group of expressions."""
         results = []
 
-        for _ in range(batch_size):
+        for _ in range(self.group_size):
             generated_ids = self.prompt_ids.clone()
             generated_tokens = []
 
@@ -270,50 +251,38 @@ class ImprovedREINFORCE:
             text = self.tokenizer.decode(generated_ids[0], skip_special_tokens=True)
             expr_str = self.extract_expression(text)
             r2, is_valid = self.compute_r2(expr_str)
-            reward = self.shape_reward(r2, is_valid)
 
-            # Phase 2: Efficient log prob computation using full sequence
+            # Phase 2: Efficient log prob computation
             if len(generated_tokens) > 0:
-                # Build target sequence
                 full_ids = torch.cat([
                     self.prompt_ids,
                     torch.tensor([generated_tokens], device=self.device)
                 ], dim=1)
 
-                # Single forward pass for all positions
-                outputs = self.model(full_ids[:, :-1])  # Input all but last
+                outputs = self.model(full_ids[:, :-1])
                 logits = outputs.logits / temperature
 
-                # Get log probs for generated portion
                 prompt_len = self.prompt_ids.shape[1]
-                gen_logits = logits[:, prompt_len-1:, :]  # Logits predicting generated tokens
+                gen_logits = logits[:, prompt_len-1:, :]
 
                 log_probs_all = F.log_softmax(gen_logits, dim=-1)
-                probs_all = F.softmax(gen_logits, dim=-1)
 
-                # Gather log probs of selected tokens
                 target_tokens = torch.tensor(generated_tokens, device=self.device).unsqueeze(0)
                 selected_log_probs = log_probs_all.gather(2, target_tokens.unsqueeze(-1)).squeeze(-1)
                 total_log_prob = selected_log_probs.sum()
-
-                # Compute mean entropy
-                entropy_per_pos = -(probs_all * log_probs_all).sum(dim=-1)
-                total_entropy = entropy_per_pos.mean()
             else:
                 total_log_prob = torch.tensor(0.0, device=self.device, requires_grad=True)
-                total_entropy = torch.tensor(0.0, device=self.device)
 
             results.append({
                 "text": text,
                 "expression": expr_str,
                 "r2": r2,
                 "is_valid": is_valid,
-                "reward": reward,
                 "log_prob": total_log_prob,
-                "entropy": total_entropy,
+                "generated_tokens": generated_tokens,
             })
 
-            # Track best and discovered expressions
+            # Track best
             if is_valid:
                 self.discovered_expressions[expr_str] = max(
                     self.discovered_expressions.get(expr_str, -np.inf), r2
@@ -323,66 +292,86 @@ class ImprovedREINFORCE:
                 self.best_r2 = r2
                 self.best_expression = expr_str
 
-            # Clear cache periodically
+            # Clear cache
             if self.device.type == "cuda":
                 torch.cuda.empty_cache()
 
         return results
 
-    def update_baseline(self, rewards: List[float]):
-        """Update baseline using reward buffer."""
-        valid_rewards = [r for r in rewards if r > -0.5]
-        self.reward_buffer.extend(valid_rewards)
+    def compute_group_advantages(self, results: List[Dict]) -> List[float]:
+        """
+        Compute GRPO advantages: (reward - mean) / std
 
-        if len(self.reward_buffer) > 0:
-            # Use median for robustness
-            self.baseline = self.baseline_decay * self.baseline + \
-                           (1 - self.baseline_decay) * np.median(list(self.reward_buffer))
+        This is the key difference from REINFORCE:
+        - REINFORCE uses external moving average baseline
+        - GRPO uses within-group statistics
+        """
+        # Get rewards (R² values, with penalty for invalid)
+        rewards = []
+        for r in results:
+            if r["is_valid"]:
+                rewards.append(r["r2"])
+            else:
+                rewards.append(-0.1)  # Small penalty for invalid
 
-    def train_step(self, batch_size: int = 8, grad_accum_steps: int = 4) -> dict:
-        """Perform one training step with gradient accumulation."""
+        rewards = np.array(rewards)
+
+        # Compute group statistics
+        mean_reward = np.mean(rewards)
+        std_reward = np.std(rewards)
+
+        # Avoid division by zero
+        if std_reward < 1e-8:
+            std_reward = 1.0
+
+        # Compute normalized advantages
+        advantages = (rewards - mean_reward) / std_reward
+
+        return advantages.tolist(), mean_reward, std_reward
+
+    def train_step(self, num_groups: int = 4) -> dict:
+        """
+        Perform one GRPO training step.
+
+        Args:
+            num_groups: Number of groups to sample (effective batch = num_groups * group_size)
+        """
         self.model.train()
 
         all_results = []
-        total_policy_loss = 0.0
-        total_entropy_loss = 0.0
+        all_advantages = []
+        total_loss = 0.0
 
         self.optimizer.zero_grad()
 
-        effective_batch = batch_size * grad_accum_steps
-
-        for accum_step in range(grad_accum_steps):
-            # Clear cache before each mini-batch
+        # Generate multiple groups
+        for _ in range(num_groups):
             if self.device.type == "cuda":
                 torch.cuda.empty_cache()
 
-            results = self.generate_batch(batch_size)
-            all_results.extend(results)
+            # Generate a group of samples
+            group_results = self.generate_group()
+            all_results.extend(group_results)
 
-            # Compute losses for this mini-batch
-            policy_loss = torch.tensor(0.0, device=self.device)
-            entropy_loss = torch.tensor(0.0, device=self.device)
+            # Compute group-relative advantages
+            advantages, group_mean, group_std = self.compute_group_advantages(group_results)
+            all_advantages.extend(advantages)
+
+            # Compute loss for this group
+            group_loss = torch.tensor(0.0, device=self.device)
             valid_count = 0
 
-            for r in results:
-                if r["is_valid"]:
-                    advantage = r["reward"] - self.baseline
-                    policy_loss = policy_loss - r["log_prob"] * advantage
-                    entropy_loss = entropy_loss - r["entropy"]
+            for result, advantage in zip(group_results, advantages):
+                if result["is_valid"]:
+                    # Policy gradient loss with advantage
+                    group_loss = group_loss - result["log_prob"] * advantage
                     valid_count += 1
 
             if valid_count > 0:
-                policy_loss = policy_loss / valid_count
-                entropy_loss = entropy_loss / valid_count
-
-                # Combined loss
-                loss = policy_loss + self.entropy_coef * entropy_loss
-                loss = loss / grad_accum_steps  # Scale for accumulation
-
-                loss.backward()
-
-                total_policy_loss += policy_loss.item()
-                total_entropy_loss += entropy_loss.item()
+                group_loss = group_loss / valid_count
+                group_loss = group_loss / num_groups  # Scale for accumulation
+                group_loss.backward()
+                total_loss += group_loss.item()
 
         # Gradient clipping
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
@@ -391,163 +380,159 @@ class ImprovedREINFORCE:
         self.optimizer.step()
         self.scheduler.step()
 
-        # Update baseline
-        rewards = [r["reward"] for r in all_results]
-        self.update_baseline(rewards)
-
         # Statistics
         r2_values = [r["r2"] for r in all_results]
         valid_mask = [r["is_valid"] for r in all_results]
         valid_r2 = [r2 for r2, v in zip(r2_values, valid_mask) if v]
 
         return {
-            "valid_count": sum(valid_mask),
+            "valid_count": int(sum(valid_mask)),
             "total_count": len(all_results),
             "valid_rate": sum(valid_mask) / len(all_results),
-            "mean_r2": np.mean(valid_r2) if valid_r2 else 0.0,
-            "max_r2": max(r2_values),
-            "baseline": self.baseline,
-            "policy_loss": total_policy_loss / grad_accum_steps,
-            "entropy_loss": total_entropy_loss / grad_accum_steps,
+            "mean_r2": float(np.mean(valid_r2)) if valid_r2 else 0.0,
+            "max_r2": float(max(r2_values)),
+            "mean_advantage": float(np.mean(all_advantages)),
+            "std_advantage": float(np.std(all_advantages)),
+            "loss": total_loss,
             "lr": self.scheduler.get_last_lr()[0],
         }
 
     def run(
         self,
-        n_epochs: int = 50,
-        batch_size: int = 16,
-        grad_accum_steps: int = 2,
+        epochs: int = 50,
+        num_groups: int = 4,
         target_r2: float = 0.99,
         patience: int = 20,
-    ):
-        """Run training with early stopping."""
+    ) -> dict:
+        """Run GRPO training."""
         logger.info("=" * 60)
-        logger.info("IMPROVED REINFORCE SYMBOLIC REGRESSION")
+        logger.info("GRPO SYMBOLIC REGRESSION")
         logger.info("=" * 60)
-        logger.info(f"Epochs: {n_epochs}")
-        logger.info(f"Batch size: {batch_size} x {grad_accum_steps} = {batch_size * grad_accum_steps}")
-        logger.info(f"Entropy coef: {self.entropy_coef}")
+        logger.info(f"Epochs: {epochs}")
+        logger.info(f"Group size: {self.group_size}")
+        logger.info(f"Num groups: {num_groups}")
+        logger.info(f"Effective batch: {self.group_size * num_groups}")
         logger.info(f"Target R^2: {target_r2}")
         logger.info("=" * 60)
 
-        no_improvement = 0
-        prev_best = -np.inf
+        no_improvement_count = 0
+        best_r2_at_start = self.best_r2
 
-        for epoch in range(n_epochs):
-            stats = self.train_step(batch_size, grad_accum_steps)
-
+        for epoch in range(1, epochs + 1):
+            stats = self.train_step(num_groups)
             self.history.append({
-                "epoch": epoch + 1,
+                "epoch": epoch,
                 **stats,
                 "best_r2": self.best_r2,
             })
 
-            # Check for improvement
-            if self.best_r2 > prev_best + 0.001:
-                no_improvement = 0
-                prev_best = self.best_r2
-            else:
-                no_improvement += 1
-
-            # Log every epoch for visibility
             logger.info(
-                f"Epoch {epoch+1:3d} | "
+                f"Epoch {epoch:3d} | "
                 f"Valid: {stats['valid_count']}/{stats['total_count']} | "
                 f"Mean R²: {stats['mean_r2']:.4f} | "
                 f"Best: {self.best_r2:.4f} | "
-                f"Baseline: {self.baseline:.4f} | "
+                f"Adv μ: {stats['mean_advantage']:.3f} σ: {stats['std_advantage']:.3f} | "
                 f"LR: {stats['lr']:.2e}"
             )
 
-            # Early stopping conditions
+            # Check for target
             if self.best_r2 >= target_r2:
-                logger.info(f"Target R^2 {target_r2} reached at epoch {epoch+1}!")
+                logger.info(f"Target R^2 {target_r2} reached at epoch {epoch}!")
                 break
 
-            if no_improvement >= patience:
+            # Early stopping
+            if self.best_r2 > best_r2_at_start:
+                best_r2_at_start = self.best_r2
+                no_improvement_count = 0
+            else:
+                no_improvement_count += 1
+
+            if no_improvement_count >= patience:
                 logger.info(f"No improvement for {patience} epochs. Early stopping.")
                 break
 
         # Final results
-        logger.info("\n" + "=" * 60)
+        logger.info("")
+        logger.info("=" * 60)
         logger.info("FINAL RESULTS")
         logger.info("=" * 60)
         logger.info(f"Best R^2: {self.best_r2:.4f}")
         logger.info(f"Best expression: {self.best_expression}")
         logger.info(f"Unique expressions discovered: {len(self.discovered_expressions)}")
 
-        # Show top 5 expressions
-        top_exprs = sorted(self.discovered_expressions.items(), key=lambda x: -x[1])[:5]
+        # Top expressions
+        top_exprs = sorted(
+            self.discovered_expressions.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:5]
         logger.info("Top 5 expressions:")
         for expr, r2 in top_exprs:
             logger.info(f"  R²={r2:.4f}: {expr}")
 
-        return {
+        # Save results
+        results = {
+            "algorithm": "GRPO",
             "best_r2": self.best_r2,
             "best_expression": self.best_expression,
             "history": self.history,
-            "discovered_expressions": self.discovered_expressions,
+            "discovered_expressions": dict(list(self.discovered_expressions.items())[:100]),
+            "config": {
+                "group_size": self.group_size,
+                "num_groups": num_groups,
+                "learning_rate": self.learning_rate,
+                "kl_coef": self.kl_coef,
+            }
         }
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_path = self.output_dir / f"results_grpo_{timestamp}.json"
+        with open(output_path, "w") as f:
+            json.dump(results, f, indent=2)
+        logger.info(f"Results saved to: {output_path}")
+
+        return results
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Improved REINFORCE Symbolic Regression")
-    parser.add_argument("--model_path", type=str, default="gpt2")
-    parser.add_argument("--dataset", type=str, default="./data/ppo_test/sin_x1.csv")
-    parser.add_argument("--output_dir", type=str, default="./output/reinforce")
+    parser = argparse.ArgumentParser(description="GRPO for Symbolic Regression")
+    parser.add_argument("--model_path", type=str, required=True)
+    parser.add_argument("--dataset", type=str, required=True)
+    parser.add_argument("--output_dir", type=str, default="./output/grpo")
     parser.add_argument("--epochs", type=int, default=50)
-    parser.add_argument("--batch_size", type=int, default=16)
-    parser.add_argument("--grad_accum", type=int, default=2)
-    parser.add_argument("--lr", type=float, default=5e-5)
-    parser.add_argument("--entropy_coef", type=float, default=0.01)
-    parser.add_argument("--patience", type=int, default=20)
-    parser.add_argument("--cpu", action="store_true")
-
+    parser.add_argument("--group_size", type=int, default=8)
+    parser.add_argument("--num_groups", type=int, default=4)
+    parser.add_argument("--learning_rate", type=float, default=5e-5)
+    parser.add_argument("--target_r2", type=float, default=0.99)
     args = parser.parse_args()
 
     # Load dataset
-    dataset_path = Path(args.dataset)
-    if not dataset_path.exists():
-        logger.error(f"Dataset not found: {dataset_path}")
-        return
+    import pandas as pd
+    df = pd.read_csv(args.dataset)
 
-    reg = RegressionDataset(str(dataset_path.parent), dataset_path.name)
-    X, y = reg.get_numpy()
+    x_cols = [c for c in df.columns if c.startswith('x_')]
+    X = df[x_cols].values
+    y = df['y'].values
 
-    # Run experiment
-    experiment = ImprovedREINFORCE(
+    logger.info(f"Loaded dataset: {args.dataset}")
+    logger.info(f"  Samples: {len(df)}, Variables: {len(x_cols)}")
+
+    # Create GRPO trainer
+    grpo = GRPO(
         model_path=args.model_path,
         X=X,
         y=y,
         output_dir=args.output_dir,
-        learning_rate=args.lr,
-        device="cpu" if args.cpu else None,
-        entropy_coef=args.entropy_coef,
+        learning_rate=args.learning_rate,
+        group_size=args.group_size,
     )
 
-    results = experiment.run(
-        n_epochs=args.epochs,
-        batch_size=args.batch_size,
-        grad_accum_steps=args.grad_accum,
-        patience=args.patience,
+    # Run training
+    results = grpo.run(
+        epochs=args.epochs,
+        num_groups=args.num_groups,
+        target_r2=args.target_r2,
     )
-
-    # Save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    results_file = Path(args.output_dir) / f"results_improved_{timestamp}.json"
-
-    # Convert for JSON serialization
-    results_json = {
-        "best_r2": float(results["best_r2"]),
-        "best_expression": results["best_expression"],
-        "history": results["history"],
-        "discovered_expressions": {k: float(v) for k, v in results["discovered_expressions"].items()},
-    }
-
-    with open(results_file, 'w') as f:
-        json.dump(results_json, f, indent=2)
-
-    logger.info(f"Results saved to: {results_file}")
 
 
 if __name__ == "__main__":
