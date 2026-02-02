@@ -107,14 +107,28 @@ class BestOfNSampler:
     def extract_expression(self, generated_text: str) -> str:
         """Extract expression from JSON format output."""
         try:
+            # Find the expression field
             if '"expr": "' in generated_text:
                 expr_start = generated_text.index('"expr": "') + len('"expr": "')
-                expr_end = generated_text.index('"', expr_start)
-                return generated_text[expr_start:expr_end].strip()
             elif '"expr":"' in generated_text:
                 expr_start = generated_text.index('"expr":"') + len('"expr":"')
-                expr_end = generated_text.index('"', expr_start)
-                return generated_text[expr_start:expr_end].strip()
+            else:
+                return generated_text.split('"expr"')[-1].strip(' ":}')
+
+            # Find the end - look for closing "} pattern
+            remaining = generated_text[expr_start:]
+
+            # Try to find proper JSON end first
+            if '"}' in remaining:
+                expr_end = remaining.index('"}')
+                return remaining[:expr_end].strip()
+
+            # Fallback: find first quote
+            if '"' in remaining:
+                expr_end = remaining.index('"')
+                return remaining[:expr_end].strip()
+
+            return remaining.strip()
         except (ValueError, IndexError):
             pass
         return generated_text.split('"expr"')[-1].strip(' ":}')
