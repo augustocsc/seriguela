@@ -105,39 +105,56 @@ class BestOfNSampler:
         return prompt
 
     def extract_expression(self, generated_text: str) -> str:
-        """Extract expression from JSON format output."""
+        """Extract expression from JSON format output.
+
+        Handles two formats:
+        1. Standard JSON: "expr": "value"}
+        2. Model output:  "expr": value"}  (no quotes around value)
+        """
         try:
-            # Find the expression field
+            # Case 1: Standard JSON with quotes around expression value
             if '"expr": "' in generated_text:
                 expr_start = generated_text.index('"expr": "') + len('"expr": "')
-            elif '"expr":"' in generated_text:
+                remaining = generated_text[expr_start:]
+                # Find closing "}
+                if '"}' in remaining:
+                    return remaining[:remaining.index('"}')].strip()
+                # Fallback: find first quote
+                if '"' in remaining:
+                    return remaining[:remaining.index('"')].strip()
+                return remaining.strip()
+
+            # Case 2: Model output WITHOUT quotes: "expr": value"}
+            # This is what the model actually generates
+            if '"expr": ' in generated_text:
+                expr_start = generated_text.index('"expr": ') + len('"expr": ')
+                remaining = generated_text[expr_start:]
+                # Find closing "} which ends the JSON object
+                if '"}' in remaining:
+                    return remaining[:remaining.index('"}')].strip()
+                # Fallback: find "{ which starts next object
+                if '"{' in remaining:
+                    return remaining[:remaining.index('"{')].strip().rstrip('}')
+                return remaining.strip()
+
+            # Case 3: Compact JSON without space
+            if '"expr":"' in generated_text:
                 expr_start = generated_text.index('"expr":"') + len('"expr":"')
-            else:
-                return generated_text.split('"expr"')[-1].strip(' ":}')
+                remaining = generated_text[expr_start:]
+                if '"}' in remaining:
+                    return remaining[:remaining.index('"}')].strip()
+                if '"' in remaining:
+                    return remaining[:remaining.index('"')].strip()
+                return remaining.strip()
 
-            # Find the end - look for closing "} pattern
-            remaining = generated_text[expr_start:]
-
-            # Try to find proper JSON end first - look for "} which closes the expr field
-            if '"}' in remaining:
-                expr_end = remaining.index('"}')
-                extracted = remaining[:expr_end].strip()
-                return extracted
-
-            # Fallback: find first quote that ends the expression
-            if '"' in remaining:
-                expr_end = remaining.index('"')
-                return remaining[:expr_end].strip()
-
-            return remaining.strip()
         except (ValueError, IndexError):
             pass
-        # Last resort fallback
+
+        # Last resort: split on "expr" and clean up
         fallback = generated_text.split('"expr"')[-1].strip(' ":}')
-        # Clean up any overflow
         if '"}' in fallback:
             fallback = fallback[:fallback.index('"}')]
-        return fallback
+        return fallback.strip()
 
     def compute_r2(self, expression_str: str, X: np.ndarray, y: np.ndarray) -> float:
         """Compute R² score for an expression."""
