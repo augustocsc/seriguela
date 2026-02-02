@@ -182,22 +182,21 @@ class PPOSymbolicRegression:
         """Setup PPO trainer."""
         logger.info("Setting up PPO trainer...")
 
+        # TRL 0.16+ uses new PPOConfig format
         self.ppo_config = PPOConfig(
-            model_name=None,
             learning_rate=self.learning_rate,
-            batch_size=self.batch_size,
-            mini_batch_size=min(16, self.batch_size),
+            per_device_train_batch_size=self.batch_size,
             gradient_accumulation_steps=1,
-            ppo_epochs=4,
-            log_with=None,  # or "wandb" for logging
-            optimize_cuda_cache=True,
+            num_ppo_epochs=4,
+            output_dir=str(self.output_dir / "ppo_checkpoints"),
+            report_to=None,  # Disable logging to wandb etc
         )
 
         self.ppo_trainer = PPOTrainer(
             config=self.ppo_config,
             model=self.model,
             ref_model=self.ref_model,
-            tokenizer=self.tokenizer,
+            processing_class=self.tokenizer,
         )
 
         logger.info("PPO trainer ready")
