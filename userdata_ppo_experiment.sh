@@ -14,31 +14,46 @@
 # Estimated time: ~4-5 hours
 # =============================================================================
 
-set -e  # Exit on error
+exec > /var/log/user-data.log 2>&1
+set -x
 
-# === Configuration ===
-HF_TOKEN="${HF_TOKEN:-YOUR_HF_TOKEN}"
-WANDB_KEY="${WANDB_KEY:-YOUR_WANDB_KEY}"
-REPO_URL="https://github.com/augustocsc/seriguela.git"
-BRANCH="experiment/ppo-symbolic-regression"
-WORKDIR="/home/ubuntu/seriguela"
+echo "=========================================="
+echo "PPO SYMBOLIC REGRESSION EXPERIMENT"
+echo "Started: $(date)"
+echo "=========================================="
+
+cloud-init status --wait
+
+# Run everything as ubuntu user
+sudo -u ubuntu bash << 'UBUNTUSETUP'
+cd /home/ubuntu
+
 LOG_FILE="/home/ubuntu/ppo_experiment.log"
-
-# === Logging ===
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
+# === Configuration ===
+# IMPORTANT: Replace these placeholders before launching
+# You can find your tokens at:
+#   HuggingFace: https://huggingface.co/settings/tokens
+#   W&B: https://wandb.ai/authorize
+HF_TOKEN="__HF_TOKEN__"
+WANDB_KEY="__WANDB_KEY__"
+REPO_URL="https://github.com/augustocsc/seriguela.git"
+BRANCH="experiment/ppo-symbolic-regression"
+WORKDIR="/home/ubuntu/seriguela"
+
 log "=========================================="
 log "PPO SYMBOLIC REGRESSION EXPERIMENT"
 log "=========================================="
 
 # === System Setup ===
-log "Updating system packages..."
-apt-get update -y
-apt-get install -y git python3-pip python3-venv nvidia-driver-535 > /dev/null 2>&1
+log "Installing system packages..."
+sudo apt-get update -qq
+sudo apt-get install -y -qq python3-venv python3-pip git
 
 # === Clone Repository ===
 log "Cloning repository..."
@@ -218,3 +233,7 @@ log "  scp -i key.pem ubuntu@IP:/home/ubuntu/seriguela/output/ppo_experiments/*/
 
 # Keep instance running for result retrieval
 log "Instance will remain running. Stop manually after downloading results."
+
+UBUNTUSETUP
+
+echo "Userdata script finished at $(date)"
