@@ -2,7 +2,7 @@
 # Automatic Training Monitor - Checks completion and downloads models
 # Prevents wasting $ on idle instances
 
-set -e
+# Note: NOT using 'set -e' because we want to continue on SSH errors
 
 # Configuration
 INSTANCE_IDS="i-0855711efcac25a9c i-0eea77c3bbf1ea976 i-04dc6f51534d8185d"
