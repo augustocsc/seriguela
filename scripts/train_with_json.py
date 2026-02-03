@@ -164,7 +164,7 @@ def main():
         eval_steps=500,
         save_steps=500,
         save_total_limit=3,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         load_best_model_at_end=True,
         metric_for_best_model="loss",
         greater_is_better=False,
