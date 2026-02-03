@@ -380,3 +380,248 @@ python scripts/generate.py --model_path ./output/exp_a_json --num_generations 1 
 ssh -i aws/keys/seriguela-key.pem ubuntu@<ip>
 tail -f ~/training_exp_a.log
 ```
+
+---
+
+## Reinforcement Learning for Expression Generation (Feb 2025)
+
+### Problem Discovery: Complexity Gap
+
+After implementing supervised fine-tuning with JSON format (80% valid expressions), RL experiments revealed a critical limitation:
+
+**The base model (GPT-2 124M) generates structurally simple expressions that fail on complex benchmarks.**
+
+#### Evidence from Nguyen-5 Benchmark
+
+Target: `sin(x_1**2)*cos(x_1) - 1`
+
+Analyzing 160 expressions from REINFORCE training:
+- **Valid expressions**: 39.4%
+- **All valid expressions had R² = -1.0** (terrible fit)
+- **Only 15.9%** used power operations (x²)
+- **0%** had nested trigonometric functions (sin(x²))
+- **Average depth**: 1.40 (target requires 2+)
+- **No examples** of function multiplication (sin()*cos())
+
+**Root Cause**: Model learns to generate syntactically valid but structurally trivial expressions. Without proper complexity, all rewards are uniformly bad → no gradient signal → no learning.
+
+### RL Algorithms Implemented
+
+Three algorithms implemented for symbolic regression fine-tuning:
+
+#### 1. REINFORCE (`scripts/reinforce_symbolic.py`)
+- Policy gradient with EMA baseline
+- Baseline: exponential moving average across epochs
+- Advantage: reward - baseline
+- Simple but effective for easy problems (Nguyen-1: R²=0.95)
+
+#### 2. GRPO (`scripts/grpo_symbolic.py`)
+- Group Relative Policy Optimization (DeepSeek-R1 approach)
+- Within-group advantage normalization
+- More stable than REINFORCE
+- Better for multi-modal reward landscapes
+
+#### 3. PPO (`scripts/ppo_symbolic.py`)
+- Proximal Policy Optimization with clipped objective
+- Multiple optimization epochs per batch
+- KL divergence monitoring with early stopping
+- **Problem**: Too conservative when all samples have poor fit
+- Failed completely on Nguyen-5 (R²=-1.0)
+
+### Debugging Tools
+
+#### `scripts/debug_reinforce.py`
+Captures ALL expressions (valid and invalid) during training for analysis:
+- Tracks: expression, R², validity, error_type, error_message
+- Saves to `debug_expressions.json`
+- Essential for understanding model behavior
+
+Example usage:
+```bash
+python scripts/debug_reinforce.py \
+  --model_path augustocsc/Se124M_700K_infix_v3_json \
+  --dataset data/benchmarks/nguyen/nguyen_5.csv \
+  --epochs 10
+```
+
+#### `scripts/analyze_complexity.py`
+Analyzes expression complexity patterns:
+- Power operation usage (x²)
+- Nested trigonometric functions
+- Expression depth (nesting level)
+- Operator distribution
+
+Results show base model generates shallow expressions (depth 1.4) with no nesting.
+
+### Solution: Scale Up Model Size
+
+**Hypothesis**: Larger models have more capacity to learn complex compositional patterns.
+
+Implemented training for three model sizes:
+- **GPT-2 Base**: 124M parameters (baseline)
+- **GPT-2 Medium**: 355M parameters (3x larger)
+- **GPT-2 Large**: 774M parameters (6x larger)
+
+### Critical Discovery: Data Format Issue (Feb 2025)
+
+**PROBLEM FOUND**: The HuggingFace dataset (`augustocsc/sintetico_natural`) column `i_prompt_n` is NOT in JSON format!
+
+**Actual format**:
+```
+vars: x_1, x_2, x_3, x_4, x_5
+oper: *, abs, asin, cos, log, sin, tan
+cons: C
+expr: log(cos(x_4))
+```
+
+**Required JSON format** (80% valid):
+```json
+{"vars": ["x_1", "x_2"], "ops": ["*", "+", "sin"], "cons": "C", "expr": "log(cos(x_4))"}
+```
+
+This was causing models to learn wrong patterns!
+
+### Solution: `scripts/train_with_json.py`
+
+New training script with critical fixes:
+
+1. **Automatic format conversion** to JSON:
+```python
+def convert_to_json_format(example):
+    """Convert text format to JSON."""
+    # Parses "vars: x_1, x_2" → {"vars": ["x_1", "x_2"]}
+    # Returns proper JSON string for training
+```
+
+2. **Early stopping**:
+   - Patience: 3 epochs
+   - Monitors validation loss
+   - Stops if no improvement → saves time and cost
+   - Load best model at end
+
+3. **Train/validation split**:
+   - 90% train / 10% validation
+   - Evaluation every 500 steps
+   - Prevents overfitting
+
+4. **Wandb integration** for monitoring
+
+### Training Larger Models on AWS
+
+#### Launch Scripts
+
+**Medium (355M) - g5.xlarge**:
+```bash
+bash scripts/aws/launch_medium_training.sh \
+  --wandb-key YOUR_KEY \
+  --hf-token YOUR_TOKEN
+```
+- GPU: NVIDIA A10G (24GB VRAM)
+- Time: ~2-3 hours
+- Cost: ~$2-3 USD
+
+**Large (774M) - g5.2xlarge**:
+```bash
+bash scripts/aws/launch_large_training.sh \
+  --wandb-key YOUR_KEY \
+  --hf-token YOUR_TOKEN
+```
+- GPU: NVIDIA A10G (48GB VRAM)
+- Time: ~4-5 hours
+- Cost: ~$8-10 USD
+
+#### Monitoring
+
+```bash
+# Check training progress
+ssh -i ~/.ssh/KEY.pem ubuntu@IP
+tail -f /home/ubuntu/training_medium.log  # or training_large.log
+
+# Check completion
+ssh ubuntu@IP 'test -f ~/.training_complete && echo "DONE" || echo "Running"'
+```
+
+#### Download Trained Models
+
+```bash
+# Medium
+scp -i ~/.ssh/KEY.pem -r ubuntu@IP:~/seriguela/output/gpt2_medium_700K_json ./
+
+# Large
+scp -i ~/.ssh/KEY.pem -r ubuntu@IP:~/seriguela/output/gpt2_large_700K_json ./
+```
+
+### Comparing Model Sizes
+
+**`scripts/compare_trained_models.py`**: Compares models on expression complexity
+
+```bash
+python scripts/compare_trained_models.py \
+  --model_base augustocsc/Se124M_700K_infix_v3_json \
+  --model_medium ./gpt2_medium_700K_json \
+  --model_large ./gpt2_large_700K_json \
+  --dataset data/benchmarks/nguyen/nguyen_5.csv \
+  --epochs 10
+```
+
+Metrics compared:
+- **Valid expression %**: Syntactic correctness
+- **Power operation %**: Use of x² (essential for Nguyen-5)
+- **Nested trig %**: sin(x²), cos(x²), etc.
+- **Average depth**: Compositional complexity
+- **Best R²**: Fit quality
+
+**Expected improvements** with larger models:
+- Medium (355M): +20-30% power usage, depth 1.8-2.0
+- Large (774M): +40-50% power usage, depth 2.0-2.5, possible nested trig
+
+### Key Insights
+
+1. **JSON format is critical**: 80% valid vs much lower with other formats
+2. **Model size matters for complexity**: Base (124M) cannot generate nested compositions
+3. **RL needs variance in rewards**: PPO fails when all samples are equally bad
+4. **Early stopping essential**: Saves compute on AWS
+5. **Validation split necessary**: Prevents overfitting on large datasets
+
+### Files Added (Feb 2025)
+
+**Training**:
+- `scripts/train_with_json.py` - Correct training with JSON + early stopping
+- `scripts/train_medium.py` - Legacy (DO NOT USE - wrong format)
+
+**RL Algorithms**:
+- `scripts/reinforce_symbolic.py` - REINFORCE implementation
+- `scripts/grpo_symbolic.py` - GRPO implementation
+- `scripts/ppo_symbolic.py` - PPO implementation
+- `scripts/debug_reinforce.py` - Debug version capturing all expressions
+
+**Analysis**:
+- `scripts/analyze_complexity.py` - Expression complexity analysis
+- `scripts/compare_trained_models.py` - Multi-model comparison
+- `scripts/show_expressions.py` - Display valid/invalid expressions
+
+**AWS Deployment**:
+- `scripts/aws/launch_medium_training.sh` - Launch medium training
+- `scripts/aws/launch_large_training.sh` - Launch large training
+- `scripts/aws/monitor_medium_training.sh` - Monitor progress
+
+**Documentation**:
+- `TRAIN_MEDIUM_AWS.md` - Quick guide for AWS training
+
+### Credentials Location
+
+API keys stored in: `~/.tokens.txt` (gitignored)
+```
+huggingface = hf_...
+wandb = wandb_v1_...
+```
+
+Scripts automatically read from this file when available.
+
+### Next Steps
+
+1. **Wait for training completion** (~5 hours for both)
+2. **Compare all three models** on Nguyen benchmarks
+3. **Test larger models with RL**: REINFORCE/GRPO on Nguyen-5
+4. **Expected result**: Medium/Large should generate complex expressions with proper nesting
+5. **If successful**: Deploy to production, create HuggingFace model cards
