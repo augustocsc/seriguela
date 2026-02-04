@@ -1,0 +1,6 @@
+name: nguyen_4
+equation: x**6 + x**5 + x**4 + x**3 + x**2 + x
+latex: x^6 + x^5 + x^4 + x^3 + x^2 + x
+n_vars: 1
+range: (-1, 1)
+n_samples: 100

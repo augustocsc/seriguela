@@ -1,0 +1,14 @@
+Instance ID: i-07279c5889587abfe
+Public IP: 54.91.123.196
+Instance Type: g5.xlarge
+Key: C:/Users/madeinweb/chave-gpu.pem
+Launch Time: qua,  4 de fev de 2026 09:59:11
+
+Monitor:
+ssh -i "C:/Users/madeinweb/chave-gpu.pem" ubuntu@54.91.123.196 'tail -f ~/seriguela/nguyen_benchmarks.log'
+
+Download:
+scp -i "C:/Users/madeinweb/chave-gpu.pem" -r ubuntu@54.91.123.196:~/seriguela/results_nguyen_benchmarks ./
+
+Stop:
+aws ec2 stop-instances --instance-ids i-07279c5889587abfe

@@ -1,0 +1,25 @@
+[0;32m[INFO][0m Launching instance for GPT-2 Medium training...
+[0;32m[INFO][0m Finding Deep Learning AMI...
+[0;32m[INFO][0m Using AMI: ami-0e4ef96c62e7cc2fe
+[0;32m[INFO][0m Using key pair: chave-gpu-nova
+[0;32m[INFO][0m Using security group: sg-0deaa73e23482e3f6
+[0;32m[INFO][0m Launching instance...
+[0;32m[INFO][0m Instance launched: i-0eea77c3bbf1ea976
+[0;32m[INFO][0m Waiting for instance to start...
+
+==========================================
+[0;32mGPT-2 Medium Training Instance Ready![0m
+==========================================
+Instance ID: i-0eea77c3bbf1ea976
+Public IP: 13.220.236.233
+
+[0;34mMonitor training:[0m
+  ssh -i ~/.ssh/chave-gpu-nova.pem ubuntu@13.220.236.233
+  tail -f /home/ubuntu/training_medium.log
+
+[0;34mCheck when complete:[0m
+  ssh ubuntu@13.220.236.233 'while [ ! -f ~/.training_complete ]; do sleep 60; echo "Training in progress..."; done; cat ~/training_results.txt'
+
+[1;33mEstimated time:[0m ~2-3 hours for 3 epochs
+
+[0;32m[INFO][0m Instance info saved to: /c/Users/madeinweb/.seriguela/medium_instance_info.txt

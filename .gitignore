@@ -76,6 +76,7 @@ venv.bak/
 # Output folder (geralmente grande demais para Git)
 output/*
 !output/.gitkeep # Não ignore um .gitkeep se precisar manter a pasta
+scripts/output/*
 
 # Dados (podem ser grandes, usar Git LFS ou armazenar fora se necessário)
 # Note: CSV files in data/processed/ can be 100MB+ and are excluded from git
@@ -95,6 +96,7 @@ data/processed/*
 ehthumbs.db
 Thumbs.db
 .env
+nul
 
 wandb
 
@@ -105,3 +107,13 @@ aws/.env
 aws/credentials
 *.pem
 *.key
+
+# Files with embedded tokens (userdata scripts, temp files)
+.claude/settings.local.json
+aws/temp/
+userdata_*.sh
+# Large data files (>100MB)
+1_data/processed/**/*.csv
+1_data/raw/**/*.csv
+*.tar.gz
+models_compressed.tar.gz

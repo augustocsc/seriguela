@@ -17,9 +17,9 @@ check_model() {
     
     echo -n "$name: "
     
-    # Check if model file exists
+    # Check if model file exists (.bin or .safetensors)
     STATUS=$(timeout 10 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o LogLevel=ERROR ubuntu@$ip \
-        'test -f ~/seriguela/output/gpt2_*/adapter_model.bin && echo "DONE" || echo "TRAINING"' 2>/dev/null || echo "ERROR")
+        'test -f ~/seriguela/output/gpt2_*/adapter_model.bin -o -f ~/seriguela/output/gpt2_*/adapter_model.safetensors && echo "DONE" || echo "TRAINING"' 2>/dev/null || echo "ERROR")
     
     if [ "$STATUS" = "DONE" ]; then
         echo "✓ COMPLETED"

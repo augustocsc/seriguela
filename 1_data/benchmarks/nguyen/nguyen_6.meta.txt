@@ -1,0 +1,6 @@
+name: nguyen_6
+equation: sin(x) + sin(x + x**2)
+latex: \sin(x) + \sin(x + x^2)
+n_vars: 1
+range: (-1, 1)
+n_samples: 100

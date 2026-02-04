@@ -1,0 +1,4 @@
+Instance ID: i-036c94c44824b420e
+Public IP: 54.198.99.192
+Instance Type: g5.xlarge
+Launch Time: qua,  4 de fev de 2026 00:02:28

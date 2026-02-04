@@ -1,0 +1,6 @@
+name: nguyen_5
+equation: sin(x**2)*cos(x) - 1
+latex: \sin(x^2) \cos(x) - 1
+n_vars: 1
+range: (-1, 1)
+n_samples: 100

@@ -105,7 +105,8 @@ echo "GPT-2 Medium Training Setup"
 echo "Started: $(date)"
 echo "=========================================="
 
-cloud-init status --wait
+# Allow system to stabilize (removed cloud-init deadlock)
+sleep 5
 
 sudo -u ubuntu bash << 'UBUNTUSETUP'
 cd /home/ubuntu

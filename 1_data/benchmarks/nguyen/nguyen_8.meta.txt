@@ -1,0 +1,6 @@
+name: nguyen_8
+equation: sqrt(x)
+latex: \sqrt{x}
+n_vars: 1
+range: (0, 4)
+n_samples: 100

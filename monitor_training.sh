@@ -29,7 +29,7 @@ error() { echo -e "${RED}[$(date '+%H:%M:%S')]${NC} $1"; }
 check_complete() {
     local ip=$1
     local result=$(timeout 10 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no ubuntu@$ip \
-        'test -f ~/seriguela/output/gpt2_*/adapter_model.bin && echo "DONE" || echo "TRAINING"' 2>/dev/null || echo "ERROR")
+        'test -f ~/seriguela/output/gpt2_*/adapter_model.bin -o -f ~/seriguela/output/gpt2_*/adapter_model.safetensors && echo "DONE" || echo "TRAINING"' 2>/dev/null || echo "ERROR")
     echo "$result"
 }
 

@@ -1,0 +1,6 @@
+name: nguyen_12
+equation: x**4 - x**3 + y**2/2 - y
+latex: x^4 - x^3 + \frac{y^2}{2} - y
+n_vars: 2
+range: (0, 1)
+n_samples: 100

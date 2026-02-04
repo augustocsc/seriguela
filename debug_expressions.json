@@ -1,0 +1,1284 @@
+{
+  "all_expressions": [
+    {
+      "expression": "x_1 + x_3 - x_2 - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.1446, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_2 + sin(cos(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-17.1278, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + cos(x_1 + C)/(x_1 + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.1906, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - C*exp(x_1/x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.2686, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1/sin(x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.6198, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + sin(sqrt(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-7.2996, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*sin(x_1*(x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.0350, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + log((x_1 + C)*sin(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.6158, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1/x_2 + cos(C*x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-20.0855, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*x_2 - sqrt(C*x_1 + C*x_1 - C))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "parse_error",
+      "error_message": "Failed to parse expression: Sympify of expression 'could not parse 'x_1*x_2 - sqrt(1*x_1 + 1*x_1 - 1",
+      "log_prob": "tensor(-23.5435, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(x_1*exp(C*x_1 - log(C*x_1)))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.9301, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_2 + x_1 - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-10.8085, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1 + C)*cos(x_1*x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-21.0684, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - C*exp(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.4841, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(-x_1 + x_1 + x_3)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.7304, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1/(x_1 - C) - log(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-18.5388, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(sqrt(x_1) - x_1**C/C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.6617, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(C - C)*log((x_1 + x_2 + x_3))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-29.3613, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_1 + C*sin(C*x_1 - C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-14.0174, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_1 - x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.7329, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + sin(x_1 + C) - x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.0279, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*(C*x_1 + x_1 + C) + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.3487, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(C*x_1 + sin(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.9110, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*sqrt(x_1 + sin(exp(x_1))))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "parse_error",
+      "error_message": "Failed to parse expression: Sympify of expression 'could not parse '1*sqrt(x_1 + sin(exp(x_1))))'' f",
+      "log_prob": "tensor(-19.5023, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + cos(x_1*(x_1 + C) + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-17.1540, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*x_1 + exp(C*x_1 - C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-14.0946, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "exp(C*x_1/x_2 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.5824, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*sqrt(x_1 - x_2*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.1297, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sin(exp(x_1) + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.7516, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + C*(C*x_1 - C)**C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.6826, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + exp(x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.6808, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-7.3515, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - x_2 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-8.9799, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 - x_2*(x_1 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.7579, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*sqrt(x_1 + x_1 + x_2 - C) + log(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-24.2000, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*cos(x_1) - C*x_1 + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.5751, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1*exp(x_1) - C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.8210, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + sqrt(C*x_1 - C) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.3996, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(x_1 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-8.4389, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + x_1 - exp(C*x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.6503, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*(x_1 - C)**C + C*x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.1844, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(C*(x_1 - log(x_1))**C) - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-28.8953, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1 - C*x_2 + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-8.1375, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - C*x_5 - log(x_1) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-20.2174, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 - sin(x_1*exp(C*x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-15.5165, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos((x_1 - C)*(x_2 + x_1)**C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-21.8672, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + sin(sqrt(x_1 - x_1)) + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-17.0154, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + cos(x_1) + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-6.6691, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - C*x_1*(x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.3329, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - C*x_2**C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.5205, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + x_2/x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-10.2499, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*x_1*exp(C*x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.8807, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(x_1*cos(x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.9742, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + tan(x_1 - C) + sqrt(x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-20.1557, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*(C*x_1 - C*x_2*(x_2 + C))/(x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-27.3651, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_1 + C*sqrt(log(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.7944, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*(x_1*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-14.9008, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1 + x_1 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.6330, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(C*x_2 + C*x_2) + log(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.5652, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + tan(x_1 - x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.1665, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*x_2 - C*x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.7558, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1 - C*sqrt(x_1) + C)/sqrt(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-21.2699, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + sin(x_1 + C) + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.5531, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(x_1) + C*x_1 + C*x_2",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.8401, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*x_2 + sin(x_1) - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-7.3581, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 - cos(x_1*(x_2 + C)) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-24.6932, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + x_1 + sin(x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-8.7660, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - sin(sqrt(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-10.4915, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(x_1)*x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-15.6386, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - C*x_1/x_2 + C*x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.2839, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_3 + x_2/(C*x_1 - C*x_2) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-26.2425, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*exp(-x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.4410, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "exp(x_1*(x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.4211, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1/(x_1*(x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.1739, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "exp(C*x_1 + x_1 - C*x_3) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.8230, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - C) + x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.0479, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_3 + C*x_2) + sin(x_1 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.8324, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + C*x_1 - C) - C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.3664, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + cos(x_1*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.1813, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + C*x_2 + exp(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.0110, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*exp(C*x_1)/x_2",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.6238, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1**C*cos(x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.2728, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 - x_2*x_1 - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.2207, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - sin(x_1*x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.4288, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + cos(x_1 - x_5)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.2683, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1 + exp(x_1**C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.7983, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + C*x_2 + C) - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-10.3943, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1)/((x_1 + x_3) - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-30.5237, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(x_1**C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.3482, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*cos(x_1 + x_1 + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.2978, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(C - x_1*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.8842, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + log(x_1) + C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.9009, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(x_1) - log(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "parse_error",
+      "error_message": "Failed to parse expression: Sympify of expression 'could not parse 'x_1 + exp(x_1) - log(x_1))'' fai",
+      "log_prob": "tensor(-17.3420, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1/(x_1*x_2 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.8347, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + (x_1 + C)*log(x_1) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.6945, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_2*(x_1 - C)**C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.5206, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "asin(C*x_1)/(x_1**C*x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-24.1757, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + C*x_1*(x_1 - C)**C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.0150, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + x_2/x_3",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.8277, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*tan(C*x_1) - C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.1159, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*sqrt(x_1 - x_2 - C) + x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.4769, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "exp(x_1 - x_1/sin(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "parse_error",
+      "error_message": "Failed to parse expression: Sympify of expression 'could not parse 'exp(x_1 - x_1/sin(x_1)'' failed,",
+      "log_prob": "tensor(-29.7222, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + x_2 + exp(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-8.6668, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(-C*x_1 + cos(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-16.8778, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*(x_1 - x_2 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.4129, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*(x_1 - C)**C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.8746, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - cos(x_1) - C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.6622, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "exp(x_1*x_2 - x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.7066, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1*(x_1 + exp(x_1)))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.0896, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-6.6344, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - x_2*(-x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.5539, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1 - x_2 - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.0407, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(C*x_1 - C*x_2 - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.8687, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(x_2 - log(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.4461, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1/(x_1*x_2 + C) - x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.0046, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*log(x_1 - sin(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.0344, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + sqrt(x_1)*cos(x_1 - x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-22.8270, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1 - log(x_1) + C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.6665, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sin(C*x_1 + x_1 + x_1)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-11.0855, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(C*x_1*x_2 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.4823, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + sqrt(x_1*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.2741, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sin(x_1 - C*(C*x_2 - C)**C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.1303, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1**C + exp(x_1)/x_1",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-16.4535, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_2*(x_1 - log(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-11.5574, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + x_2 - sin(C))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-20.5820, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - x_1 - C*exp(x_1) - C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-15.0082, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*cos(x_1 + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-12.3415, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - C) + x_3",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.3116, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_2 - C*x_1 + C*x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.7093, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*exp(C*x_1 - x_1*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-15.3356, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*x_2 - C*x_1 + x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.7126, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sqrt(x_1 - log(x_1 - C) - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.0512, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + C*exp(C*x_1) + C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-8.6479, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*exp(x_1**C*(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.5312, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1/(x_1 - x_2 + C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.9416, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*x_2 + log(x_1)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-7.9040, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*x_2 + x_2 + C*x_3",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.4488, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_1 + sin(x_5) - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-19.2400, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(cos(C*x_1) + C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-14.9380, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sqrt(x_1 - x_2 - x_4)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.0756, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 - C*x_1 + x_2)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-10.8562, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1*x_1 + log(x_1) - C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-9.5787, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1*(x_2 - x_2))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-14.5700, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + sin(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-10.2449, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + exp(C*x_1 - C)",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.8691, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*(x_1 + C)*(x_1 + C)*(x_2 + C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-22.5810, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + (x_1 + sqrt(x_1) - C)/x_1",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-13.4762, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 - cos(log(x_1))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.7598, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 - C*x_1*x_2",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-12.6677, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(C*x_2 + C*sqrt(x_1 - C))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-17.3950, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_1 + sin(x_1/sin(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-13.1717, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "sqrt(x_1*x_2 + x_2*x_3)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.6805, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "C*x_2*(sqrt(x_1) - C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-16.8862, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(x_1 + cos(x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-6.9042, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + exp(x_1))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-7.6389, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_2*(x_1 + C*x_2 + C)",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.9165, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1 + x_2 + (C*x_1 - C)**C",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.3171, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "log(x_1*cos(x_1*(x_1 - C)))",
+      "r2": -1.0,
+      "is_valid": false,
+      "error_type": "invalid_on_dataset",
+      "error_message": "NaN/Inf on dataset",
+      "log_prob": "tensor(-15.0268, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "x_1*(x_1 + C*(x_1 - C)**C)**C",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-9.4006, grad_fn=<SumBackward0>)"
+    },
+    {
+      "expression": "cos(exp(C*x_1 + C))",
+      "r2": -1.0,
+      "is_valid": true,
+      "error_type": null,
+      "error_message": null,
+      "log_prob": "tensor(-15.6020, grad_fn=<SumBackward0>)"
+    }
+  ]
+}

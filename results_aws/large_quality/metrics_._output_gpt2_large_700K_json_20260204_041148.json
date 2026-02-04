@@ -1,0 +1,22 @@
+{
+  "model_path": "./output/gpt2_large_700K_json",
+  "dataset": "augustocsc/sintetico_natural/700K",
+  "data_column": "i_prompt_n",
+  "is_prefix": false,
+  "num_samples": 500,
+  "num_generations": 500,
+  "temperature": 0.7,
+  "top_p": 0.9,
+  "valid_rate": 0.22,
+  "parseable_rate": 0.22,
+  "uses_allowed_vars_rate": 1.0,
+  "uses_allowed_ops_rate": 1.0,
+  "constraints_met_rate": 1.0,
+  "unique_expressions": 110,
+  "diversity_rate": 0.22,
+  "avg_expression_length": 32.18181818181818,
+  "top_errors": {
+    "Failed to parse expression: Sympify of expression ": 390
+  },
+  "timestamp": "2026-02-04T04:11:48.912512"
+}

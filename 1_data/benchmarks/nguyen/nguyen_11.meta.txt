@@ -1,0 +1,6 @@
+name: nguyen_11
+equation: x**y
+latex: x^y
+n_vars: 2
+range: (0, 1)
+n_samples: 100

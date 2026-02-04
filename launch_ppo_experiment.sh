@@ -35,7 +35,7 @@ fi
 # Configuration
 REGION="us-east-1"
 INSTANCE_TYPE="${INSTANCE_TYPE:-g5.xlarge}"
-KEY_NAME="seriguela-key"
+KEY_NAME="chave-gpu"
 SECURITY_GROUP="sg-0deaa73e23482e3f6"
 INSTANCE_NAME="seriguela-ppo-experiment"
 
@@ -56,7 +56,7 @@ echo "AMI: $AMI_ID"
 echo "=========================================="
 
 # Check if key exists
-if [ ! -f "aws/keys/seriguela-key.pem" ] && [ ! -f "$HOME/.ssh/seriguela-key.pem" ]; then
+if [ ! -f "aws/keys/chave-gpu.pem" ] && [ ! -f "$HOME/.ssh/chave-gpu.pem" ]; then
     echo "WARNING: SSH key not found locally."
     echo "Make sure you have the key to connect to the instance."
 fi
@@ -134,16 +134,16 @@ echo "Public IP: $PUBLIC_IP"
 echo "=========================================="
 echo ""
 echo "Connect with:"
-echo "  ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP"
+echo "  ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP"
 echo ""
 echo "Check setup progress:"
-echo "  ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'tail -50 /var/log/user-data.log'"
+echo "  ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'tail -50 /var/log/user-data.log'"
 echo ""
 echo "Check experiment progress:"
-echo "  ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'tail -50 /home/ubuntu/ppo_experiment.log'"
+echo "  ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'tail -50 /home/ubuntu/ppo_experiment.log'"
 echo ""
 echo "Check if complete:"
-echo "  ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'ls -la /home/ubuntu/.ppo_experiment_complete'"
+echo "  ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'ls -la /home/ubuntu/.ppo_experiment_complete'"
 echo ""
 echo "Stop instance when done:"
 echo "  aws ec2 stop-instances --instance-ids $INSTANCE_ID"
@@ -168,24 +168,24 @@ cat > "PPO_INSTANCE_INFO.md" << EOF
 
 \`\`\`bash
 # Connect
-ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP
+ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP
 
 # Check setup log
-ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'tail -100 /var/log/user-data.log'
+ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'tail -100 /var/log/user-data.log'
 
 # Check experiment log
-ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'tail -100 /home/ubuntu/ppo_experiment.log'
+ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'tail -100 /home/ubuntu/ppo_experiment.log'
 
 # Check if complete
-ssh -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP 'ls -la /home/ubuntu/.ppo_experiment_complete'
+ssh -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP 'ls -la /home/ubuntu/.ppo_experiment_complete'
 \`\`\`
 
 ## Download Results
 
 \`\`\`bash
 # After experiment completes
-scp -i aws/keys/seriguela-key.pem -r ubuntu@$PUBLIC_IP:/home/ubuntu/seriguela/output/ppo_experiments ./results/
-scp -i aws/keys/seriguela-key.pem ubuntu@$PUBLIC_IP:/home/ubuntu/*.log ./logs/
+scp -i aws/keys/chave-gpu.pem -r ubuntu@$PUBLIC_IP:/home/ubuntu/seriguela/output/ppo_experiments ./results/
+scp -i aws/keys/chave-gpu.pem ubuntu@$PUBLIC_IP:/home/ubuntu/*.log ./logs/
 \`\`\`
 
 ## Stop Instance

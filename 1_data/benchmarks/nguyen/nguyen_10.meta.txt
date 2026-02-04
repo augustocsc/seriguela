@@ -1,0 +1,6 @@
+name: nguyen_10
+equation: 2*sin(x)*cos(y)
+latex: 2 \sin(x) \cos(y)
+n_vars: 2
+range: (-1, 1)
+n_samples: 100
