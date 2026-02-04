@@ -1,0 +1,7 @@
+{
+  "num_samples": 500,
+  "valid_rate": 1.0,
+  "parseable_rate": 1.0,
+  "unique_expressions": 493,
+  "diversity_rate": 0.986
+}

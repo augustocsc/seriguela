@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Seriguela** is a fine-tuning project that trains GPT-2 models to generate valid mathematical expressions using LoRA (parameter-efficient fine-tuning). The model learns to generate syntactically valid symbolic expressions with proper boundary detection.
+**Seriguela** is an **academic research project** focused on training language models for symbolic regression through fine-tuning and reinforcement learning. The project trains GPT-2 models to generate valid mathematical expressions using LoRA (parameter-efficient fine-tuning) and explores RL algorithms (PPO, GRPO, REINFORCE) for optimizing expression quality.
+
+**Research Context**: This is a graduate-level research project exploring the application of large language models to symbolic regression problems, with focus on:
+- Parameter-efficient fine-tuning techniques (LoRA)
+- Reinforcement learning for expression optimization
+- Model scaling effects on compositional complexity
+- Benchmark evaluation (Nguyen benchmarks)
 
 **Current Status:** The JSON structured format (EXP-A) is the recommended approach, achieving 80% valid expressions vs 0.5% with EOS token approach. See `EXPERIMENT_RESULTS.md` for details.
 
@@ -292,7 +298,10 @@ aws ec2 authorize-security-group-ingress \
 ### Configuration
 
 - `configs/training_*.json` - Training hyperparameters for different scales
+- `configs/wandb_config.py` - Wandb naming standards and utilities
 - `aws/config.json` - AWS instance configurations
+- `CREDENTIALS_SETUP.md` - Guide for API tokens and SSH keys setup
+- `WANDB_NAMING.md` - Wandb experiment naming conventions
 - `.gitignore` - Excludes `*.pem`, `*.key`, `aws/.env`, `output/*`, `data/*`
 
 ## Dependencies
@@ -355,11 +364,12 @@ Add converter in `scripts/data/data_processing.py` for custom notation or expres
 
 1. **Always validate data**: Ensure `<|endofex|>` markers exist before training
 2. **Use config files**: Store hyperparameters in `configs/` for reproducibility
-3. **Track experiments**: Enable W&B logging with `--wandb_project`
-4. **Test locally first**: Run small experiments before AWS deployment
-5. **Monitor GPU usage**: Check `nvidia-smi` and training logs for memory issues
-6. **Stop AWS instances**: Always stop instances when not in use to avoid charges
-7. **Version control**: Commit config files but never commit model weights or keys
+3. **Track experiments**: Enable W&B logging with standardized naming (see `WANDB_NAMING.md`)
+4. **Use standard Wandb names**: Import from `configs/wandb_config.py` for consistent naming
+5. **Test locally first**: Run small experiments before AWS deployment
+6. **Monitor GPU usage**: Check `nvidia-smi` and training logs for memory issues
+7. **Stop AWS instances**: Always stop instances when not in use to avoid charges
+8. **Version control**: Commit config files but never commit model weights or keys
 
 ## Quick Debugging
 
@@ -377,9 +387,51 @@ python -c "from classes.expression import Expression; expr = Expression.parse_in
 python scripts/generate.py --model_path ./output/exp_a_json --num_generations 1 --validate
 
 # Monitor training on AWS
-ssh -i aws/keys/seriguela-key.pem ubuntu@<ip>
+ssh -i ~/chave-gpu.pem ubuntu@<ip>
 tail -f ~/training_exp_a.log
 ```
+
+## Wandb Naming Standards
+
+**Complete guide**: See `WANDB_NAMING.md` for detailed naming conventions.
+
+### Standard Format
+
+All Wandb runs follow the pattern: `seriguela-{type}-{model}-{dataset}-{timestamp}`
+
+### Quick Usage
+
+```python
+from configs.wandb_config import generate_run_name, get_wandb_project_name
+
+# Generate standardized run name
+run_name = generate_run_name("ppo", "medium", "nguyen5")
+# → seriguela-ppo-medium-nguyen5-20260203-143022
+
+# Initialize wandb
+wandb.init(
+    project=get_wandb_project_name(),  # → "seriguela"
+    name=run_name
+)
+```
+
+### Common Examples
+
+```python
+# Supervised training
+generate_run_name("supervised", "base", "700K")
+# → seriguela-supervised-base-700k-20260203-143022
+
+# PPO reinforcement learning
+generate_run_name("ppo", "medium", "nguyen5")
+# → seriguela-ppo-medium-nguyen5-20260203-143022
+
+# GRPO with extra info
+generate_run_name("grpo", "large", "nguyen7", "lr5e5")
+# → seriguela-grpo-large-nguyen7-lr5e5-20260203-143022
+```
+
+**Project name**: Always use `"seriguela"` for production experiments.
 
 ---
 
@@ -607,16 +659,24 @@ Metrics compared:
 
 **Documentation**:
 - `TRAIN_MEDIUM_AWS.md` - Quick guide for AWS training
+- `WANDB_NAMING.md` - Wandb experiment naming standards
+- `CREDENTIALS_SETUP.md` - API keys and SSH setup guide
 
 ### Credentials Location
 
-API keys stored in: `~/.tokens.txt` (gitignored)
+**Complete setup guide**: See `CREDENTIALS_SETUP.md` for detailed configuration.
+
+**API Tokens**: `C:\Users\madeinweb\.tokens.txt` (gitignored)
 ```
 huggingface = hf_...
 wandb = wandb_v1_...
 ```
 
-Scripts automatically read from this file when available.
+**SSH Key (AWS)**: `C:\Users\madeinweb\chave-gpu.pem`
+- Used for all AWS EC2 instance access
+- Usage: `ssh -i ~/chave-gpu.pem ubuntu@<IP>`
+
+Scripts automatically read tokens from `~/.tokens.txt` when available.
 
 ### Next Steps
 
@@ -625,3 +685,205 @@ Scripts automatically read from this file when available.
 3. **Test larger models with RL**: REINFORCE/GRPO on Nguyen-5
 4. **Expected result**: Medium/Large should generate complex expressions with proper nesting
 5. **If successful**: Deploy to production, create HuggingFace model cards
+
+---
+
+## Model Scaling Study (Feb 2025)
+
+### Overview
+
+Comprehensive experiment training GPT-2 Base (124M), Medium (355M), and Large (774M) on 700K JSON dataset to investigate the impact of model size on symbolic regression capability.
+
+**Status**: ⏳ In Progress
+
+**Complete documentation**: See `EXPERIMENT_MODEL_SCALING.md` for full research report.
+
+### Research Question
+
+**Do larger models generate more complex, valid, and diverse mathematical expressions for symbolic regression?**
+
+### Hypotheses
+
+1. **H1 (Validity)**: Valid expression rate increases with model size (80% → 90%)
+2. **H2 (Complexity)**: Expression depth increases (1.4 → 2.5), power operations increase (16% → 50%+)
+3. **H3 (Performance)**: R² scores improve on complex benchmarks (Nguyen-5: -1.0 → >0.0)
+4. **H4 (Diversity)**: Larger models generate more unique expressions
+5. **H5 (RL Interaction)**: RL algorithms benefit more from larger models
+
+### Models Trained
+
+| Model | Parameters | Trainable (LoRA) | Instance | Batch Size | Training Time | Cost |
+|-------|-----------|------------------|----------|-----------|---------------|------|
+| Base | 124M | 294K | g5.xlarge | 8 | ~2-3h | ~$2-3 |
+| Medium | 355M | 294K | g5.xlarge | 4 | ~3-4h | ~$3-4 |
+| Large | 774M | 294K | g5.2xlarge | 2 | ~4-5h | ~$5-6 |
+
+**All hyperparameters identical** except batch size (to isolate model size effect).
+
+### Training Scripts
+
+**Parallel training** (all 3 models simultaneously):
+```bash
+# Launch all models in parallel
+bash launch_all_models.sh
+```
+
+**Individual training** (if needed):
+```bash
+# Base (124M)
+bash scripts/aws/launch_base_training.sh --wandb-key KEY --hf-token TOKEN
+
+# Medium (355M)
+bash scripts/aws/launch_medium_training.sh --wandb-key KEY --hf-token TOKEN
+
+# Large (774M)
+bash scripts/aws/launch_large_training.sh --wandb-key KEY --hf-token TOKEN
+```
+
+**Critical fix applied**: Removed `cloud-init status --wait` deadlock from all launch scripts.
+
+### Evaluation Pipeline
+
+**Complete Nguyen suite evaluation** (144 experiments):
+```bash
+# Run full suite: 3 models × 12 benchmarks × 4 algorithms
+bash scripts/run_nguyen_suite.sh
+
+# Aggregate results and generate report
+python scripts/aggregate_nguyen_results.py --input_dir nguyen_suite_results
+```
+
+**Algorithms evaluated**:
+1. **Supervised**: Direct generation (no RL)
+2. **REINFORCE**: Policy gradient with EMA baseline
+3. **GRPO**: Group Relative Policy Optimization
+4. **PPO**: Proximal Policy Optimization
+
+### Metrics Tracked
+
+**Quality Metrics**:
+- Valid expression rate (%)
+- Constraint adherence (uses only allowed vars/ops)
+- Diversity rate (unique expressions)
+
+**Complexity Metrics**:
+- Power operations usage (x², x**n)
+- Nested trigonometric functions (sin(cos(x)))
+- Average expression depth
+- Operator distribution
+
+**Performance Metrics**:
+- Best R² achieved per benchmark
+- Mean R² (valid expressions only)
+- Convergence rate during RL
+
+### Key Results
+
+*To be filled after evaluation completes*
+
+| Metric | Base (124M) | Medium (355M) | Large (774M) |
+|--------|-------------|---------------|--------------|
+| Valid Rate (%) | TBD | TBD | TBD |
+| Power Ops (%) | TBD | TBD | TBD |
+| Avg Depth | TBD | TBD | TBD |
+| Nested Trig (%) | TBD | TBD | TBD |
+| Best R² (Nguyen-5) | TBD | TBD | TBD |
+
+**Baseline** (from previous work):
+- Base model: 39.4% valid on Nguyen-5, R²=-1.0
+- Power operations: 15.9%
+- Nested trig: 0%
+- Average depth: 1.40
+
+### Files Created
+
+**Training scripts**:
+- `scripts/aws/launch_base_training.sh` - Launch Base training
+- `scripts/aws/launch_medium_training.sh` - Launch Medium training (fixed)
+- `scripts/aws/launch_large_training.sh` - Launch Large training (fixed)
+- `launch_all_models.sh` - Parallel launch all 3 models
+
+**Evaluation scripts**:
+- `scripts/run_nguyen_suite.sh` - Run complete Nguyen 1-12 suite
+- `scripts/aggregate_nguyen_results.py` - Aggregate and visualize results
+
+**Documentation**:
+- `EXPERIMENT_MODEL_SCALING.md` - Full research report
+- `TRAINING_LOG_MODEL_SCALING_2025.md` - Training execution log
+- `model_cards/gpt2_base_700K_json_card.md` - Base model card
+- `model_cards/gpt2_medium_700K_json_card.md` - Medium model card
+- `model_cards/gpt2_large_700K_json_card.md` - Large model card
+
+### Model Locations
+
+**Local paths** (after training):
+```
+output/
+├── gpt2_base_700K_json/       # Base (124M)
+├── gpt2_medium_700K_json/     # Medium (355M)
+└── gpt2_large_700K_json/      # Large (774M)
+```
+
+**HuggingFace** (after publication):
+- Base: TBD (to be uploaded)
+- Medium: TBD (to be uploaded)
+- Large: TBD (to be uploaded)
+
+### Reproduction
+
+**Quick start**:
+```bash
+# 1. Train all models (requires AWS, ~10h total parallel)
+bash launch_all_models.sh
+
+# 2. Stop instances immediately after completion
+aws ec2 stop-instances --instance-ids $(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=seriguela-*-training" \
+  "Name=instance-state-name,Values=running" \
+  --query "Reservations[*].Instances[*].InstanceId" --output text)
+
+# 3. Download models
+scp -i ~/.ssh/KEY.pem -r ubuntu@BASE_IP:~/seriguela/output/gpt2_base_700K_json ./output/
+scp -i ~/.ssh/KEY.pem -r ubuntu@MEDIUM_IP:~/seriguela/output/gpt2_medium_700K_json ./output/
+scp -i ~/.ssh/KEY.pem -r ubuntu@LARGE_IP:~/seriguela/output/gpt2_large_700K_json ./output/
+
+# 4. Evaluate (can run locally or on single AWS instance)
+bash scripts/run_nguyen_suite.sh
+
+# 5. Analyze results
+python scripts/aggregate_nguyen_results.py --input_dir nguyen_suite_results
+```
+
+**Total cost**: ~$10-13 USD for training + optional $8-12 for full suite evaluation (if run on AWS)
+
+### Expected Findings
+
+**If hypotheses confirmed**:
+- Larger models produce significantly more complex expressions
+- Depth and power operation usage scale with model size
+- R² scores improve on complex benchmarks
+- Optimal model choice depends on task complexity and budget
+
+**If hypotheses rejected**:
+- LoRA may be the limiting factor (fixed rank=8 for all sizes)
+- Dataset (700K) may not be large enough to show scaling benefits
+- Alternative architectures may be needed
+
+### Implications
+
+**For model selection**:
+- **Use Base (124M)** if: Fast inference, simple benchmarks (Nguyen 1-2), limited budget
+- **Use Medium (355M)** if: Balanced performance/cost, moderate complexity
+- **Use Large (774M)** if: Maximum quality needed, complex benchmarks (Nguyen 5+), budget available
+
+**For future research**:
+- Test LoRA rank scaling with model size (r=8/16/32)
+- Train on larger datasets (1M, 5M expressions)
+- Test other architectures (GPT-Neo, LLaMA)
+
+### References
+
+- **Training log**: `TRAINING_LOG_MODEL_SCALING_2025.md`
+- **Research report**: `EXPERIMENT_MODEL_SCALING.md`
+- **Model cards**: `model_cards/gpt2_*_700K_json_card.md`
+- **Previous RL work**: See "Reinforcement Learning for Expression Generation" section above

@@ -1,0 +1,792 @@
+{
+  "expressions": [
+    {
+      "index": 0,
+      "expression": "sin(C*x_1*log(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 1,
+      "expression": "C*(x_1 - C)*log(sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 2,
+      "expression": "sin(x_1*(x_1 + C))",
+      "valid": true,
+      "r2": -39.47471340150758,
+      "error": null
+    },
+    {
+      "index": 3,
+      "expression": "C*(C*x_1 - C*x_1 + log(x_1))/(x_1 + C)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 4,
+      "expression": "C*cos(C*x_1 + exp(C*x_1))",
+      "valid": true,
+      "r2": -16.8343156804298,
+      "error": null
+    },
+    {
+      "index": 5,
+      "expression": "C*cos(sqrt(sin(C*x_1 - C)))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 6,
+      "expression": "sin(cos(C*x_1) + cos(C*x_1))",
+      "valid": true,
+      "r2": -78.63421433777575,
+      "error": null
+    },
+    {
+      "index": 7,
+      "expression": "C*x_1 + cos(x_1 + x_2)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 8,
+      "expression": "sqrt(cos(x_1) - C)/(x_1 + C)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 9,
+      "expression": "C*sin(C*x_1 - C*exp(x_1))",
+      "valid": true,
+      "r2": 0.5670834369531821,
+      "error": null
+    },
+    {
+      "index": 10,
+      "expression": "sqrt(x_1*(x_1 - C)*sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 11,
+      "expression": "C*cos(C*sqrt(x_1) + C)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 12,
+      "expression": "cos(x_1*exp(x_1))",
+      "valid": true,
+      "r2": -94.50871295563647,
+      "error": null
+    },
+    {
+      "index": 13,
+      "expression": "sin(C*exp(sin(x_1 + C)))",
+      "valid": true,
+      "r2": 0.04334854434421498,
+      "error": null
+    },
+    {
+      "index": 14,
+      "expression": "C*x_1 + C*(C*x_1 + C)**C",
+      "valid": true,
+      "r2": 0.011534871365684651,
+      "error": null
+    },
+    {
+      "index": 15,
+      "expression": "C*x_1 + cos(x_1) - C",
+      "valid": true,
+      "r2": -2.3371806256143888,
+      "error": null
+    },
+    {
+      "index": 16,
+      "expression": "sin(sqrt(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 17,
+      "expression": "log(cos(C*x_1))",
+      "valid": true,
+      "r2": -14.091381980121795,
+      "error": null
+    },
+    {
+      "index": 18,
+      "expression": "x_1 + sin(sin(x_1))",
+      "valid": true,
+      "r2": -62.36010975426275,
+      "error": null
+    },
+    {
+      "index": 19,
+      "expression": "x_1 - cos(x_1) - C",
+      "valid": true,
+      "r2": -12.46816118585269,
+      "error": null
+    },
+    {
+      "index": 20,
+      "expression": "sqrt(cos(x_1)/x_1)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 21,
+      "expression": "C*x_1 + C*cos(cos(x_1))",
+      "valid": true,
+      "r2": -1.7646570314737646,
+      "error": null
+    },
+    {
+      "index": 22,
+      "expression": "C*cos(C*sin(C*x_1))",
+      "valid": true,
+      "r2": 0.9992877748509154,
+      "error": null
+    },
+    {
+      "index": 23,
+      "expression": "log(sin(sqrt(x_1 - C)))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 24,
+      "expression": "x_1*log(x_1 - sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 25,
+      "expression": "sin(sqrt(x_1)/sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 26,
+      "expression": "log(cos(cos(x_1 + C)))",
+      "valid": true,
+      "r2": -3.5549604109653403,
+      "error": null
+    },
+    {
+      "index": 27,
+      "expression": "x_1*cos(sin(x_1))",
+      "valid": true,
+      "r2": -28.113103319507434,
+      "error": null
+    },
+    {
+      "index": 28,
+      "expression": "C*x_1 + C*sin(x_1) + C",
+      "valid": true,
+      "r2": 0.013405828665652653,
+      "error": null
+    },
+    {
+      "index": 29,
+      "expression": "cos(x_1 + exp(sin(x_1)))",
+      "valid": true,
+      "r2": -64.7497225765322,
+      "error": null
+    },
+    {
+      "index": 30,
+      "expression": "x_1*cos(cos(x_1) - C)",
+      "valid": true,
+      "r2": -22.54036438735345,
+      "error": null
+    },
+    {
+      "index": 31,
+      "expression": "C*cos(x_1)/log(x_1)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 32,
+      "expression": "sin(C*x_1)/(C*sin(x_1) + C)",
+      "valid": true,
+      "r2": -20.219896658767997,
+      "error": null
+    },
+    {
+      "index": 33,
+      "expression": "sin(sqrt(x_1 + C)) - C",
+      "valid": true,
+      "r2": -12.708782683023697,
+      "error": null
+    },
+    {
+      "index": 34,
+      "expression": "C*x_1*log(C*x_1 + cos(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 35,
+      "expression": "x_1*x_1 + log(sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 36,
+      "expression": "x_1 + cos(x_1 - C) - C",
+      "valid": true,
+      "r2": 0.06965673901915359,
+      "error": null
+    },
+    {
+      "index": 37,
+      "expression": "C*exp(cos(x_1))",
+      "valid": true,
+      "r2": 0.8434275680434764,
+      "error": null
+    },
+    {
+      "index": 38,
+      "expression": "C*x_1*cos(x_1 - C)",
+      "valid": true,
+      "r2": -12.711588366701514,
+      "error": null
+    },
+    {
+      "index": 39,
+      "expression": "cos(C*x_1)/sin(x_1)",
+      "valid": true,
+      "r2": -7970.385452051939,
+      "error": null
+    },
+    {
+      "index": 40,
+      "expression": "log(x_1 + C*sin(C*x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 41,
+      "expression": "C*cos(x_1 - C)/x_1",
+      "valid": true,
+      "r2": 0.40829676047106367,
+      "error": null
+    },
+    {
+      "index": 42,
+      "expression": "x_1 + cos(x_1) - C",
+      "valid": true,
+      "r2": -17.09489608266365,
+      "error": null
+    },
+    {
+      "index": 43,
+      "expression": "sqrt(log(sin(x_1) + C) + C)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 44,
+      "expression": "C*x_1 + C*exp(C*x_1)/x_1",
+      "valid": true,
+      "r2": -20.61732122622569,
+      "error": null
+    },
+    {
+      "index": 45,
+      "expression": "sin(x_1 + log(sin(x_1 + C))))",
+      "valid": false,
+      "r2": null,
+      "error": "Parse error: Failed to parse expression: Sympify of expression 'could not parse 'sin(x_1 + log(sin(x_1 + C))))'' "
+    },
+    {
+      "index": 46,
+      "expression": "sin(x_1) + cos(x_1)",
+      "valid": true,
+      "r2": -104.42391935139386,
+      "error": null
+    },
+    {
+      "index": 47,
+      "expression": "x_1 + exp(x_1)",
+      "valid": true,
+      "r2": -183.71282985957876,
+      "error": null
+    },
+    {
+      "index": 48,
+      "expression": "sqrt(x_1 - cos(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 49,
+      "expression": "sqrt(cos(x_1))",
+      "valid": true,
+      "r2": -106.91499846320613,
+      "error": null
+    },
+    {
+      "index": 50,
+      "expression": "x_1 + log(cos(x_1))",
+      "valid": true,
+      "r2": -27.72769367838703,
+      "error": null
+    },
+    {
+      "index": 51,
+      "expression": "x_1*sin(C*x_1*(x_1 + C) - C)",
+      "valid": true,
+      "r2": -23.48266511501094,
+      "error": null
+    },
+    {
+      "index": 52,
+      "expression": "x_1 - cos(exp(x_1))",
+      "valid": true,
+      "r2": -52.285562860236354,
+      "error": null
+    },
+    {
+      "index": 53,
+      "expression": "C*x_1 + exp(sin(x_1 - C))",
+      "valid": true,
+      "r2": -53.671009369354834,
+      "error": null
+    },
+    {
+      "index": 54,
+      "expression": "sin(x_1 - C)/log(sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 55,
+      "expression": "log(sin(x_1 - cos(x_1 + C)))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 56,
+      "expression": "cos(x_1 - C*x_1 + cos(C*x_1))",
+      "valid": true,
+      "r2": -61.20979101964921,
+      "error": null
+    },
+    {
+      "index": 57,
+      "expression": "C*cos(sin(x_1))",
+      "valid": true,
+      "r2": 0.8074674164569381,
+      "error": null
+    },
+    {
+      "index": 58,
+      "expression": "sin(C*x_1 + cos(x_1) - C)",
+      "valid": true,
+      "r2": -0.4210673974666088,
+      "error": null
+    },
+    {
+      "index": 59,
+      "expression": "log(x_1 + sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 60,
+      "expression": "C*sin(sin(x_1 + C))",
+      "valid": true,
+      "r2": 0.8038845232970716,
+      "error": null
+    },
+    {
+      "index": 61,
+      "expression": "C*sqrt(x_1 - C) + cos(x_1)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 62,
+      "expression": "log(sin(C*x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 63,
+      "expression": "cos(x_1) - sin(x_1)",
+      "valid": true,
+      "r2": -114.73262781563518,
+      "error": null
+    },
+    {
+      "index": 64,
+      "expression": "cos(C*(C*x_1 - C)**C*exp(C*x_1))",
+      "valid": true,
+      "r2": -29.354478962847395,
+      "error": null
+    },
+    {
+      "index": 65,
+      "expression": "C*sqrt(sin(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 66,
+      "expression": "C*x_1 + C*x_1 - C",
+      "valid": true,
+      "r2": 0.01153487523266572,
+      "error": null
+    },
+    {
+      "index": 67,
+      "expression": "sin(x_1*(x_1 + C)*log(x_1 + C))",
+      "valid": true,
+      "r2": -25.35557308833287,
+      "error": null
+    },
+    {
+      "index": 68,
+      "expression": "sqrt(x_1)/(x_1 + cos(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 69,
+      "expression": "cos(sqrt(x_1 - C) - x_1)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 70,
+      "expression": "x_1 - C*exp(C*x_1) - C",
+      "valid": true,
+      "r2": -1.019941062177848,
+      "error": null
+    },
+    {
+      "index": 71,
+      "expression": "sin(cos(x_1))",
+      "valid": true,
+      "r2": -86.0796870707704,
+      "error": null
+    },
+    {
+      "index": 72,
+      "expression": "cos(sin(x_1)) - C",
+      "valid": true,
+      "r2": -1.6967890941271642,
+      "error": null
+    },
+    {
+      "index": 73,
+      "expression": "C*exp(sin(cos(x_1 + C)))",
+      "valid": true,
+      "r2": -5.193777184259356,
+      "error": null
+    },
+    {
+      "index": 74,
+      "expression": "log(x_1*x_2 + cos(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 75,
+      "expression": "C*sqrt(x_1 - C*exp(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 76,
+      "expression": "cos(log(sin(x_1 + C)))",
+      "valid": true,
+      "r2": -92.8554499282256,
+      "error": null
+    },
+    {
+      "index": 77,
+      "expression": "log(x_1*cos(x_1 - C))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 78,
+      "expression": "x_1*exp(cos(C*x_1 - C))",
+      "valid": true,
+      "r2": -23.22112860897197,
+      "error": null
+    },
+    {
+      "index": 79,
+      "expression": "log(cos(x_1 + exp(x_1)))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 80,
+      "expression": "C*x_1 - x_2 + log(x_1)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 81,
+      "expression": "cos(x_1*sin(log(x_1)) + C)",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 82,
+      "expression": "sin(cos(x_1 - C) + C)",
+      "valid": true,
+      "r2": 0.5065326661489363,
+      "error": null
+    },
+    {
+      "index": 83,
+      "expression": "C*x_1 + exp(sin(cos(x_1)))",
+      "valid": true,
+      "r2": -309.3847456003572,
+      "error": null
+    },
+    {
+      "index": 84,
+      "expression": "cos(C*x_1 + cos(C*x_1))",
+      "valid": true,
+      "r2": -51.90030312470561,
+      "error": null
+    },
+    {
+      "index": 85,
+      "expression": "sin(sqrt(cos(x_1)))",
+      "valid": true,
+      "r2": -91.51023810793072,
+      "error": null
+    },
+    {
+      "index": 86,
+      "expression": "C*exp(x_1) + C*sin(x_1)",
+      "valid": true,
+      "r2": -1.5543315084231444,
+      "error": null
+    },
+    {
+      "index": 87,
+      "expression": "cos(sin(C*x_1))",
+      "valid": true,
+      "r2": -84.79309574667052,
+      "error": null
+    },
+    {
+      "index": 88,
+      "expression": "C*sin(x_1) + cos(x_1)",
+      "valid": true,
+      "r2": -98.01421622501121,
+      "error": null
+    },
+    {
+      "index": 89,
+      "expression": "C*x_1 + cos(C*x_1 + C) - C",
+      "valid": true,
+      "r2": 0.7259689703927897,
+      "error": null
+    },
+    {
+      "index": 90,
+      "expression": "x_1*cos(cos(x_1 - C))",
+      "valid": true,
+      "r2": -23.91703347349787,
+      "error": null
+    },
+    {
+      "index": 91,
+      "expression": "C*exp(sin(x_1) - C)",
+      "valid": true,
+      "r2": -5.155897446540824,
+      "error": null
+    },
+    {
+      "index": 92,
+      "expression": "sqrt(sin(x_1 - x_1 + C))",
+      "valid": true,
+      "r2": -28.403162625911246,
+      "error": null
+    },
+    {
+      "index": 93,
+      "expression": "sin(cos(x_1 + C*x_1))",
+      "valid": true,
+      "r2": -42.738192215083814,
+      "error": null
+    },
+    {
+      "index": 94,
+      "expression": "C*x_1*(C*x_1 + C) - cos(x_1 + C)",
+      "valid": true,
+      "r2": 0.9448259018311311,
+      "error": null
+    },
+    {
+      "index": 95,
+      "expression": "log(sin(C*x_1)) + C",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 96,
+      "expression": "log(C*x_1 + C*exp(x_1))",
+      "valid": false,
+      "r2": null,
+      "error": "Invalid on dataset"
+    },
+    {
+      "index": 97,
+      "expression": "C*(x_1 + C*sin(C*x_1 - C) + C)**C",
+      "valid": true,
+      "r2": 0.9605045034112892,
+      "error": null
+    },
+    {
+      "index": 98,
+      "expression": "C*x_1 + sin(sin(x_1 - C))",
+      "valid": true,
+      "r2": 0.7486923009607166,
+      "error": null
+    },
+    {
+      "index": 99,
+      "expression": "C*x_1*(x_1 + C)*(C*x_1 - C)",
+      "valid": true,
+      "r2": -13.154036739470165,
+      "error": null
+    }
+  ],
+  "valid_count": 64,
+  "r2_scores": [
+    -39.47471340150758,
+    -16.8343156804298,
+    -78.63421433777575,
+    0.5670834369531821,
+    -94.50871295563647,
+    0.04334854434421498,
+    0.011534871365684651,
+    -2.3371806256143888,
+    -14.091381980121795,
+    -62.36010975426275,
+    -12.46816118585269,
+    -1.7646570314737646,
+    0.9992877748509154,
+    -3.5549604109653403,
+    -28.113103319507434,
+    0.013405828665652653,
+    -64.7497225765322,
+    -22.54036438735345,
+    -20.219896658767997,
+    -12.708782683023697,
+    0.06965673901915359,
+    0.8434275680434764,
+    -12.711588366701514,
+    -7970.385452051939,
+    0.40829676047106367,
+    -17.09489608266365,
+    -20.61732122622569,
+    -104.42391935139386,
+    -183.71282985957876,
+    -106.91499846320613,
+    -27.72769367838703,
+    -23.48266511501094,
+    -52.285562860236354,
+    -53.671009369354834,
+    -61.20979101964921,
+    0.8074674164569381,
+    -0.4210673974666088,
+    0.8038845232970716,
+    -114.73262781563518,
+    -29.354478962847395,
+    0.01153487523266572,
+    -25.35557308833287,
+    -1.019941062177848,
+    -86.0796870707704,
+    -1.6967890941271642,
+    -5.193777184259356,
+    -92.8554499282256,
+    -23.22112860897197,
+    0.5065326661489363,
+    -309.3847456003572,
+    -51.90030312470561,
+    -91.51023810793072,
+    -1.5543315084231444,
+    -84.79309574667052,
+    -98.01421622501121,
+    0.7259689703927897,
+    -23.91703347349787,
+    -5.155897446540824,
+    -28.403162625911246,
+    -42.738192215083814,
+    0.9448259018311311,
+    0.9605045034112892,
+    0.7486923009607166,
+    -13.154036739470165
+  ],
+  "best_r2": 0.9992877748509154,
+  "best_expression": "C*cos(C*sin(C*x_1))",
+  "summary": {
+    "num_samples": 100,
+    "valid_count": 64,
+    "valid_rate": 0.64,
+    "num_with_r2": 64,
+    "best_r2": 0.9992877748509154,
+    "mean_r2": -159.85294257465853,
+    "median_r2": -18.657396370715823,
+    "std_r2": 985.4000630309285,
+    "best_expression": "C*cos(C*sin(C*x_1))"
+  },
+  "metadata": {
+    "model_path": "./output/gpt2_medium_700K_json",
+    "base_model": "gpt2-medium",
+    "benchmark_csv": "./data/benchmarks/nguyen/nguyen_5.csv",
+    "true_formula": null,
+    "num_variables": 1,
+    "num_data_points": 100
+  }
+}
