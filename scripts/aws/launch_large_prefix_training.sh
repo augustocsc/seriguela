@@ -23,7 +23,7 @@ fi
 
 # Instance configuration - LARGE MODEL USES g5.2xlarge!
 INSTANCE_TYPE="g5.2xlarge"
-IMAGE_ID="ami-0c7217cdde317cfec"  # Ubuntu Deep Learning AMI
+IMAGE_ID="ami-01dfe92df9055a1c6"  # Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.9 (Ubuntu 24.04)
 KEY_NAME="chave-gpu-nova"
 SECURITY_GROUP="sg-0deaa73e23482e3f6"
 VOLUME_SIZE=120
@@ -47,19 +47,14 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 sleep 5
 
-# Install dependencies
-apt-get update
-apt-get install -y python3-pip git
-
 # Clone repository
 cd /home/ubuntu
 git clone https://github.com/augustocsc/seriguela.git
 cd seriguela
 git checkout experiment/ppo-symbolic-regression
 
-# Install Python dependencies
+# Install Python dependencies (PyTorch already installed in AMI)
 pip3 install -r requirements.txt
-pip3 install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 
 # Setup credentials
 echo "huggingface = ${HF_TOKEN}" > /home/ubuntu/.tokens.txt
