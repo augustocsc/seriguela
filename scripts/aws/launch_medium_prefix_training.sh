@@ -53,8 +53,12 @@ git clone https://github.com/augustocsc/seriguela.git
 cd seriguela
 git checkout experiment/ppo-symbolic-regression
 
-# Install Python dependencies (PyTorch already installed in AMI)
-pip3 install -r requirements.txt
+# Setup Python environment (use PyTorch venv from AMI)
+PYTHON=/opt/pytorch/bin/python3
+PIP=/opt/pytorch/bin/pip3
+
+# Install Python dependencies
+$PIP install -r requirements.txt
 
 # Setup credentials
 echo "huggingface = ${HF_TOKEN}" > /home/ubuntu/.tokens.txt
@@ -64,11 +68,11 @@ chmod 600 /home/ubuntu/.tokens.txt
 # Login to services
 export HF_TOKEN="${HF_TOKEN}"
 export WANDB_API_KEY="${WANDB_KEY}"
-huggingface-cli login --token $HF_TOKEN
-wandb login $WANDB_KEY
+/opt/pytorch/bin/huggingface-cli login --token $HF_TOKEN
+/opt/pytorch/bin/wandb login $WANDB_KEY
 
 # Start training with FIXED script (no double-split, MEDIUM MODEL)
-python3 scripts/train_with_json_fixed.py \
+$PYTHON scripts/train_with_json_fixed.py \
   --model_size gpt2-medium \
   --dataset_repo augustocsc/sintetico_natural_prefix_682k \
   --text_column p_prompt_n_converted \
