@@ -1,0 +1,82 @@
+{
+  "builder_name": "csv",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "sintetico_natural",
+  "dataset_size": 5704135,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/augustocsc/sintetico_natural@fe48ddc600c4674bcff395308dc8d7c32aed6135/mini_test/test_mini_test.csv": {
+      "num_bytes": 560871,
+      "checksum": null
+    },
+    "hf://datasets/augustocsc/sintetico_natural@fe48ddc600c4674bcff395308dc8d7c32aed6135/mini_test/train_mini_test.csv": {
+      "num_bytes": 4378438,
+      "checksum": null
+    },
+    "hf://datasets/augustocsc/sintetico_natural@fe48ddc600c4674bcff395308dc8d7c32aed6135/mini_test/val_mini_test.csv": {
+      "num_bytes": 545160,
+      "checksum": null
+    }
+  },
+  "download_size": 5484469,
+  "features": {
+    "infix_expr_n": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "infix_expr_c": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "expression_objects": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prefix_expr_c": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prefix_expr_n": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "i_prompt_n": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "p_prompt_n": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "skeleton": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "p_prompt_n_converted": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "conversion_success": {
+      "dtype": "bool",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 11188604,
+  "splits": {
+    "test": {
+      "name": "test",
+      "num_bytes": 5704135,
+      "num_examples": 12221,
+      "dataset_name": "sintetico_natural"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
