@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Default values
 INSTANCE_TYPE="g5.2xlarge"  # Larger instance for parallel execution
 AMI_ID="ami-0e86e20dae9224db8"  # Ubuntu 24.04 in us-east-1
-KEY_NAME="chave-gpu"
+KEY_NAME="chave-gpu-nova"
 SECURITY_GROUP="sg-0deaa73e23482e3f6"
 INSTANCE_NAME="seriguela-comprehensive-eval"
 
@@ -90,8 +90,14 @@ echo "Benchmarks: ${BENCHMARKS:-all}"
 echo "Algorithms: $ALGORITHMS"
 echo "Epochs: $EPOCHS"
 
-# Create user data script
-cat > /tmp/userdata_eval.sh << 'EOF'
+# Create user data script (Windows-compatible path)
+TEMP_DIR="${TMPDIR:-/tmp}"
+if [ -d "/c/Users/madeinweb/temp" ]; then
+    TEMP_DIR="/c/Users/madeinweb/temp"
+fi
+mkdir -p "$TEMP_DIR"
+
+cat > "$TEMP_DIR/userdata_eval.sh" << 'EOF'
 #!/bin/bash
 exec > >(tee -a /home/ubuntu/setup.log)
 exec 2>&1
@@ -136,7 +142,7 @@ pip install matplotlib seaborn
 EOF
 
 # Add credentials to user data
-cat >> /tmp/userdata_eval.sh << EOF
+cat >> "$TEMP_DIR/userdata_eval.sh" << EOF
 export HUGGINGFACE_TOKEN="$HF_TOKEN"
 export WANDB_API_KEY="$WANDB_KEY"
 
@@ -176,24 +182,24 @@ EOF
 
 # Add model/benchmark selection if specified
 if [ -n "$MODELS" ]; then
-    cat >> /tmp/userdata_eval.sh << EOF
+    cat >> "$TEMP_DIR/userdata_eval.sh" << EOF
 CMD="\$CMD --models $MODELS"
 EOF
 fi
 
 if [ -n "$BENCHMARKS" ]; then
-    cat >> /tmp/userdata_eval.sh << EOF
+    cat >> "$TEMP_DIR/userdata_eval.sh" << EOF
 CMD="\$CMD --benchmarks $BENCHMARKS"
 EOF
 fi
 
 if [ "$QUICK_TEST" == "true" ]; then
-    cat >> /tmp/userdata_eval.sh << EOF
+    cat >> "$TEMP_DIR/userdata_eval.sh" << EOF
 CMD="\$CMD --quick_test"
 EOF
 fi
 
-cat >> /tmp/userdata_eval.sh << EOF
+cat >> "$TEMP_DIR/userdata_eval.sh" << EOF
 CMD="\$CMD --algorithms $ALGORITHMS"
 
 echo "Running: \$CMD"
@@ -221,14 +227,20 @@ EOF
 # Launch instance
 echo -e "${YELLOW}Launching EC2 instance...${NC}"
 
+# Convert path to Windows format if needed
+USERDATA_PATH="$TEMP_DIR/userdata_eval.sh"
+if [[ "$USERDATA_PATH" == /c/* ]]; then
+    USERDATA_PATH=$(echo "$USERDATA_PATH" | sed 's|^/c/|C:/|')
+fi
+
 INSTANCE_ID=$(aws ec2 run-instances \
     --image-id $AMI_ID \
     --instance-type $INSTANCE_TYPE \
     --key-name $KEY_NAME \
-    --security-groups $SECURITY_GROUP \
-    --user-data file:///tmp/userdata_eval.sh \
+    --security-group-ids $SECURITY_GROUP \
+    --user-data "file://$USERDATA_PATH" \
     --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" \
-    --block-device-mappings DeviceName=/dev/sda1,Ebs={VolumeSize=100,VolumeType=gp3} \
+    --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp3"}}]' \
     --query 'Instances[0].InstanceId' \
     --output text)
 
