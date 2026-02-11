@@ -1,0 +1,99 @@
+% LaTeX table for paper - Nguyen Benchmark Results
+% Insert this into your academic paper
+
+\begin{table*}[t]
+\centering
+\caption{Best R² scores achieved by each model on Nguyen benchmarks using PPO and GRPO algorithms. Bold indicates best result per benchmark. The base model (124M parameters) outperformed the large model (774M parameters) on 9 out of 12 benchmarks.}
+\label{tab:nguyen_results}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Benchmark} & \textbf{Base (124M)} & \textbf{Large (774M)} & \textbf{Medium (355M)} \\
+\midrule
+nguyen\_1  & \textbf{0.9709} & 0.6275 & -0.3676 \\
+nguyen\_2  & \textbf{0.6837} & 0.4110 & -0.6687 \\
+nguyen\_3  & 0.8536 & \textbf{0.9004} & 0.3157 \\
+nguyen\_4  & \textbf{0.5318} & 0.7930 & 0.2227 \\
+nguyen\_5  & -1.0000 & -1.0000 & \textbf{-0.4994} \\
+nguyen\_6  & \textbf{0.8749} & 0.8380 & 0.0035 \\
+nguyen\_7  & \textbf{0.8625} & 0.8236 & -0.0099 \\
+nguyen\_8  & \textbf{0.8109} & 0.5688 & -0.0217 \\
+nguyen\_9  & \textbf{0.7277} & 0.7277 & 0.2517 \\
+nguyen\_10 & 0.9147 & \textbf{0.9332} & 0.6412 \\
+nguyen\_11 & 0.5277 & \textbf{0.6773} & -0.1281 \\
+nguyen\_12 & \textbf{0.8329} & -1.0000 & -1.0000 \\
+\midrule
+\textbf{Average} & \textbf{0.6648} & 0.6584 & -0.0888 \\
+\textbf{Success Rate} & \textbf{87.5\%} & 83.3\% & 70.8\% \\
+\textbf{Benchmarks Won} & \textbf{9/12} & 3/12 & 0/12 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% Algorithm comparison table
+\begin{table}[h]
+\centering
+\caption{Comparison of PPO and GRPO reinforcement learning algorithms across all models and benchmarks.}
+\label{tab:algorithm_comparison}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Metric} & \textbf{PPO} & \textbf{GRPO} \\
+\midrule
+Total Experiments & 36 & 36 \\
+Valid Experiments & 29 & 29 \\
+Average R² (valid) & 0.6123 & 0.6271 \\
+Best R² Achieved & 0.9004 & \textbf{0.9709} \\
+Benchmarks Won & \textbf{9/12} & 6/12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Model statistics table
+\begin{table}[h]
+\centering
+\caption{Detailed statistics for each model across all benchmarks and algorithms.}
+\label{tab:model_statistics}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Model} & \textbf{Exp.} & \textbf{Valid} & \textbf{Avg R²} & \textbf{Best R²} & \textbf{Worst R²} \\
+\midrule
+base\_prefix (124M)   & 24 & 21 & \textbf{0.6648} & \textbf{0.9709} & -0.7059 \\
+large\_prefix (774M)  & 24 & 20 & 0.6584 & 0.9332 & 0.3410 \\
+medium\_prefix (355M) & 24 & 17 & -0.0888 & 0.6412 & -0.6687 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Best expressions table
+\begin{table*}[t]
+\centering
+\caption{Top 10 best expressions discovered across all experiments, showing the expression in prefix notation and the R² score achieved.}
+\label{tab:best_expressions}
+\small
+\begin{tabular}{lllrp{6cm}}
+\toprule
+\textbf{Rank} & \textbf{Benchmark} & \textbf{Model} & \textbf{R²} & \textbf{Expression (prefix notation)} \\
+\midrule
+1  & nguyen\_1  & base\_prefix  & 0.9709 & \texttt{* * -1 C log - * C x\_1 C} \\
+2  & nguyen\_10 & large\_prefix & 0.9332 & \texttt{tan * C x\_1} \\
+3  & nguyen\_10 & base\_prefix  & 0.9147 & \texttt{+ * C x\_1 sin * C x\_1} \\
+4  & nguyen\_3  & large\_prefix & 0.9004 & \texttt{* x\_1 + exp x\_1 C} \\
+5  & nguyen\_6  & base\_prefix  & 0.8749 & \texttt{- C exp * C x\_1} \\
+6  & nguyen\_7  & base\_prefix  & 0.8625 & \texttt{* C exp + x\_1 * -1 C} \\
+7  & nguyen\_3  & base\_prefix  & 0.8536 & \texttt{* x\_1 exp + x\_1 sin x\_1} \\
+8  & nguyen\_6  & large\_prefix & 0.8380 & \texttt{tan * C x\_1} \\
+9  & nguyen\_12 & base\_prefix  & 0.8329 & \texttt{- C sin * C exp * -1 x\_2} \\
+10 & nguyen\_7  & large\_prefix & 0.8236 & \texttt{+ x\_1 sin x\_1} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% Usage note
+\begin{comment}
+Usage in your paper:
+
+\usepackage{booktabs}  % For professional tables
+
+Then reference tables in text:
+Table~\ref{tab:nguyen_results} shows...
+As seen in Table~\ref{tab:algorithm_comparison}...
+\end{comment}

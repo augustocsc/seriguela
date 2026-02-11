@@ -1,0 +1,39 @@
+{
+  "total_experiments": 96,
+  "models": {
+    "base_prefix": {
+      "experiments": 24,
+      "valid_experiments": 0,
+      "avg_r2": null,
+      "best_r2": null
+    },
+    "medium_prefix": {
+      "experiments": 24,
+      "valid_experiments": 0,
+      "avg_r2": null,
+      "best_r2": null
+    },
+    "large_prefix": {
+      "experiments": 24,
+      "valid_experiments": 0,
+      "avg_r2": null,
+      "best_r2": null
+    },
+    "base_infix": {
+      "experiments": 24,
+      "valid_experiments": 0,
+      "avg_r2": null,
+      "best_r2": null
+    }
+  },
+  "algorithms": {
+    "ppo": {
+      "experiments": 48,
+      "avg_r2": null
+    },
+    "grpo": {
+      "experiments": 48,
+      "avg_r2": null
+    }
+  }
+}
