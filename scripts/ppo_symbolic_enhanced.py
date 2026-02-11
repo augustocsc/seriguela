@@ -176,6 +176,13 @@ class EnhancedPPOSymbolic:
             # Prefix format
             if "expr:" in text:
                 text = text.split("expr:")[-1].strip()
+            # Stop at newline or JSON artifacts
+            if "\n" in text:
+                text = text.split("\n")[0].strip()
+            # Remove any trailing JSON artifacts
+            for marker in ['"}"', '"}', '"cons"', '"vars"', '"ops"']:
+                if marker in text:
+                    text = text.split(marker)[0].strip()
             return text.strip()
         else:
             # JSON format
