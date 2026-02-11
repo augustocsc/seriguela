@@ -126,9 +126,20 @@ class EnhancedGRPO:
             # Check for adapter_config.json (LoRA model)
             adapter_config_path = Path(model_path) / "adapter_config.json"
             if adapter_config_path.exists():
+                # Determine base model from adapter config
+                with open(adapter_config_path, 'r') as f:
+                    import json
+                    adapter_config = json.load(f)
+                    base_model_name = adapter_config.get("base_model_name_or_path", "gpt2")
+
+                logger.info(f"Loading base model: {base_model_name}")
                 base_model = AutoModelForCausalLM.from_pretrained(
-                    "gpt2", torch_dtype=torch.float32
+                    base_model_name, torch_dtype=torch.float32
                 ).to(self.device)
+
+                # CRITICAL: Enable gradients for LoRA training
+                base_model.enable_input_require_grads()
+
                 self.model = PeftModel.from_pretrained(base_model, model_path).to(self.device)
             else:
                 self.model = AutoModelForCausalLM.from_pretrained(
