@@ -83,8 +83,23 @@ aws ec2 stop-instances --instance-ids i-051cad4bd51af8746
 - ⚠️ Running on CPU (GPU driver issue)
 - ⏱️ Estimated duration: 24-36 hours (instead of 8-12h with GPU)
 
+### 12:02 UTC - GPU ATIVADA! (REBOOT)
+- ⚠️ Identificado: GPU não estava carregada (módulo nvidia não no kernel)
+- ✅ Reboot realizado para carregar driver
+- ✅ GPU FUNCIONANDO: NVIDIA A10G, CUDA 12.2, 23GB VRAM
+- ✅ PyTorch detectou GPU corretamente
+
+### 12:03 UTC - AVALIAÇÃO REINICIADA COM GPU
+- ✅ Resultados antigos limpos (eram timeouts em CPU)
+- ✅ Processo novo: PID 1181
+- ✅ Log: ~/seriguela/evaluation_gpu.log
+- ✅ GPU em uso: 43% util, 1GB VRAM, 134W, 39°C
+- ⏱️ Nova estimativa: **8-12 horas** (20x mais rápido!)
+
 ### Current Status
-**RUNNING** - Experiment [1/96] in progress
+**RUNNING COM GPU** - Experiment [1/96] em progresso
+
+Velocidade esperada: ~15-20 min/experimento (ao invés de 30+ min timeout)
 
 ---
-**Last Updated**: 2026-02-11 04:23 UTC
+**Last Updated**: 2026-02-11 12:05 UTC

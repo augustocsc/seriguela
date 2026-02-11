@@ -266,7 +266,12 @@ class EnhancedPPOSymbolic:
                         break
 
                     text = self.tokenizer.decode(generated_ids[0], skip_special_tokens=True)
-                    if not self.is_prefix and '"}' in text[len(self.prompt):]:
+                    generated_text = text[len(self.prompt):]
+
+                    # Stop at newline for prefix, closing brace for infix
+                    if self.is_prefix and ("\n" in generated_text or "vars:" in generated_text):
+                        break
+                    if not self.is_prefix and '"}' in generated_text:
                         break
 
             # Decode and evaluate

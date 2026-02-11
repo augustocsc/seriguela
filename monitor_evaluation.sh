@@ -27,7 +27,7 @@ echo "========================================="
 echo "Latest Progress (last 50 lines)"
 echo "========================================="
 ssh -i "$SSH_KEY" -o ConnectTimeout=10 -o StrictHostKeyChecking=no ubuntu@$INSTANCE_IP \
-  'tail -50 ~/seriguela/evaluation_full.log' 2>/dev/null
+  'tail -50 ~/seriguela/evaluation_gpu.log 2>/dev/null || tail -50 ~/seriguela/evaluation_full.log 2>/dev/null' 2>/dev/null
 
 echo ""
 echo "========================================="
