@@ -11,10 +11,12 @@ the same variables and operators from the original prompt.
 import sys
 import re
 import argparse
+import pandas as pd
 from datasets import load_dataset, Dataset, DatasetDict
 from huggingface_hub import HfApi
 import sympy
 from tqdm import tqdm
+import os
 
 sys.path.append('.')
 sys.path.append('..')
@@ -178,7 +180,10 @@ def parse_infix_prompt(prompt_text):
         elif line.startswith('cons:'):
             result['cons'] = line.replace('cons:', '').strip()
         elif line.startswith('expr:'):
-            result['expr'] = line.replace('expr:', '').strip()
+            expr_text = line.replace('expr:', '').strip()
+            # Remove <|endofex|> marker if present
+            expr_text = expr_text.replace('<|endofex|>', '').strip()
+            result['expr'] = expr_text
 
     return result
 
@@ -283,6 +288,194 @@ def process_dataset(dataset_name='augustocsc/sintetico_natural',
     return ds
 
 
+def process_hf_dataset_with_split(dataset_name='augustocsc/sintetico_natural',
+                                   data_dir='700K',
+                                   output_path='./1_data/processed/700K_prefix_682k',
+                                   test_size=0.1,
+                                   seed=42):
+    """
+    Process HuggingFace dataset with the same train/val split used in training.
+
+    This matches the exact split used in train_with_json.py:
+    - Loads train split from HF (758K)
+    - Splits into 90% train / 10% validation (682K / 76K)
+    - Converts both to prefix notation
+
+    Args:
+        dataset_name: HuggingFace dataset name
+        data_dir: Data directory within dataset
+        output_path: Where to save converted dataset
+        test_size: Validation split size (0.1 = 10%)
+        seed: Random seed for reproducibility (42 matches training)
+    """
+    print(f"Loading dataset {dataset_name} (data_dir={data_dir})...")
+    ds = load_dataset(dataset_name, data_dir=data_dir, split='train')
+
+    print(f"Loaded {len(ds):,} examples from train split")
+    print(f"Splitting: {int((1-test_size)*100)}% train / {int(test_size*100)}% validation (seed={seed})")
+
+    # Apply same split as training script
+    split_ds = ds.train_test_split(test_size=test_size, seed=seed)
+    train_ds = split_ds['train']
+    val_ds = split_ds['test']
+
+    print(f"\nTrain: {len(train_ds):,} examples")
+    print(f"Validation: {len(val_ds):,} examples")
+
+    # Convert train
+    print("\n" + "="*60)
+    print("Converting TRAIN split")
+    print("="*60)
+
+    train_converted = []
+    train_success = []
+
+    for example in tqdm(train_ds, desc="Converting train"):
+        infix_prompt = example['i_prompt_n']
+        prefix_prompt = convert_infix_to_prefix_prompt(infix_prompt)
+
+        if prefix_prompt is not None:
+            train_converted.append(prefix_prompt)
+            train_success.append(True)
+        else:
+            train_converted.append(infix_prompt)
+            train_success.append(False)
+
+    train_ds = train_ds.add_column('p_prompt_n_converted', train_converted)
+    train_ds = train_ds.add_column('conversion_success', train_success)
+
+    train_success_rate = sum(train_success) / len(train_success) * 100
+    print(f"\nTrain conversion: {sum(train_success):,}/{len(train_success):,} ({train_success_rate:.1f}%)")
+
+    # Convert validation
+    print("\n" + "="*60)
+    print("Converting VALIDATION split")
+    print("="*60)
+
+    val_converted = []
+    val_success = []
+
+    for example in tqdm(val_ds, desc="Converting validation"):
+        infix_prompt = example['i_prompt_n']
+        prefix_prompt = convert_infix_to_prefix_prompt(infix_prompt)
+
+        if prefix_prompt is not None:
+            val_converted.append(prefix_prompt)
+            val_success.append(True)
+        else:
+            val_converted.append(infix_prompt)
+            val_success.append(False)
+
+    val_ds = val_ds.add_column('p_prompt_n_converted', val_converted)
+    val_ds = val_ds.add_column('conversion_success', val_success)
+
+    val_success_rate = sum(val_success) / len(val_success) * 100
+    print(f"\nValidation conversion: {sum(val_success):,}/{len(val_success):,} ({val_success_rate:.1f}%)")
+
+    # Create DatasetDict
+    dataset_dict = DatasetDict({
+        'train': train_ds,
+        'validation': val_ds
+    })
+
+    # Save
+    print(f"\nSaving dataset to {output_path}...")
+    dataset_dict.save_to_disk(output_path)
+
+    print("\n" + "="*60)
+    print("CONVERSION COMPLETE")
+    print("="*60)
+    print(f"Total converted: {sum(train_success) + sum(val_success):,}")
+    print(f"Overall success rate: {(sum(train_success) + sum(val_success)) / (len(train_success) + len(val_success)) * 100:.1f}%")
+
+    return dataset_dict
+
+
+def process_csv_files(input_dir, output_dir, chunksize=10000):
+    """
+    Process local CSV files (train, validation, test) and convert infix to prefix.
+
+    Args:
+        input_dir: Directory containing train_700K.csv, validation_700K.csv, test_700K.csv
+        output_dir: Directory to save converted CSV files
+        chunksize: Number of rows to process at once (for memory efficiency)
+    """
+    import os
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    files_to_process = {
+        'train': 'train_700K.csv',
+        'validation': 'validation_700K.csv',
+        'test': 'test_700K.csv'
+    }
+
+    for split_name, filename in files_to_process.items():
+        input_path = os.path.join(input_dir, filename)
+        output_path = os.path.join(output_dir, filename)
+
+        if not os.path.exists(input_path):
+            print(f"\n[SKIP] {filename} not found at {input_path}")
+            continue
+
+        print(f"\n{'='*60}")
+        print(f"Processing {split_name}: {filename}")
+        print(f"{'='*60}")
+
+        # Count total rows for progress bar
+        print("Counting rows...")
+        total_rows = sum(1 for _ in open(input_path, encoding='utf-8')) - 1  # -1 for header
+        print(f"Total rows: {total_rows:,}")
+
+        # Process in chunks
+        converted_count = 0
+        failed_count = 0
+
+        first_chunk = True
+
+        with tqdm(total=total_rows, desc=f"Converting {split_name}") as pbar:
+            for chunk in pd.read_csv(input_path, chunksize=chunksize):
+                converted_prompts = []
+                conversion_success = []
+
+                for idx, row in chunk.iterrows():
+                    # Get the infix prompt from 'text' column
+                    infix_prompt = row['text']
+
+                    # Convert to prefix
+                    prefix_prompt = convert_infix_to_prefix_prompt(infix_prompt)
+
+                    if prefix_prompt is not None:
+                        converted_prompts.append(prefix_prompt)
+                        conversion_success.append(True)
+                        converted_count += 1
+                    else:
+                        # Keep original if conversion fails
+                        converted_prompts.append(infix_prompt)
+                        conversion_success.append(False)
+                        failed_count += 1
+
+                    pbar.update(1)
+
+                # Add new columns
+                chunk['p_prompt_n_converted'] = converted_prompts
+                chunk['conversion_success'] = conversion_success
+
+                # Save chunk
+                if first_chunk:
+                    chunk.to_csv(output_path, index=False, mode='w', encoding='utf-8')
+                    first_chunk = False
+                else:
+                    chunk.to_csv(output_path, index=False, mode='a', header=False, encoding='utf-8')
+
+        success_rate = (converted_count / total_rows * 100) if total_rows > 0 else 0
+
+        print(f"\n[OK] {split_name} completed:")
+        print(f"  Converted: {converted_count:,} ({success_rate:.1f}%)")
+        print(f"  Failed: {failed_count:,}")
+        print(f"  Saved to: {output_path}")
+
+
 def upload_to_hub(dataset, repo_id, token=None):
     """
     Upload the converted dataset to HuggingFace Hub.
@@ -349,6 +542,46 @@ def main():
         help='Test conversion on first 10 examples only'
     )
 
+    parser.add_argument(
+        '--process_csv',
+        action='store_true',
+        help='Process local CSV files (train, validation, test)'
+    )
+
+    parser.add_argument(
+        '--input_dir',
+        type=str,
+        default='./1_data/processed/700K_fixed',
+        help='Directory containing train_700K.csv, validation_700K.csv, test_700K.csv'
+    )
+
+    parser.add_argument(
+        '--output_dir',
+        type=str,
+        default='./1_data/processed/700K_prefix_full',
+        help='Directory to save converted CSV files'
+    )
+
+    parser.add_argument(
+        '--chunksize',
+        type=int,
+        default=10000,
+        help='Number of rows to process at once (for memory efficiency)'
+    )
+
+    parser.add_argument(
+        '--use_training_split',
+        action='store_true',
+        help='Use same 90/10 train/val split as training (682K train + 76K val)'
+    )
+
+    parser.add_argument(
+        '--data_dir',
+        type=str,
+        default='700K',
+        help='Data directory within HuggingFace dataset'
+    )
+
     args = parser.parse_args()
 
     # Test mode
@@ -377,7 +610,97 @@ def main():
 
         return
 
-    # Full conversion
+    # Training split mode (682K train + 76K val)
+    if args.use_training_split:
+        print("=" * 60)
+        print("TRAINING SPLIT MODE: 90% train / 10% validation")
+        print("=" * 60)
+        print("This matches the exact split used in train_with_json.py")
+        print(f"Dataset: {args.dataset_name} (data_dir={args.data_dir})")
+        print(f"Output: {args.output_path}")
+        print("=" * 60)
+
+        dataset_dict = process_hf_dataset_with_split(
+            dataset_name=args.dataset_name,
+            data_dir=args.data_dir,
+            output_path=args.output_path,
+            test_size=0.1,
+            seed=42
+        )
+
+        # Show examples
+        print("\n" + "=" * 60)
+        print("SAMPLE CONVERSIONS")
+        print("=" * 60)
+
+        print("\nTRAIN example:")
+        print("INFIX:")
+        print(dataset_dict['train'][0]['i_prompt_n'])
+        print("\nPREFIX:")
+        print(dataset_dict['train'][0]['p_prompt_n_converted'])
+
+        print("\nVALIDATION example:")
+        print("INFIX:")
+        print(dataset_dict['validation'][0]['i_prompt_n'])
+        print("\nPREFIX:")
+        print(dataset_dict['validation'][0]['p_prompt_n_converted'])
+
+        # Upload if requested
+        if args.upload:
+            if args.repo_id is None:
+                print("\n[ERROR] --repo_id required for upload")
+                print("  Example: --repo_id augustocsc/sintetico_natural_prefix_682k")
+            else:
+                print(f"\n{'='*60}")
+                print(f"Uploading to HuggingFace Hub: {args.repo_id}")
+                print("="*60)
+
+                try:
+                    dataset_dict.push_to_hub(args.repo_id)
+                    print(f"[OK] Dataset uploaded successfully!")
+                    print(f"  View at: https://huggingface.co/datasets/{args.repo_id}")
+                except Exception as e:
+                    print(f"[FAIL] Failed to upload: {e}")
+                    print("  Make sure you have write permissions")
+                    print("  Run: huggingface-cli login")
+        else:
+            print("\n" + "=" * 60)
+            print("To upload to HuggingFace Hub, run:")
+            print(f"  python {__file__} --use_training_split --upload --repo_id augustocsc/sintetico_natural_prefix_682k")
+            print("=" * 60)
+
+        return
+
+    # CSV mode
+    if args.process_csv:
+        print("=" * 60)
+        print("CSV MODE: Processing local CSV files")
+        print("=" * 60)
+        print(f"Input directory: {args.input_dir}")
+        print(f"Output directory: {args.output_dir}")
+        print(f"Chunk size: {args.chunksize:,} rows")
+        print("=" * 60)
+
+        process_csv_files(
+            input_dir=args.input_dir,
+            output_dir=args.output_dir,
+            chunksize=args.chunksize
+        )
+
+        print("\n" + "=" * 60)
+        print("CONVERSION COMPLETE")
+        print("=" * 60)
+        print(f"Converted files saved to: {args.output_dir}")
+        print("\nNext steps:")
+        print("1. Verify converted files:")
+        print(f"   head -3 {args.output_dir}/train_700K.csv")
+        print("2. Upload to HuggingFace (optional):")
+        print("   # TODO: Add upload functionality for CSV files")
+        print("=" * 60)
+
+        return
+
+    # Full conversion (HuggingFace dataset mode)
     dataset = process_dataset(
         dataset_name=args.dataset_name,
         split=args.split,
