@@ -1,0 +1,93 @@
+/opt/pytorch/lib/python3.12/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+================================================================================
+Complete Evaluation and Finetuning Pipeline
+================================================================================
+
+✓ CUDA available: NVIDIA A10G
+
+================================================================================
+PHASE 1: Model Comparison (Base vs Medium vs Large)
+================================================================================
+
+
+================================================================================
+Evaluating BASE (./output/gpt2_base_prefix_682k)
+================================================================================
+Loading model from ./output/gpt2_base_prefix_682k...
+✓ Model loaded: gpt2 + LoRA adapter
+Generating 50 expressions...
+  Generated 10/50...
+  Generated 20/50...
+  Generated 30/50...
+  Generated 40/50...
+  Generated 50/50...
+✓ Generated 50 expressions
+✓ BASE evaluation complete
+
+================================================================================
+Evaluating MEDIUM (./output/gpt2_medium_prefix_682k)
+================================================================================
+Loading model from ./output/gpt2_medium_prefix_682k...
+✓ Model loaded: gpt2-medium + LoRA adapter
+Generating 50 expressions...
+  Generated 10/50...
+  Generated 20/50...
+  Generated 30/50...
+  Generated 40/50...
+  Generated 50/50...
+✓ Generated 50 expressions
+✓ MEDIUM evaluation complete
+
+================================================================================
+Evaluating LARGE (./output/gpt2_large_prefix_682k)
+================================================================================
+Loading model from ./output/gpt2_large_prefix_682k...
+✓ Model loaded: gpt2-large + LoRA adapter
+Generating 50 expressions...
+  Generated 10/50...
+  Generated 20/50...
+  Generated 30/50...
+  Generated 40/50...
+  Generated 50/50...
+✓ Generated 50 expressions
+✓ LARGE evaluation complete
+
+================================================================================
+COMPARISON RESULTS
+================================================================================
+
+| Metric | Base | Medium | Large |
+|--------|------|--------|-------|
+| Total | 50 | 50 | 50 |
+| Unique | 46 | 49 | 50 |
+| Diversity (%) | 92.0 | 98.0 | 100.0 |
+| With power (%) | 6.0 | 10.0 | 6.0 |
+| With trig (%) | 54.0 | 84.0 | 92.0 |
+| Nested trig (%) | 0.0 | 0.0 | 0.0 |
+
+✓ Comparison results saved to: comparison_all_models_prefix.json
+
+BASE score: 152.0
+MEDIUM score: 192.0
+LARGE score: 198.0
+
+✓ Best model: LARGE (score: 198.0)
+
+Starting RL finetuning phase...
+================================================================================
+PHASE 2: RL Finetuning (REINFORCE on Nguyen-5)
+================================================================================
+
+⚠️  REINFORCE script not found, skipping finetuning
+   This is optional - evaluation is complete
+
+================================================================================
+PIPELINE COMPLETE
+================================================================================
+
+Results saved:
+  - comparison_all_models_prefix.json
+  - rl_results_*.json (if RL ran)
+
