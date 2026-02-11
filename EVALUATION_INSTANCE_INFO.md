@@ -66,5 +66,25 @@ aws ec2 stop-instances --instance-ids i-051cad4bd51af8746
 - Cloud-init wait timeout (300s) - this is normal for the user-data script
 - System is proceeding with package installation
 
+### 04:13 UTC - Setup Completed
+- ✅ All system packages installed
+- ✅ Python environment created
+- ✅ Repository cloned (augustocsc/seriguela)
+- ✅ Dependencies installed
+- ✅ HuggingFace and Wandb credentials configured
+
+### 04:18 UTC - Data Upload Completed
+- ✅ 3 prefix models uploaded (Base 30MB, Medium 49MB, Large 49MB)
+- ✅ Nguyen benchmarks 1-12 uploaded (all CSV + meta files)
+
+### 04:22 UTC - Evaluation STARTED
+- ✅ Process running (PID 28803)
+- ✅ Log file: ~/seriguela/evaluation_full.log
+- ⚠️ Running on CPU (GPU driver issue)
+- ⏱️ Estimated duration: 24-36 hours (instead of 8-12h with GPU)
+
+### Current Status
+**RUNNING** - Experiment [1/96] in progress
+
 ---
-**Last Updated**: 2026-02-11 04:05 UTC
+**Last Updated**: 2026-02-11 04:23 UTC
