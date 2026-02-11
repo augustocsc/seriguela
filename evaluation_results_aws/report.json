@@ -1,0 +1,1038 @@
+{
+  "timestamp": "20260211_143640",
+  "total_experiments": 96,
+  "successful": 72,
+  "failed": 24,
+  "summary_table": [
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "ppo",
+      "best_r2": 0.8637676702437062,
+      "best_expression": "- C exp * C x_1",
+      "best_epoch": 6,
+      "final_valid_rate": 0.15625,
+      "duration": 282.3820643424988
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "grpo",
+      "best_r2": 0.9709123400171664,
+      "best_expression": "* * -1 C log - * C x_1 C",
+      "best_epoch": 4,
+      "final_valid_rate": 0.03125,
+      "duration": 276.38196778297424
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "ppo",
+      "best_r2": 0.6836584573735693,
+      "best_expression": "- C / C exp * C x_1",
+      "best_epoch": 6,
+      "final_valid_rate": 0.0625,
+      "duration": 280.0991027355194
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "grpo",
+      "best_r2": 0.6836584573735693,
+      "best_expression": "- C exp * C x_1",
+      "best_epoch": 8,
+      "final_valid_rate": 0.125,
+      "duration": 276.1628408432007
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "ppo",
+      "best_r2": 0.8535549867293691,
+      "best_expression": "* x_1 exp + x_1 sin x_1",
+      "best_epoch": 0,
+      "final_valid_rate": 0.09375,
+      "duration": 281.5670325756073
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "grpo",
+      "best_r2": 0.653877476647486,
+      "best_expression": "- C exp * C x_1",
+      "best_epoch": 1,
+      "final_valid_rate": 0.1875,
+      "duration": 278.5253059864044
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "ppo",
+      "best_r2": 0.4409392191621767,
+      "best_expression": "- C exp * C sin x_1",
+      "best_epoch": 5,
+      "final_valid_rate": 0.0625,
+      "duration": 280.31394362449646
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "grpo",
+      "best_r2": 0.5317741540174384,
+      "best_expression": "- C exp x_1",
+      "best_epoch": 2,
+      "final_valid_rate": 0.125,
+      "duration": 279.139169216156
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "- tan exp * C x_1 C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0625,
+      "duration": 281.36394476890564
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "- * -1 C cos tan exp x_1",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0625,
+      "duration": 278.3394546508789
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "ppo",
+      "best_r2": 0.8749156709498362,
+      "best_expression": "- C exp * C x_1",
+      "best_epoch": 15,
+      "final_valid_rate": 0.03125,
+      "duration": 278.5220937728882
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "grpo",
+      "best_r2": 0.8749156709498362,
+      "best_expression": "- C exp x_1",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0625,
+      "duration": 275.15968656539917
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "ppo",
+      "best_r2": 0.8624672321371489,
+      "best_expression": "* C exp + x_1 * -1 C",
+      "best_epoch": 4,
+      "final_valid_rate": 0.0625,
+      "duration": 276.7545087337494
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "grpo",
+      "best_r2": 0.7778885028772459,
+      "best_expression": "* C exp * -1 sin sin - x_1 C",
+      "best_epoch": 7,
+      "final_valid_rate": 0.09375,
+      "duration": 274.95765256881714
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "ppo",
+      "best_r2": 0.8108823668102059,
+      "best_expression": "* C ** cos x_1 0.5",
+      "best_epoch": 11,
+      "final_valid_rate": 0.03125,
+      "duration": 279.14366149902344
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "- x_1 C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.09375,
+      "duration": 276.94188833236694
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "ppo",
+      "best_r2": 0.6536243311311587,
+      "best_expression": "- C exp * C x_1",
+      "best_epoch": 10,
+      "final_valid_rate": 0.34375,
+      "duration": 286.19399905204773
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "grpo",
+      "best_r2": 0.7277338079965577,
+      "best_expression": "* C cos - x_1 C",
+      "best_epoch": 5,
+      "final_valid_rate": 0.1875,
+      "duration": 277.8882496356964
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "ppo",
+      "best_r2": 0.8616744011308619,
+      "best_expression": "* x_1 ** - * C x_2 C C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.15625,
+      "duration": 285.92716574668884
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "grpo",
+      "best_r2": 0.91472721778718,
+      "best_expression": "+ * C x_1 sin * C x_1",
+      "best_epoch": 0,
+      "final_valid_rate": 0.21875,
+      "duration": 281.8345139026642
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "ppo",
+      "best_r2": 0.26554890374900253,
+      "best_expression": "* C ** x_2 0.5",
+      "best_epoch": 1,
+      "final_valid_rate": 0.25,
+      "duration": 284.80263328552246
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "grpo",
+      "best_r2": 0.5277208902141226,
+      "best_expression": "* C ** - * C x_1 C 0.5",
+      "best_epoch": 16,
+      "final_valid_rate": 0.1875,
+      "duration": 274.74913120269775
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "ppo",
+      "best_r2": 0.8328941381442009,
+      "best_expression": "- C sin * C exp * -1 x_2",
+      "best_epoch": 18,
+      "final_valid_rate": 0.21875,
+      "duration": 284.0744905471802
+    },
+    {
+      "model": "base_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "grpo",
+      "best_r2": -0.705946771437808,
+      "best_expression": "- cos - C ** - * C x_1 C C 0.5",
+      "best_epoch": 1,
+      "final_valid_rate": 0.21875,
+      "duration": 279.95388174057007
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "ppo",
+      "best_r2": -0.5878522519063969,
+      "best_expression": "C",
+      "best_epoch": 1,
+      "final_valid_rate": 0.0,
+      "duration": 228.06438207626343
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "grpo",
+      "best_r2": -0.36755442260266724,
+      "best_expression": "cos * log + sin cos x_1 C C",
+      "best_epoch": 11,
+      "final_valid_rate": 0.0,
+      "duration": 226.18282198905945
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "ppo",
+      "best_r2": -0.6686679446355801,
+      "best_expression": "sin / - x_1 C * -1 C",
+      "best_epoch": 3,
+      "final_valid_rate": 0.0,
+      "duration": 234.32030653953552
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "* + x_1 C exp - x_1 C",
+      "best_epoch": 7,
+      "final_valid_rate": 0.0,
+      "duration": 239.3803391456604
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "ppo",
+      "best_r2": 0.3157036343741656,
+      "best_expression": "* C sin sin / x_1 C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0,
+      "duration": 229.9676206111908
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "grpo",
+      "best_r2": -0.12329612658436018,
+      "best_expression": "* C ** + sin * C tan + exp * C x_1 C C 0.5",
+      "best_epoch": 14,
+      "final_valid_rate": 0.0,
+      "duration": 227.84853863716125
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "ppo",
+      "best_r2": 0.22266277664131628,
+      "best_expression": "sin / x_1 cos cos + x_1 C",
+      "best_epoch": 16,
+      "final_valid_rate": 0.0,
+      "duration": 237.76533555984497
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "grpo",
+      "best_r2": -0.40251671729253125,
+      "best_expression": "* C exp - cos exp x_1 C",
+      "best_epoch": 5,
+      "final_valid_rate": 0.0,
+      "duration": 240.6059432029724
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "ppo",
+      "best_r2": -0.4993523062906364,
+      "best_expression": "* -1 cos cos + * C x_1 C",
+      "best_epoch": 2,
+      "final_valid_rate": 0.0,
+      "duration": 236.34736013412476
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "sin - x_1 C",
+      "best_epoch": 15,
+      "final_valid_rate": 0.0,
+      "duration": 240.61222624778748
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "tan / * * -1 x_1 tan x_1 C",
+      "best_epoch": 5,
+      "final_valid_rate": 0.0,
+      "duration": 237.1746106147766
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "grpo",
+      "best_r2": 0.0034618551420038113,
+      "best_expression": "* x_1 + log + x_1 C C",
+      "best_epoch": 17,
+      "final_valid_rate": 0.0,
+      "duration": 224.69750881195068
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "ppo",
+      "best_r2": -0.1111432472742806,
+      "best_expression": "* C ** - * C cos / log x_1 C 0.5 C",
+      "best_epoch": 14,
+      "final_valid_rate": 0.0,
+      "duration": 242.26461672782898
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "grpo",
+      "best_r2": -0.009899466223375786,
+      "best_expression": "* x_1 exp sin - x_1 C",
+      "best_epoch": 10,
+      "final_valid_rate": 0.03125,
+      "duration": 237.50125575065613
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "tan + log * C x_1 C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0,
+      "duration": 242.3155541419983
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "grpo",
+      "best_r2": -0.021678063018243154,
+      "best_expression": "sqrt * C exp cos sin + x_1 C",
+      "best_epoch": 16,
+      "final_valid_rate": 0.0,
+      "duration": 240.5142056941986
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "ppo",
+      "best_r2": 0.25169531661679656,
+      "best_expression": "* x_1 - x_2 C",
+      "best_epoch": 17,
+      "final_valid_rate": 0.03125,
+      "duration": 239.43836879730225
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "grpo",
+      "best_r2": 0.05554591184105373,
+      "best_expression": "sin sin - * C cos * C x_2 C",
+      "best_epoch": 18,
+      "final_valid_rate": 0.0,
+      "duration": 238.52411007881165
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "ppo",
+      "best_r2": -0.07943175729850593,
+      "best_expression": "sin cos + cos * C x_1 C",
+      "best_epoch": 13,
+      "final_valid_rate": 0.0,
+      "duration": 228.64967036247253
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "grpo",
+      "best_r2": 0.6411935995118747,
+      "best_expression": "* + x_2 C tan x_1",
+      "best_epoch": 5,
+      "final_valid_rate": 0.0,
+      "duration": 225.50962781906128
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "ppo",
+      "best_r2": -0.12811074263841582,
+      "best_expression": "* x_1 + cos sin + x_2 C C",
+      "best_epoch": 13,
+      "final_valid_rate": 0.0,
+      "duration": 225.1508059501648
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "* -1 cos * -1 tan * -1 exp * -1 x_1",
+      "best_epoch": 5,
+      "final_valid_rate": 0.0625,
+      "duration": 231.19924592971802
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "tan / tan log x_2 C",
+      "best_epoch": 2,
+      "final_valid_rate": 0.0,
+      "duration": 239.62635445594788
+    },
+    {
+      "model": "medium_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "cos / - * C x_1 C C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0,
+      "duration": 242.30063724517822
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "ppo",
+      "best_r2": 0.6274890630588883,
+      "best_expression": "sin * C x_1",
+      "best_epoch": 14,
+      "final_valid_rate": 0.0,
+      "duration": 259.15233850479126
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_1",
+      "algorithm": "grpo",
+      "best_r2": 0.44448781479399935,
+      "best_expression": "sin log + x_1 C",
+      "best_epoch": 7,
+      "final_valid_rate": 0.0625,
+      "duration": 248.1111466884613
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "ppo",
+      "best_r2": 0.4109918266448592,
+      "best_expression": "* C exp x_1",
+      "best_epoch": 16,
+      "final_valid_rate": 0.03125,
+      "duration": 254.5274772644043
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_2",
+      "algorithm": "grpo",
+      "best_r2": 0.4109918266448592,
+      "best_expression": "* C exp x_1",
+      "best_epoch": 4,
+      "final_valid_rate": 0.03125,
+      "duration": 258.51141691207886
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "ppo",
+      "best_r2": 0.900388887140349,
+      "best_expression": "* x_1 + exp x_1 C",
+      "best_epoch": 14,
+      "final_valid_rate": 0.0,
+      "duration": 252.4022979736328
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_3",
+      "algorithm": "grpo",
+      "best_r2": 0.5514680272917045,
+      "best_expression": "tan x_1",
+      "best_epoch": 5,
+      "final_valid_rate": 0.03125,
+      "duration": 249.4443061351776
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "ppo",
+      "best_r2": 0.7930076160955026,
+      "best_expression": "* x_1 + exp * C x_1 C",
+      "best_epoch": 18,
+      "final_valid_rate": 0.03125,
+      "duration": 252.3619236946106
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_4",
+      "algorithm": "grpo",
+      "best_r2": 0.7611517632522452,
+      "best_expression": "* x_1 exp x_1",
+      "best_epoch": 15,
+      "final_valid_rate": 0.0625,
+      "duration": 252.60706186294556
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "sin + x_1 C",
+      "best_epoch": 1,
+      "final_valid_rate": 0.03125,
+      "duration": 253.06723618507385
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_5",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "tan ** - x_1 C 0.5",
+      "best_epoch": 1,
+      "final_valid_rate": 0.0,
+      "duration": 252.36098980903625
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "ppo",
+      "best_r2": 0.8380220885439014,
+      "best_expression": "tan * C x_1",
+      "best_epoch": 11,
+      "final_valid_rate": 0.0,
+      "duration": 250.7021038532257
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_6",
+      "algorithm": "grpo",
+      "best_r2": 0.7070422824175572,
+      "best_expression": "* sin sin x_1 C",
+      "best_epoch": 18,
+      "final_valid_rate": 0.0,
+      "duration": 252.7959167957306
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "ppo",
+      "best_r2": 0.8235794439179452,
+      "best_expression": "+ x_1 sin x_1",
+      "best_epoch": 10,
+      "final_valid_rate": 0.03125,
+      "duration": 253.91165232658386
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_7",
+      "algorithm": "grpo",
+      "best_r2": 0.7492462795666575,
+      "best_expression": "* C x_1",
+      "best_epoch": 3,
+      "final_valid_rate": 0.03125,
+      "duration": 254.97912621498108
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "ppo",
+      "best_r2": 0.5687824457575807,
+      "best_expression": "log + x_1 C",
+      "best_epoch": 12,
+      "final_valid_rate": 0.0,
+      "duration": 254.51854634284973
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_8",
+      "algorithm": "grpo",
+      "best_r2": 0.568782445757581,
+      "best_expression": "log + exp log x_1 C",
+      "best_epoch": 1,
+      "final_valid_rate": 0.03125,
+      "duration": 254.61065411567688
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "ppo",
+      "best_r2": 0.6181679955310633,
+      "best_expression": "* x_1 + sin x_1 C",
+      "best_epoch": 6,
+      "final_valid_rate": 0.0,
+      "duration": 250.42514848709106
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_9",
+      "algorithm": "grpo",
+      "best_r2": 0.7277338079965577,
+      "best_expression": "cos - x_1 C",
+      "best_epoch": 10,
+      "final_valid_rate": 0.03125,
+      "duration": 252.83560585975647
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "ppo",
+      "best_r2": 0.7161253358776474,
+      "best_expression": "* x_1 - x_2 C",
+      "best_epoch": 8,
+      "final_valid_rate": 0.0625,
+      "duration": 261.12305545806885
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_10",
+      "algorithm": "grpo",
+      "best_r2": 0.9332034464163791,
+      "best_expression": "tan * C x_1",
+      "best_epoch": 13,
+      "final_valid_rate": 0.09375,
+      "duration": 251.78213500976562
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "ppo",
+      "best_r2": 0.3409999686152946,
+      "best_expression": "cos - x_1 C",
+      "best_epoch": 14,
+      "final_valid_rate": 0.03125,
+      "duration": 257.94557428359985
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_11",
+      "algorithm": "grpo",
+      "best_r2": 0.6772813399415722,
+      "best_expression": "* x_1 exp tan - x_1 C",
+      "best_epoch": 11,
+      "final_valid_rate": 0.03125,
+      "duration": 251.14101886749268
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "ppo",
+      "best_r2": -1.0,
+      "best_expression": "* x_1 + + x_1 x_2 C",
+      "best_epoch": 0,
+      "final_valid_rate": 0.0625,
+      "duration": 257.55631470680237
+    },
+    {
+      "model": "large_prefix",
+      "benchmark": "nguyen_12",
+      "algorithm": "grpo",
+      "best_r2": -1.0,
+      "best_expression": "+ * -1 x_1 log x_1",
+      "best_epoch": 2,
+      "final_valid_rate": 0.0625,
+      "duration": 255.1719446182251
+    }
+  ],
+  "best_per_benchmark": {
+    "nguyen_1": {
+      "r2": 0.9709123400171664,
+      "expression": "* * -1 C log - * C x_1 C",
+      "model": "base_prefix",
+      "algorithm": "grpo",
+      "epoch": 4
+    },
+    "nguyen_2": {
+      "r2": 0.6836584573735693,
+      "expression": "- C / C exp * C x_1",
+      "model": "base_prefix",
+      "algorithm": "ppo",
+      "epoch": 6
+    },
+    "nguyen_3": {
+      "r2": 0.900388887140349,
+      "expression": "* x_1 + exp x_1 C",
+      "model": "large_prefix",
+      "algorithm": "ppo",
+      "epoch": 14
+    },
+    "nguyen_4": {
+      "r2": 0.7930076160955026,
+      "expression": "* x_1 + exp * C x_1 C",
+      "model": "large_prefix",
+      "algorithm": "ppo",
+      "epoch": 18
+    },
+    "nguyen_5": {
+      "r2": -0.4993523062906364,
+      "expression": "* -1 cos cos + * C x_1 C",
+      "model": "medium_prefix",
+      "algorithm": "ppo",
+      "epoch": 2
+    },
+    "nguyen_6": {
+      "r2": 0.8749156709498362,
+      "expression": "- C exp * C x_1",
+      "model": "base_prefix",
+      "algorithm": "ppo",
+      "epoch": 15
+    },
+    "nguyen_7": {
+      "r2": 0.8624672321371489,
+      "expression": "* C exp + x_1 * -1 C",
+      "model": "base_prefix",
+      "algorithm": "ppo",
+      "epoch": 4
+    },
+    "nguyen_8": {
+      "r2": 0.8108823668102059,
+      "expression": "* C ** cos x_1 0.5",
+      "model": "base_prefix",
+      "algorithm": "ppo",
+      "epoch": 11
+    },
+    "nguyen_9": {
+      "r2": 0.7277338079965577,
+      "expression": "* C cos - x_1 C",
+      "model": "base_prefix",
+      "algorithm": "grpo",
+      "epoch": 5
+    },
+    "nguyen_10": {
+      "r2": 0.9332034464163791,
+      "expression": "tan * C x_1",
+      "model": "large_prefix",
+      "algorithm": "grpo",
+      "epoch": 13
+    },
+    "nguyen_11": {
+      "r2": 0.6772813399415722,
+      "expression": "* x_1 exp tan - x_1 C",
+      "model": "large_prefix",
+      "algorithm": "grpo",
+      "epoch": 11
+    },
+    "nguyen_12": {
+      "r2": 0.8328941381442009,
+      "expression": "- C sin * C exp * -1 x_2",
+      "model": "base_prefix",
+      "algorithm": "ppo",
+      "epoch": 18
+    }
+  },
+  "best_per_model": {
+    "base_prefix": {
+      "nguyen_1": {
+        "r2": 0.9709123400171664,
+        "expression": "* * -1 C log - * C x_1 C",
+        "algorithm": "grpo",
+        "epoch": 4
+      },
+      "nguyen_2": {
+        "r2": 0.6836584573735693,
+        "expression": "- C / C exp * C x_1",
+        "algorithm": "ppo",
+        "epoch": 6
+      },
+      "nguyen_3": {
+        "r2": 0.8535549867293691,
+        "expression": "* x_1 exp + x_1 sin x_1",
+        "algorithm": "ppo",
+        "epoch": 0
+      },
+      "nguyen_4": {
+        "r2": 0.5317741540174384,
+        "expression": "- C exp x_1",
+        "algorithm": "grpo",
+        "epoch": 2
+      },
+      "nguyen_5": {
+        "r2": -1.0,
+        "expression": "- tan exp * C x_1 C",
+        "algorithm": "ppo",
+        "epoch": 0
+      },
+      "nguyen_6": {
+        "r2": 0.8749156709498362,
+        "expression": "- C exp * C x_1",
+        "algorithm": "ppo",
+        "epoch": 15
+      },
+      "nguyen_7": {
+        "r2": 0.8624672321371489,
+        "expression": "* C exp + x_1 * -1 C",
+        "algorithm": "ppo",
+        "epoch": 4
+      },
+      "nguyen_8": {
+        "r2": 0.8108823668102059,
+        "expression": "* C ** cos x_1 0.5",
+        "algorithm": "ppo",
+        "epoch": 11
+      },
+      "nguyen_9": {
+        "r2": 0.7277338079965577,
+        "expression": "* C cos - x_1 C",
+        "algorithm": "grpo",
+        "epoch": 5
+      },
+      "nguyen_10": {
+        "r2": 0.91472721778718,
+        "expression": "+ * C x_1 sin * C x_1",
+        "algorithm": "grpo",
+        "epoch": 0
+      },
+      "nguyen_11": {
+        "r2": 0.5277208902141226,
+        "expression": "* C ** - * C x_1 C 0.5",
+        "algorithm": "grpo",
+        "epoch": 16
+      },
+      "nguyen_12": {
+        "r2": 0.8328941381442009,
+        "expression": "- C sin * C exp * -1 x_2",
+        "algorithm": "ppo",
+        "epoch": 18
+      }
+    },
+    "medium_prefix": {
+      "nguyen_1": {
+        "r2": -0.36755442260266724,
+        "expression": "cos * log + sin cos x_1 C C",
+        "algorithm": "grpo",
+        "epoch": 11
+      },
+      "nguyen_2": {
+        "r2": -0.6686679446355801,
+        "expression": "sin / - x_1 C * -1 C",
+        "algorithm": "ppo",
+        "epoch": 3
+      },
+      "nguyen_3": {
+        "r2": 0.3157036343741656,
+        "expression": "* C sin sin / x_1 C",
+        "algorithm": "ppo",
+        "epoch": 0
+      },
+      "nguyen_4": {
+        "r2": 0.22266277664131628,
+        "expression": "sin / x_1 cos cos + x_1 C",
+        "algorithm": "ppo",
+        "epoch": 16
+      },
+      "nguyen_5": {
+        "r2": -0.4993523062906364,
+        "expression": "* -1 cos cos + * C x_1 C",
+        "algorithm": "ppo",
+        "epoch": 2
+      },
+      "nguyen_6": {
+        "r2": 0.0034618551420038113,
+        "expression": "* x_1 + log + x_1 C C",
+        "algorithm": "grpo",
+        "epoch": 17
+      },
+      "nguyen_7": {
+        "r2": -0.009899466223375786,
+        "expression": "* x_1 exp sin - x_1 C",
+        "algorithm": "grpo",
+        "epoch": 10
+      },
+      "nguyen_8": {
+        "r2": -0.021678063018243154,
+        "expression": "sqrt * C exp cos sin + x_1 C",
+        "algorithm": "grpo",
+        "epoch": 16
+      },
+      "nguyen_9": {
+        "r2": 0.25169531661679656,
+        "expression": "* x_1 - x_2 C",
+        "algorithm": "ppo",
+        "epoch": 17
+      },
+      "nguyen_10": {
+        "r2": 0.6411935995118747,
+        "expression": "* + x_2 C tan x_1",
+        "algorithm": "grpo",
+        "epoch": 5
+      },
+      "nguyen_11": {
+        "r2": -0.12811074263841582,
+        "expression": "* x_1 + cos sin + x_2 C C",
+        "algorithm": "ppo",
+        "epoch": 13
+      },
+      "nguyen_12": {
+        "r2": -1.0,
+        "expression": "tan / tan log x_2 C",
+        "algorithm": "ppo",
+        "epoch": 2
+      }
+    },
+    "large_prefix": {
+      "nguyen_1": {
+        "r2": 0.6274890630588883,
+        "expression": "sin * C x_1",
+        "algorithm": "ppo",
+        "epoch": 14
+      },
+      "nguyen_2": {
+        "r2": 0.4109918266448592,
+        "expression": "* C exp x_1",
+        "algorithm": "ppo",
+        "epoch": 16
+      },
+      "nguyen_3": {
+        "r2": 0.900388887140349,
+        "expression": "* x_1 + exp x_1 C",
+        "algorithm": "ppo",
+        "epoch": 14
+      },
+      "nguyen_4": {
+        "r2": 0.7930076160955026,
+        "expression": "* x_1 + exp * C x_1 C",
+        "algorithm": "ppo",
+        "epoch": 18
+      },
+      "nguyen_5": {
+        "r2": -1.0,
+        "expression": "sin + x_1 C",
+        "algorithm": "ppo",
+        "epoch": 1
+      },
+      "nguyen_6": {
+        "r2": 0.8380220885439014,
+        "expression": "tan * C x_1",
+        "algorithm": "ppo",
+        "epoch": 11
+      },
+      "nguyen_7": {
+        "r2": 0.8235794439179452,
+        "expression": "+ x_1 sin x_1",
+        "algorithm": "ppo",
+        "epoch": 10
+      },
+      "nguyen_8": {
+        "r2": 0.568782445757581,
+        "expression": "log + exp log x_1 C",
+        "algorithm": "grpo",
+        "epoch": 1
+      },
+      "nguyen_9": {
+        "r2": 0.7277338079965577,
+        "expression": "cos - x_1 C",
+        "algorithm": "grpo",
+        "epoch": 10
+      },
+      "nguyen_10": {
+        "r2": 0.9332034464163791,
+        "expression": "tan * C x_1",
+        "algorithm": "grpo",
+        "epoch": 13
+      },
+      "nguyen_11": {
+        "r2": 0.6772813399415722,
+        "expression": "* x_1 exp tan - x_1 C",
+        "algorithm": "grpo",
+        "epoch": 11
+      },
+      "nguyen_12": {
+        "r2": -1.0,
+        "expression": "* x_1 + + x_1 x_2 C",
+        "algorithm": "ppo",
+        "epoch": 0
+      }
+    }
+  }
+}
