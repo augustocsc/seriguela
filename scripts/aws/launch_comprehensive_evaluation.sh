@@ -17,7 +17,7 @@ INSTANCE_TYPE="g5.2xlarge"  # Larger instance for parallel execution
 AMI_ID="ami-0e86e20dae9224db8"  # Ubuntu 24.04 in us-east-1
 KEY_NAME="chave-gpu-nova"
 SECURITY_GROUP="sg-0deaa73e23482e3f6"
-INSTANCE_NAME="seriguela-comprehensive-eval"
+INSTANCE_NAME="augusto-seriguela-comprehensive-eval"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do

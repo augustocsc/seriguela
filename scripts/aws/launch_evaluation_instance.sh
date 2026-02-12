@@ -23,7 +23,7 @@ KEY_NAME=""
 SECURITY_GROUP=""
 REGION=$(aws configure get region 2>/dev/null || echo "us-east-1")
 VOLUME_SIZE=80
-INSTANCE_NAME="seriguela-evaluation"
+INSTANCE_NAME="augusto-seriguela-evaluation"
 HF_TOKEN=""
 
 # Parse arguments

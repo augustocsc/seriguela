@@ -110,22 +110,96 @@ python scripts/compare_models.py \
 
 ### AWS Infrastructure
 
+**⚠️ CONVENÇÃO DE NOMES IMPORTANTE**: Todas as instâncias AWS criadas por este projeto usam o prefixo **"augusto-"** para evitar conflitos e garantir que apenas suas instâncias sejam gerenciadas.
+
+#### Scripts Seguros de Gerenciamento
+
 ```bash
-# Launch instance with training
-./scripts/aws/launch_instance_fixed.sh \
-  --instance-type g5.xlarge \
+# ✅ RECOMENDADO: Listar apenas suas instâncias (prefixo "augusto-")
+bash scripts/aws/list_augusto_instances.sh
+
+# ✅ RECOMENDADO: Parar TODAS as suas instâncias (pede confirmação)
+bash scripts/aws/stop_augusto_instances.sh
+
+# ✅ RECOMENDADO: Parar TODAS as suas instâncias (sem confirmação)
+bash scripts/aws/stop_augusto_instances.sh --confirm
+
+# ✅ RECOMENDADO: Parar instância específica (valida prefixo "augusto-")
+bash scripts/aws/stop_instance.sh INSTANCE_ID
+```
+
+#### Lançar Instâncias de Treinamento
+
+Todas as instâncias criadas automaticamente recebem o prefixo "augusto-seriguela-":
+
+```bash
+# Base (124M) - g5.xlarge
+bash scripts/aws/launch_base_training.sh \
   --hf-token <token> \
   --wandb-key <key>
+# Cria: augusto-seriguela-base-training
 
-# Monitor training remotely
-./scripts/aws/monitor_training_auto.sh
+# Medium (355M) - g5.xlarge
+bash scripts/aws/launch_medium_training.sh \
+  --hf-token <token> \
+  --wandb-key <key>
+# Cria: augusto-seriguela-medium-training
 
-# Check AWS instances
-aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,InstanceType,State.Name,PublicIpAddress,Tags[?Key=='Name'].Value|[0]]" --output table
+# Large (774M) - g5.2xlarge
+bash scripts/aws/launch_large_training.sh \
+  --hf-token <token> \
+  --wandb-key <key>
+# Cria: augusto-seriguela-large-training
 
-# Stop all running instances
-aws ec2 stop-instances --instance-ids <id1> <id2>
+# Avaliação completa - g5.2xlarge
+bash scripts/aws/launch_comprehensive_evaluation.sh \
+  --hf-token <token> \
+  --wandb-key <key>
+# Cria: augusto-seriguela-comprehensive-eval
 ```
+
+#### Monitoramento
+
+```bash
+# Monitor training remotely
+bash scripts/aws/monitor_training_auto.sh
+
+# SSH para instância (use IP do list_augusto_instances.sh)
+ssh -i ~/.ssh/chave-gpu-nova.pem ubuntu@<PUBLIC_IP>
+
+# Verificar progresso do treinamento
+tail -f ~/seriguela/training_*.log
+```
+
+#### ⚠️ SEGURANÇA
+
+**NUNCA use comandos AWS genéricos sem filtro de nome!** Isso pode afetar instâncias de outras pessoas:
+
+```bash
+# ❌ PERIGOSO - Pode listar/parar instâncias de outros
+aws ec2 describe-instances
+aws ec2 stop-instances --instance-ids i-xxx
+
+# ✅ SEGURO - Usa scripts com filtro "augusto-"
+bash scripts/aws/list_augusto_instances.sh
+bash scripts/aws/stop_augusto_instances.sh
+```
+
+#### Custos e Limpeza
+
+**SEMPRE pare instâncias após uso** para evitar custos desnecessários:
+
+```bash
+# Verificar se há instâncias rodando
+bash scripts/aws/list_augusto_instances.sh
+
+# Se houver instâncias rodando, pare-as
+bash scripts/aws/stop_augusto_instances.sh --confirm
+```
+
+Custos típicos (us-east-1):
+- **g5.xlarge** (24GB VRAM): ~$1.01/hora
+- **g5.2xlarge** (48GB VRAM): ~$1.21/hora
 
 ## Architecture
 

@@ -29,7 +29,7 @@ SECURITY_GROUP="sg-0deaa73e23482e3f6"
 VOLUME_SIZE=100
 
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-INSTANCE_NAME="seriguela-base-prefix-training-${TIMESTAMP}"
+INSTANCE_NAME="augusto-seriguela-base-prefix-${TIMESTAMP}"
 
 echo "============================================"
 echo "Launching instance: $INSTANCE_NAME"

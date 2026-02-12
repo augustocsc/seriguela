@@ -6,7 +6,7 @@ set -e
 # Default values
 INSTANCE_TYPE="g5.xlarge"
 VOLUME_SIZE=100
-INSTANCE_NAME="seriguela-evaluation"
+INSTANCE_NAME="augusto-seriguela-evaluation"
 KEY_NAME="chave-gpu-nova"
 SECURITY_GROUP="seriguela-sg"
 AMI_ID=""  # Will be auto-detected

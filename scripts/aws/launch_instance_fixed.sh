@@ -23,7 +23,7 @@ KEY_NAME=""  # Will be auto-detected
 SECURITY_GROUP=""  # Will be auto-detected or created
 REGION=$(aws configure get region 2>/dev/null || echo "us-east-1")
 VOLUME_SIZE=100
-INSTANCE_NAME="seriguela-training"
+INSTANCE_NAME="augusto-seriguela-training"
 HF_TOKEN=""
 WANDB_KEY=""
 

@@ -22,7 +22,7 @@ KEY_NAME=""
 SECURITY_GROUP=""
 REGION=$(aws configure get region 2>/dev/null || echo "us-east-1")
 VOLUME_SIZE=100
-INSTANCE_NAME="seriguela-medium-training"
+INSTANCE_NAME="augusto-seriguela-medium-training"
 HF_TOKEN=""
 WANDB_KEY=""
 
