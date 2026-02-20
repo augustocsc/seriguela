@@ -219,16 +219,41 @@ def run_experiment(exp: ExperimentConfig, output_dir: str, upload: bool = True) 
         }
 
 
+def load_failed_experiments(progress_file: Path) -> List[str]:
+    """Load list of failed experiment names from progress file."""
+    if not progress_file.exists():
+        return []
+
+    with open(progress_file) as f:
+        data = json.load(f)
+
+    failed = [r["experiment"] for r in data.get("results", []) if not r.get("success")]
+    return failed
+
+
 def run_all_experiments(
     experiments: List[ExperimentConfig],
     output_dir: str = "results/comprehensive",
     upload: bool = True,
     resume_from: Optional[str] = None,
+    retry_failed: bool = False,
 ) -> Dict:
     """Run all experiments and collect results."""
 
     results = []
     start_idx = 0
+
+    progress_file = Path(output_dir) / "progress.json"
+
+    # If retrying failed, filter experiments
+    if retry_failed and progress_file.exists():
+        failed_names = load_failed_experiments(progress_file)
+        if failed_names:
+            print(f"Retrying {len(failed_names)} failed experiments...")
+            experiments = [e for e in experiments if e.name in failed_names]
+        else:
+            print("No failed experiments to retry.")
+            return {}
 
     # Resume from specific experiment if requested
     if resume_from:
@@ -348,6 +373,11 @@ def main():
         help="Resume from a specific experiment name",
     )
     parser.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="Only retry experiments that failed in the previous run",
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         help="List all experiments without running",
@@ -397,6 +427,7 @@ def main():
         output_dir=args.output_dir,
         upload=not args.no_upload,
         resume_from=args.resume_from,
+        retry_failed=args.retry_failed,
     )
 
 
