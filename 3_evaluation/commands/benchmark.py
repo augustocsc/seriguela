@@ -406,6 +406,24 @@ def execute_benchmark(args: argparse.Namespace):
     print(f"\nResults saved to: {storage.get_run_dir(run_id)}")
     print(f"Run ID: {run_id}")
 
+    # Auto-upload to HuggingFace if requested
+    if getattr(args, "upload", False):
+        print(f"\n{'='*60}")
+        print("Uploading to HuggingFace...")
+        print(f"{'='*60}")
+        try:
+            from core.hf_storage import HFResultStorage
+            hf_repo = getattr(args, "hf_repo", "augustocsc/seriguela-results")
+            hf_storage = HFResultStorage(repo_id=hf_repo)
+            run_dir = storage.get_run_dir(run_id)
+            success = hf_storage.upload_run(run_dir, eval_type="benchmark")
+            if success:
+                print(f"[OK] Uploaded to: https://huggingface.co/datasets/{hf_repo}/tree/main/benchmark/{run_id}")
+            else:
+                print("[FAIL] Upload failed - check HF_TOKEN environment variable")
+        except Exception as e:
+            print(f"[FAIL] Upload error: {e}")
+
     return run_id
 
 
@@ -451,6 +469,17 @@ def add_benchmark_arguments(parser: argparse.ArgumentParser):
         type=str,
         default="results/benchmark",
         help="Output directory for results (default: results/benchmark)",
+    )
+    parser.add_argument(
+        "--upload",
+        action="store_true",
+        help="Automatically upload results to HuggingFace after evaluation",
+    )
+    parser.add_argument(
+        "--hf-repo",
+        type=str,
+        default="augustocsc/seriguela-results",
+        help="HuggingFace repository for results (default: augustocsc/seriguela-results)",
     )
 
 

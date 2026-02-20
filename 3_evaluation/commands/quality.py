@@ -250,6 +250,24 @@ def execute_quality(args: argparse.Namespace):
         for error_type, count in sorted(metrics.error_types.items(), key=lambda x: -x[1])[:3]:
             print(f"  - {error_type}: {count}")
 
+    # Auto-upload to HuggingFace if requested
+    if getattr(args, "upload", False):
+        print(f"\n{'='*60}")
+        print("Uploading to HuggingFace...")
+        print(f"{'='*60}")
+        try:
+            from core.hf_storage import HFResultStorage
+            hf_repo = getattr(args, "hf_repo", "augustocsc/seriguela-results")
+            hf_storage = HFResultStorage(repo_id=hf_repo)
+            run_dir = storage.get_run_dir(run_id)
+            success = hf_storage.upload_run(run_dir, eval_type="quality")
+            if success:
+                print(f"[OK] Uploaded to: https://huggingface.co/datasets/{hf_repo}/tree/main/quality/{run_id}")
+            else:
+                print("[FAIL] Upload failed - check HF_TOKEN environment variable")
+        except Exception as e:
+            print(f"[FAIL] Upload error: {e}")
+
     return run_id
 
 
@@ -317,6 +335,17 @@ def add_quality_arguments(parser: argparse.ArgumentParser):
         type=int,
         default=42,
         help="Random seed (default: 42)",
+    )
+    parser.add_argument(
+        "--upload",
+        action="store_true",
+        help="Automatically upload results to HuggingFace after evaluation",
+    )
+    parser.add_argument(
+        "--hf-repo",
+        type=str,
+        default="augustocsc/seriguela-results",
+        help="HuggingFace repository for results (default: augustocsc/seriguela-results)",
     )
 
 
