@@ -1,228 +1,305 @@
-# 3_evaluation/ - Avaliação de Modelos
+# 3_evaluation/ - Model Evaluation
 
-Este diretório contém scripts para avaliar modelos treinados em diferentes métricas e benchmarks.
+Unified CLI for evaluating symbolic regression models.
 
-## Estrutura
+## Two Evaluation Phases
+
+This CLI supports two distinct evaluation phases:
+
+1. **Quality Evaluation** (Generation Phase)
+   - Measures: valid rate, diversity, constraint adherence
+   - Used after supervised training to assess generation quality
+   - Results in: `results/quality/`
+
+2. **Benchmark Evaluation** (RL Phase)
+   - Measures: R² scores on Nguyen benchmarks
+   - Used during/after RL training to assess expression fit
+   - Results in: `results/benchmark/`
+
+## Quick Start
+
+```bash
+# Quality evaluation (generation phase)
+python -m 3_evaluation.cli quality --model augustocsc/gpt2_large_infix_682k --num-samples 500
+
+# Benchmark evaluation (RL phase)
+python -m 3_evaluation.cli benchmark --model augustocsc/gpt2_large_infix_682k --benchmark nguyen_5
+
+# List available benchmarks
+python -m 3_evaluation.cli benchmarks
+
+# List all runs
+python -m 3_evaluation.cli list
+
+# Compare runs
+python -m 3_evaluation.cli compare --runs run_001 run_002
+
+# Generate report
+python -m 3_evaluation.cli report --run run_001 --format markdown
+```
+
+## Commands
+
+### `quality` - Generation Quality Evaluation
+
+Evaluates expression generation quality (valid rate, diversity, constraint adherence).
+
+```bash
+python -m 3_evaluation.cli quality \
+  --model augustocsc/gpt2_large_infix_682k \
+  --num-samples 500 \
+  --temperature 0.7 \
+  --top-p 0.9 \
+  --top-k 50 \
+  --max-tokens 100 \
+  --vars x_1,x_2,x_3 \
+  --ops "+,-,*,/,sin,cos" \
+  --output-dir results/quality
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--model` | (required) | HuggingFace model or local path |
+| `--num-samples` | 500 | Number of samples to generate |
+| `--temperature` | 0.7 | Sampling temperature |
+| `--top-p` | 0.9 | Top-p (nucleus sampling) |
+| `--top-k` | 50 | Top-k sampling |
+| `--max-tokens` | 100 | Max tokens to generate |
+| `--vars` | x_1 | Allowed variables (comma-separated) |
+| `--ops` | +,-,*,/,sin,cos | Allowed operators |
+| `--config` | - | YAML configuration file |
+| `--output-dir` | results/quality | Output directory |
+
+### `benchmark` - Nguyen Benchmark Evaluation
+
+Evaluates model on symbolic regression benchmarks (R² scores).
+
+```bash
+python -m 3_evaluation.cli benchmark \
+  --model augustocsc/gpt2_large_infix_682k \
+  --benchmark nguyen_5 \
+  --num-samples 100 \
+  --temperature 0.7 \
+  --output-dir results/benchmark
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--model` | (required) | HuggingFace model or local path |
+| `--benchmark` | nguyen_5 | Benchmark name (nguyen_1 to nguyen_12) |
+| `--csv` | - | Custom benchmark CSV file |
+| `--num-samples` | 100 | Number of candidate expressions |
+| `--temperature` | 0.7 | Sampling temperature |
+| `--top-p` | 0.9 | Top-p sampling |
+| `--output-dir` | results/benchmark | Output directory |
+
+### `benchmarks` - List Available Benchmarks
+
+```bash
+python -m 3_evaluation.cli benchmarks
+```
+
+Shows all available Nguyen benchmarks (1-12) with their formulas.
+
+### `list` - List Evaluation Runs
+
+```bash
+# List all runs (quality and benchmark)
+python -m 3_evaluation.cli list
+
+# List only quality runs
+python -m 3_evaluation.cli list --type quality
+
+# List only benchmark runs
+python -m 3_evaluation.cli list --type benchmark
+```
+
+### `compare` - Compare Runs
+
+```bash
+python -m 3_evaluation.cli compare --runs run_001 run_002 --output comparison.md
+```
+
+### `report` - Generate Reports
+
+```bash
+# Markdown (default)
+python -m 3_evaluation.cli report --run run_001
+
+# HTML
+python -m 3_evaluation.cli report --run run_001 --format html
+
+# JSON
+python -m 3_evaluation.cli report --run run_001 --format json
+```
+
+## Output Structure
+
+```
+results/
+├── quality/                         # Generation phase results
+│   └── run_20260220_143022_abc123/
+│       ├── config.yaml              # Full configuration
+│       ├── samples.jsonl            # Individual samples
+│       ├── metrics.json             # Aggregated metrics
+│       └── summary.txt              # Human-readable summary
+│
+└── benchmark/                       # RL phase results
+    └── run_20260220_150000_def456/
+        ├── config.yaml
+        ├── samples.jsonl            # Each expression with R²
+        └── metrics.json             # Best R², mean R², etc.
+```
+
+### Quality `metrics.json`
+
+```json
+{
+  "valid_rate": 0.95,
+  "parseable_rate": 0.97,
+  "diversity_rate": 0.89,
+  "total_samples": 500,
+  "valid_count": 475,
+  "unique_count": 445,
+  "constraint_adherence_rate": 0.92,
+  "avg_complexity": 7.3,
+  "variable_usage": {"x_1": 450, "x_2": 380},
+  "operator_usage": {"sin": 320, "+": 280}
+}
+```
+
+### Benchmark `metrics.json`
+
+```json
+{
+  "benchmark_name": "nguyen_5",
+  "true_formula": "sin(x**2)*cos(x) - 1",
+  "num_samples": 100,
+  "valid_count": 85,
+  "valid_rate": 0.85,
+  "num_with_r2": 80,
+  "best_r2": 0.9987,
+  "mean_r2": 0.7234,
+  "median_r2": 0.8012,
+  "std_r2": 0.2156,
+  "best_expression": "sin(x_1**2)*cos(x_1) - C",
+  "best_constants": [0.998]
+}
+```
+
+## Nguyen Benchmarks
+
+| Benchmark | Formula | Variables | Range |
+|-----------|---------|-----------|-------|
+| nguyen_1 | x³ + x² + x | x_1 | [-1, 1] |
+| nguyen_2 | x⁴ + x³ + x² + x | x_1 | [-1, 1] |
+| nguyen_3 | x⁵ + x⁴ + x³ + x² + x | x_1 | [-1, 1] |
+| nguyen_4 | x⁶ + x⁵ + x⁴ + x³ + x² + x | x_1 | [-1, 1] |
+| nguyen_5 | sin(x²)cos(x) - 1 | x_1 | [-1, 1] |
+| nguyen_6 | sin(x) + sin(x + x²) | x_1 | [-1, 1] |
+| nguyen_7 | log(x+1) + log(x²+1) | x_1 | [0, 2] |
+| nguyen_8 | √x | x_1 | [0, 4] |
+| nguyen_9 | sin(x) + sin(y²) | x_1, x_2 | [-1, 1] |
+| nguyen_10 | 2sin(x)cos(y) | x_1, x_2 | [-1, 1] |
+| nguyen_11 | xʸ | x_1, x_2 | [0, 1] |
+| nguyen_12 | x⁴ - x³ + y²/2 - y | x_1, x_2 | [-1, 1] |
+
+## Code Structure
 
 ```
 3_evaluation/
-├── quality/                # Avaliação de qualidade
-│   ├── evaluate_quality_simple.py      # Valid rate, diversity
-│   ├── evaluate.py                      # Avaliação completa
-│   └── evaluate_experiments.py          # Comparação de experimentos
-│
-├── benchmarks/             # Avaliação em benchmarks
-│   ├── evaluate_nguyen_benchmarks.py    # Nguyen 1-12
-│   ├── run_all_nguyen_benchmarks.py     # Suite completa
-│   └── run_nguyen_subset.py             # Subset de benchmarks
-│
-├── comparison/             # Comparação entre modelos
-│   ├── compare_models.py                # Comparação básica
-│   └── compare_trained_models.py        # Comparação detalhada
-│
-├── generate.py             # Geração de expressões
-└── show_expressions.py     # Visualizar expressões geradas
+├── cli.py                  # CLI entry point
+├── core/                   # Common library
+│   ├── model_loader.py     # LoRA model loading
+│   ├── generator.py        # Expression generation
+│   ├── extractor.py        # Expression extraction from output
+│   ├── validator.py        # SymPy validation
+│   ├── metrics.py          # Metrics calculation
+│   └── storage.py          # Result persistence
+├── commands/               # Subcommands
+│   ├── quality.py          # evaluate quality
+│   ├── benchmark.py        # evaluate benchmark
+│   ├── compare.py          # evaluate compare
+│   └── report.py           # evaluate report
+└── benchmarks/             # Additional benchmark utilities
 ```
 
-## Métricas de Avaliação
+## Available Models
 
-### 1. Qualidade de Expressão
+| Model | Notation | Params | HuggingFace |
+|-------|----------|--------|-------------|
+| Base | Infix | 124M | `augustocsc/gpt2_base_infix_682k` |
+| Base | Prefix | 124M | `augustocsc/gpt2_base_prefix_682k` |
+| Medium | Infix | 355M | `augustocsc/gpt2_medium_infix_682k` |
+| Medium | Prefix | 355M | `augustocsc/gpt2_medium_prefix_682k` |
+| Large | Infix | 774M | `augustocsc/gpt2_large_infix_682k` |
+| Large | Prefix | 774M | `augustocsc/gpt2_large_prefix_682k` |
 
-Script: `quality/evaluate_quality_simple.py`
+## YAML Configuration
 
-**Métricas**:
-- **Valid Rate**: % de expressões sintaticamente corretas
-- **Diversity Rate**: % de expressões únicas
-- **Parseable Rate**: % de expressões parseáveis
-- **Error Types**: Categorização de erros
+For reproducible experiments, use a configuration file:
 
-**Uso**:
-```bash
-cd quality
-python evaluate_quality_simple.py \
-  --model_path ../../models/gpt2/medium_700k_json \
-  --num_samples 500
+```yaml
+# config.yaml
+model:
+  path: augustocsc/gpt2_large_infix_682k
+
+generation:
+  temperature: 0.8
+  top_p: 0.95
+  top_k: 50
+  max_new_tokens: 100
+
+prompt:
+  vars: [x_1, x_2, x_3]
+  ops: ['+', '-', '*', '/', sin, cos]
+  cons: C
+  format: infix
+
+evaluation:
+  num_samples: 1000
+  seed: 42
 ```
-
-**Output esperado**:
-```
-Valid expressions: 496/500 (99.2%)
-Diversity: 98.8%
-Unique expressions: 494
-Average length: 42.3 chars
-```
-
-### 2. Benchmarks Nguyen
-
-Script: `benchmarks/evaluate_nguyen_benchmarks.py`
-
-**Métricas**:
-- **Valid Rate**: % de expressões válidas geradas
-- **Best R²**: Melhor fit entre expressões geradas
-- **Mean R²**: R² médio das expressões válidas
-- **Samples to Best**: Quantas amostras até melhor R²
-
-**Uso Individual**:
-```bash
-cd benchmarks
-python evaluate_nguyen_benchmarks.py \
-  --model_path ../../models/gpt2/large_700k_json \
-  --benchmark_name nguyen_5 \
-  --num_samples 100
-```
-
-**Suite Completa** (todos os 12 benchmarks):
-```bash
-cd benchmarks
-python run_all_nguyen_benchmarks.py \
-  --model_path ../../models/gpt2/large_700k_json \
-  --output_dir ../../results/2025-02_test/nguyen
-```
-
-### 3. Comparação de Modelos
-
-Script: `comparison/compare_trained_models.py`
-
-**Compara**:
-- Valid rates
-- R² scores
-- Complexity metrics (depth, operators)
-- Execution time
-
-**Uso**:
-```bash
-cd comparison
-python compare_trained_models.py \
-  --model_base ../../models/gpt2/base_700k_json \
-  --model_medium ../../models/gpt2/medium_700k_json \
-  --model_large ../../models/gpt2/large_700k_json \
-  --dataset ../../1_data/benchmarks/nguyen/nguyen_5.csv \
-  --epochs 10
-```
-
-## Resultados Históricos
-
-### Model Scaling Study (2025-02)
-
-| Modelo | Valid Rate (Quality) | Valid Rate (Nguyen) | Avg R² | Max R² |
-|--------|---------------------|---------------------|---------|--------|
-| Base | 99.4% | 62.5% | 0.9190 | 0.9994 |
-| Medium | 99.2% | 75.2% | 0.9812 | 0.9999 |
-| Large | **100%** 🏆 | **89.0%** 🏆 | **0.9852** 🏆 | **1.0000** 🏆 |
-
-**Destaque**: Large model achieving perfect R²=1.0 on Nguyen-8
-
-## Geração de Expressões
-
-Script: `generate.py`
-
-**Uso**:
-```bash
-python generate.py \
-  --model_path ../models/gpt2/large_700k_json \
-  --num_generations 50 \
-  --validate \
-  --temperature 0.7
-```
-
-**Parâmetros**:
-- `--temperature`: Controla diversidade (0.1-1.0)
-- `--top_p`: Nucleus sampling (0.9-0.95)
-- `--num_return_sequences`: Batch generation
-- `--validate`: Validar expressões com SymPy
-
-## Workflow Típico
-
-### Avaliação Completa de Novo Modelo
 
 ```bash
-# 1. Avaliar qualidade (500 samples)
-cd quality
-python evaluate_quality_simple.py \
-  --model_path ../../models/novo_modelo \
-  --num_samples 500 \
-  --output_file ../../results/novo_experimento/quality.json
-
-# 2. Avaliar em Nguyen (36 experiments)
-cd ../benchmarks
-python run_all_nguyen_benchmarks.py \
-  --model_path ../../models/novo_modelo \
-  --output_dir ../../results/novo_experimento/nguyen
-
-# 3. Comparar com modelos existentes
-cd ../comparison
-python compare_trained_models.py \
-  --model_base ../../models/gpt2/base_700k_json \
-  --model_new ../../models/novo_modelo \
-  --dataset ../../1_data/benchmarks/nguyen/nguyen_5.csv
+python -m 3_evaluation.cli quality --config config.yaml
 ```
 
-## Futuro: Novos Benchmarks
+## Examples
 
-### Feynman Equations (120+ equações)
+### Evaluate All Models (Quality)
+
 ```bash
-# Estrutura planejada
-python evaluate_feynman_benchmarks.py \
-  --model_path ../../models/gpt2/large_700k_json \
-  --category mechanics  # mechanics, electromagnetism, etc
+for model in base medium large; do
+  for notation in infix prefix; do
+    python -m 3_evaluation.cli quality \
+      --model augustocsc/gpt2_${model}_${notation}_682k \
+      --num-samples 500
+  done
+done
 ```
 
-### Strogatz Benchmarks
+### Run All Nguyen Benchmarks
+
 ```bash
-# Sistemas dinâmicos
-python evaluate_strogatz_benchmarks.py \
-  --model_path ../../models/novo_modelo \
-  --system oscillator
+for i in {1..12}; do
+  python -m 3_evaluation.cli benchmark \
+    --model augustocsc/gpt2_large_infix_682k \
+    --benchmark nguyen_$i \
+    --num-samples 100
+done
 ```
 
-## Métricas Detalhadas
+### Compare Infix vs Prefix
 
-### R² Score (Coefficient of Determination)
+```bash
+# Run quality evaluations
+python -m 3_evaluation.cli quality --model augustocsc/gpt2_large_infix_682k --num-samples 500
+python -m 3_evaluation.cli quality --model augustocsc/gpt2_large_prefix_682k --num-samples 500
+
+# List to get run IDs
+python -m 3_evaluation.cli list --type quality
+
+# Compare
+python -m 3_evaluation.cli compare --runs run_xxx run_yyy --output comparison.md
 ```
-R² = 1 - (SS_res / SS_tot)
-
-Onde:
-  SS_res = Σ(y_true - y_pred)²  # Soma dos quadrados dos resíduos
-  SS_tot = Σ(y_true - y_mean)²  # Variância total
-
-Interpretação:
-  R² = 1.0    → Fit perfeito
-  R² > 0.99   → Excelente
-  R² > 0.95   → Muito bom
-  R² > 0.90   → Bom
-  R² < 0      → Pior que média
-```
-
-### Valid Expression Rate
-```
-Valid Rate = (Valid / Total) * 100%
-
-Critérios de validade:
-  1. Sintaxe correta (parseável)
-  2. Semanticamente avaliável
-  3. Sem erros de runtime
-  4. Usa apenas ops/vars permitidas
-```
-
-## Troubleshooting
-
-### Low Valid Rate (<80%)
-- Verificar formato de dados de treino
-- Aumentar epochs de treinamento
-- Verificar temperature (reduzir para 0.6-0.7)
-
-### Low R² Scores
-- Gerar mais samples (100 → 200)
-- Tentar RL fine-tuning (PPO, GRPO)
-- Verificar se benchmark é muito complexo
-
-### OOM Durante Avaliação
-- Reduzir `num_samples`
-- Usar CPU ao invés de GPU
-- Processar em batches menores
-
-## Referências
-
-- Nguyen benchmarks: "Semantically-based crossover in genetic programming" (2012)
-- R² metric: scikit-learn documentation
-- SymPy validation: SymPy documentation
