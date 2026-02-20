@@ -66,10 +66,10 @@ def execute_upload(args: argparse.Namespace):
         success = storage.upload_run(run_dir, eval_type)
 
         if success:
-            print(f"\n✓ Successfully uploaded {args.run}")
+            print(f"\n[OK] Successfully uploaded {args.run}")
             print(f"View at: https://huggingface.co/datasets/{args.repo}/tree/main/{eval_type}/{args.run}")
         else:
-            print(f"\n✗ Failed to upload {args.run}")
+            print(f"\n[FAIL] Failed to upload {args.run}")
 
     elif args.sync:
         # Sync all results
@@ -89,17 +89,17 @@ def execute_upload(args: argparse.Namespace):
         if summary["uploaded"]:
             print(f"\nUploaded ({len(summary['uploaded'])}):")
             for item in summary["uploaded"]:
-                print(f"  ✓ {item}")
+                print(f"  [OK] {item}")
 
         if summary["downloaded"]:
             print(f"\nDownloaded ({len(summary['downloaded'])}):")
             for item in summary["downloaded"]:
-                print(f"  ✓ {item}")
+                print(f"  [OK] {item}")
 
         if summary["errors"]:
             print(f"\nErrors ({len(summary['errors'])}):")
             for item in summary["errors"]:
-                print(f"  ✗ {item}")
+                print(f"  [FAIL] {item}")
 
         if not summary["uploaded"] and not summary["downloaded"]:
             print("\nNo changes - local and remote are in sync.")
@@ -125,7 +125,7 @@ def execute_upload(args: argparse.Namespace):
         fail_count = sum(1 for v in results.values() if not v)
 
         for run_id, success in results.items():
-            status = "✓" if success else "✗"
+            status = "[OK]" if success else "[FAIL]"
             print(f"  {status} {run_id}")
 
         print(f"\nTotal: {success_count} uploaded, {fail_count} failed")
@@ -165,9 +165,9 @@ def execute_download(args: argparse.Namespace):
         )
 
         if result:
-            print(f"\n✓ Downloaded to: {result}")
+            print(f"\n[OK] Downloaded to: {result}")
         else:
-            print(f"\n✗ Failed to download {args.run}")
+            print(f"\n[FAIL] Failed to download {args.run}")
 
     elif args.list:
         # List available runs
@@ -197,7 +197,7 @@ def execute_download(args: argparse.Namespace):
         if summary["downloaded"]:
             print(f"\nDownloaded {len(summary['downloaded'])} runs:")
             for item in summary["downloaded"]:
-                print(f"  ✓ {item}")
+                print(f"  [OK] {item}")
         else:
             print("\nNo new runs to download - local is up to date.")
 
