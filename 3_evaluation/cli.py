@@ -34,6 +34,7 @@ from commands.quality import execute_quality, add_quality_arguments
 from commands.benchmark import execute_benchmark, add_benchmark_arguments, list_benchmarks
 from commands.compare import execute_compare, add_compare_arguments, list_available_runs
 from commands.report import execute_report, add_report_arguments
+from commands.upload import execute_upload, execute_download, add_upload_arguments, add_download_arguments
 from core.storage import ResultStorage
 
 
@@ -132,6 +133,22 @@ For more information, see: https://github.com/augustocsc/seriguela
         description="Show all available benchmark problems.",
     )
 
+    # Subcommand: upload
+    upload_parser = subparsers.add_parser(
+        "upload",
+        help="Upload results to HuggingFace",
+        description="Upload evaluation results to HuggingFace Hub for persistent storage.",
+    )
+    add_upload_arguments(upload_parser)
+
+    # Subcommand: download
+    download_parser = subparsers.add_parser(
+        "download",
+        help="Download results from HuggingFace",
+        description="Download evaluation results from HuggingFace Hub.",
+    )
+    add_download_arguments(download_parser)
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -154,6 +171,10 @@ For more information, see: https://github.com/augustocsc/seriguela
         _list_runs(args)
     elif args.command == "benchmarks":
         list_benchmarks()
+    elif args.command == "upload":
+        execute_upload(args)
+    elif args.command == "download":
+        execute_download(args)
     else:
         parser.print_help()
 

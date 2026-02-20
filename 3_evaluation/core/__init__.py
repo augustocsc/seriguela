@@ -16,6 +16,7 @@ from .extractor import ExpressionExtractor
 from .validator import ExpressionValidator, ValidationResult
 from .metrics import MetricsCalculator, QualityMetrics
 from .storage import ResultStorage
+from .hf_storage import HFResultStorage
 
 __all__ = [
     "ModelLoader",
@@ -27,4 +28,5 @@ __all__ = [
     "MetricsCalculator",
     "QualityMetrics",
     "ResultStorage",
+    "HFResultStorage",
 ]

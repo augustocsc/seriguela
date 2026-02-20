@@ -12,6 +12,7 @@ from .quality import execute_quality, add_quality_arguments
 from .benchmark import execute_benchmark, add_benchmark_arguments, list_benchmarks
 from .compare import execute_compare, add_compare_arguments, list_available_runs
 from .report import execute_report, add_report_arguments
+from .upload import execute_upload, execute_download, add_upload_arguments, add_download_arguments
 
 __all__ = [
     "execute_quality",
@@ -24,4 +25,8 @@ __all__ = [
     "list_available_runs",
     "execute_report",
     "add_report_arguments",
+    "execute_upload",
+    "execute_download",
+    "add_upload_arguments",
+    "add_download_arguments",
 ]
