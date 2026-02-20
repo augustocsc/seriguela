@@ -23,15 +23,20 @@ class ModelLoader:
     """Loads LoRA models from HuggingFace or local paths."""
 
     # Mapping from model size keywords to base model names
-    BASE_MODEL_MAP = {
-        "gpt2": "gpt2",
-        "gpt2-base": "gpt2",
-        "base": "gpt2",
-        "gpt2-medium": "gpt2-medium",
-        "medium": "gpt2-medium",
-        "gpt2-large": "gpt2-large",
-        "large": "gpt2-large",
-    }
+    # IMPORTANT: Order matters! More specific patterns must come first.
+    # Using list of tuples to preserve order (most specific first)
+    BASE_MODEL_PATTERNS = [
+        ("gpt2-large", "gpt2-large"),
+        ("gpt2_large", "gpt2-large"),
+        ("large", "gpt2-large"),
+        ("gpt2-medium", "gpt2-medium"),
+        ("gpt2_medium", "gpt2-medium"),
+        ("medium", "gpt2-medium"),
+        ("gpt2-base", "gpt2"),
+        ("gpt2_base", "gpt2"),
+        ("base", "gpt2"),
+        ("gpt2", "gpt2"),  # Must be last - matches all gpt2 variants
+    ]
 
     def __init__(self, device: Optional[str] = None):
         """
@@ -75,7 +80,7 @@ class ModelLoader:
 
         # Try to infer from model path name
         model_path_lower = model_path.lower()
-        for keyword, base_model in self.BASE_MODEL_MAP.items():
+        for keyword, base_model in self.BASE_MODEL_PATTERNS:
             if keyword in model_path_lower:
                 logger.info(f"Inferred base model from path: {base_model}")
                 return base_model
