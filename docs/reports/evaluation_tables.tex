@@ -1,0 +1,194 @@
+% Standalone tables for dissertation inclusion
+% Usage: \input{evaluation_tables.tex} after defining packages
+
+%==============================================================================
+% TABLE: Main Results Summary
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Comprehensive evaluation results: model performance comparison}
+\label{tab:main_results}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model} & \textbf{Notation} & \textbf{Valid Rate} & \textbf{Diversity} & \textbf{Constraint} \\
+\midrule
+\multirow{2}{*}{GPT-2 Base (124M)}
+    & Infix  & 99.8\% & 75.3\% & 68.3\% \\
+    & Prefix & 89.3\% & 47.5\% & 70.4\% \\
+\midrule
+\multirow{2}{*}{GPT-2 Medium (355M)}
+    & Infix  & 99.9\% & 83.5\% & 57.2\% \\
+    & Prefix & 96.5\% & 71.7\% & 74.2\% \\
+\midrule
+\multirow{2}{*}{GPT-2 Large (774M)}
+    & Infix  & \textbf{100.0\%} & 77.5\% & 74.1\% \\
+    & Prefix & 97.8\% & 69.5\% & 59.5\% \\
+\midrule
+\multicolumn{2}{c}{\textit{Infix Average}} & \textit{99.9\%} & \textit{78.8\%} & \textit{66.5\%} \\
+\multicolumn{2}{c}{\textit{Prefix Average}} & \textit{94.6\%} & \textit{62.9\%} & \textit{68.0\%} \\
+\midrule
+\multicolumn{2}{c}{\textbf{Difference (Infix $-$ Prefix)}} & \textbf{+5.3 pp} & \textbf{+15.9 pp} & $-$1.5 pp \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Results averaged across 12 experiments per model (temperature, prompt, and sampling variations).
+\item pp = percentage points.
+\end{tablenotes}
+\end{table}
+
+%==============================================================================
+% TABLE: Temperature Sweep Results
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Effect of sampling temperature on generation quality}
+\label{tab:temperature_sweep}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\textbf{Temperature} & \textbf{Valid Rate} & \textbf{Diversity} & \textbf{Constraint} & \textbf{Recommended For} \\
+\midrule
+0.3 & 100.0\% & 25.3\% & 80.2\% & Maximum validity \\
+0.5 & 99.7\% & 49.8\% & 70.8\% & High validity \\
+0.7 & 97.5\% & 72.6\% & 60.1\% & Balanced (default) \\
+0.9 & 94.5\% & 82.2\% & 47.7\% & High diversity \\
+1.0 & 92.2\% & 85.5\% & 38.0\% & Maximum diversity \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Results averaged across all 6 models at each temperature setting.
+\end{tablenotes}
+\end{table}
+
+%==============================================================================
+% TABLE: Temperature by Model (Detailed)
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Valid rate (\%) by model and temperature}
+\label{tab:temp_detailed}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Model} & $T=0.3$ & $T=0.5$ & $T=0.7$ & $T=0.9$ & $T=1.0$ \\
+\midrule
+Base Infix & 100.0 & 100.0 & 100.0 & 100.0 & 99.0 \\
+Medium Infix & 100.0 & 100.0 & 100.0 & 100.0 & 99.0 \\
+Large Infix & 100.0 & 100.0 & 100.0 & 100.0 & \textbf{100.0} \\
+\midrule
+Base Prefix & 100.0 & 98.0 & 93.0 & 75.0 & 76.0 \\
+Medium Prefix & 100.0 & 100.0 & 98.0 & 95.0 & 83.0 \\
+Large Prefix & 100.0 & 100.0 & 98.0 & 97.0 & 96.0 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Infix models maintain near-perfect validity; prefix models degrade at higher temperatures.
+\end{tablenotes}
+\end{table}
+
+%==============================================================================
+% TABLE: Model Size Scaling
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Effect of model size on generation quality}
+\label{tab:scaling}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Model Size} & \textbf{Params} & \textbf{Valid} & \textbf{Diversity} & $\Delta$\textbf{Valid} & $\Delta$\textbf{Diverse} \\
+\midrule
+Base & 124M & 94.5\% & 61.4\% & --- & --- \\
+Medium & 355M & 98.2\% & 77.6\% & +3.7 pp & +16.2 pp \\
+Large & 774M & 98.9\% & 73.5\% & +0.7 pp & $-$4.1 pp \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item $\Delta$ columns show change from previous model size.
+\item Medium model achieves best diversity; Large achieves best validity.
+\end{tablenotes}
+\end{table}
+
+%==============================================================================
+% TABLE: Prompt Complexity
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Effect of prompt complexity on generation quality ($T=0.7$)}
+\label{tab:prompt_complexity}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Prompt Type} & \textbf{Configuration} & \textbf{Valid} & \textbf{Diversity} \\
+\midrule
+Simple & 1 var, basic ops ($+,-,\times,\div$) & 98.8\% & 78.8\% \\
+Trigonometric & 1 var, trig ops ($\sin,\cos$) & 97.2\% & 81.3\% \\
+Multivariate & 2 vars, mixed ops & 96.8\% & 90.0\% \\
+Complex & 3 vars, all ops ($\exp,\log$) & 97.7\% & 93.5\% \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item More complex prompts increase diversity with minimal impact on validity.
+\end{tablenotes}
+\end{table}
+
+%==============================================================================
+% TABLE: Sampling Methods
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Effect of sampling method on generation quality ($T=0.7$)}
+\label{tab:sampling_methods}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Method} & \textbf{top\_p} & \textbf{top\_k} & \textbf{Valid} & \textbf{Diversity} \\
+\midrule
+Conservative & 0.80 & 30 & \textbf{99.8\%} & 53.8\% \\
+Default & 0.90 & 50 & 97.5\% & 72.6\% \\
+Diverse & 0.95 & 100 & 94.7\% & \textbf{73.2\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%==============================================================================
+% TABLE: Recommendations
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Recommended configurations for different use cases}
+\label{tab:recommendations}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Objective} & \textbf{Model} & \textbf{Temperature} & \textbf{Expected Valid/Diverse} \\
+\midrule
+Maximum validity & Large Infix & 0.3--0.5 & 100\% / 28--55\% \\
+Maximum diversity & Medium Infix & 0.9--1.0 & 99--100\% / 92--95\% \\
+Balanced & Large Infix & 0.7 & 100\% / 76\% \\
+Resource-constrained & Base Infix & 0.7 & 100\% / 76\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%==============================================================================
+% TABLE: Statistical Summary
+%==============================================================================
+\begin{table}[htbp]
+\centering
+\caption{Statistical summary of comprehensive evaluation}
+\label{tab:stats_summary}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total experiments & 72 \\
+Models evaluated & 6 \\
+Samples per experiment & 100 \\
+Total expressions generated & 7,200 \\
+Overall valid rate & 97.2\% \\
+Overall diversity rate & 70.9\% \\
+Best single-experiment valid rate & 100.0\% (Large Infix, $T \leq 0.9$) \\
+Best single-experiment diversity & 97.0\% (Large Infix, $T=1.0$) \\
+\bottomrule
+\end{tabular}
+\end{table}
