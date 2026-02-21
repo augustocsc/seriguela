@@ -269,13 +269,15 @@ echo "Date: $(date)"
 # Update system
 sudo apt-get update -y
 
-# Clone repository
+# Clone repository and checkout RL experiment branch
 cd /home/ubuntu
 if [ ! -d "seriguela" ]; then
     git clone https://github.com/augustocsc/seriguela.git
 fi
 cd seriguela
-git pull origin main
+git fetch origin
+git checkout experiment/ppo-symbolic-regression
+git pull origin experiment/ppo-symbolic-regression
 
 # Setup Python environment
 python3 -m venv .venv
