@@ -237,15 +237,13 @@ def generate_userdata(experiment_name: str, commands: list, hf_token: str = "", 
     """Generate EC2 userdata script."""
     commands_str = "\n".join([f"    {cmd}" for cmd in commands])
 
-    # Token setup section
+    # Token setup for ubuntu user
     if hf_token or wandb_token:
         token_setup = f"""
-# Setup authentication tokens
-export HF_TOKEN="{hf_token}"
-export WANDB_API_KEY="{wandb_token}"
+# Setup credentials for ubuntu user
+sudo -u ubuntu mkdir -p /home/ubuntu/.cache/huggingface
 
-# Create .netrc for WandB authentication
-mkdir -p /home/ubuntu
+# Create .netrc for WandB
 cat > /home/ubuntu/.netrc << 'NETRC'
 machine api.wandb.ai
   login user
@@ -254,23 +252,23 @@ NETRC
 chmod 600 /home/ubuntu/.netrc
 chown ubuntu:ubuntu /home/ubuntu/.netrc
 
-# Login to services
-wandb login --key $WANDB_API_KEY || true
-huggingface-cli login --token $HF_TOKEN || true
+# Create HuggingFace token file
+echo "{hf_token}" > /home/ubuntu/.cache/huggingface/token
+chmod 600 /home/ubuntu/.cache/huggingface/token
+chown -R ubuntu:ubuntu /home/ubuntu/.cache/huggingface
+
+# Export tokens for current session
+export HF_TOKEN="{hf_token}"
+export WANDB_API_KEY="{wandb_token}"
 """
     else:
-        token_setup = """
-# Login to services (using stored tokens)
-if [ -f ~/.tokens.txt ]; then
-    WANDB_TOKEN=$(grep "wandb" ~/.tokens.txt | cut -d'=' -f2 | tr -d ' ')
-    HF_TOKEN=$(grep "huggingface" ~/.tokens.txt | cut -d'=' -f2 | tr -d ' ')
-    wandb login $WANDB_TOKEN || true
-    huggingface-cli login --token $HF_TOKEN || true
-fi
-"""
+        token_setup = ""
 
     return f"""#!/bin/bash
 set -e
+
+# Set HOME explicitly (required for userdata scripts)
+export HOME=/root
 
 # Log everything
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
@@ -279,40 +277,46 @@ echo "Starting experiment: {experiment_name}"
 echo "Date: $(date)"
 
 # Update system
-sudo apt-get update -y
+apt-get update -y
+
+{token_setup}
 
 # Clone repository and checkout RL experiment branch
 cd /home/ubuntu
 if [ ! -d "seriguela" ]; then
-    git clone https://github.com/augustocsc/seriguela.git
+    sudo -u ubuntu git clone https://github.com/augustocsc/seriguela.git
 fi
 
-# Fix ownership for ubuntu user
-chown -R ubuntu:ubuntu /home/ubuntu/seriguela
-git config --global --add safe.directory /home/ubuntu/seriguela
-
 cd seriguela
-git fetch origin
-git checkout experiment/ppo-symbolic-regression
-git pull origin experiment/ppo-symbolic-regression
+sudo -u ubuntu git config --global --add safe.directory /home/ubuntu/seriguela
+sudo -u ubuntu git fetch origin
+sudo -u ubuntu git checkout experiment/ppo-symbolic-regression
+sudo -u ubuntu git pull origin experiment/ppo-symbolic-regression
 
-# Setup Python environment
-python3 -m venv .venv
-source .venv/bin/activate
+# Setup Python environment as ubuntu user
+sudo -u ubuntu python3 -m venv .venv
 
 # Install dependencies
-pip install --upgrade pip
-pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
-pip install -r requirements.txt
-pip install wandb huggingface_hub
-{token_setup}
+sudo -u ubuntu .venv/bin/pip install --upgrade pip
+sudo -u ubuntu .venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+sudo -u ubuntu .venv/bin/pip install -r requirements.txt
+sudo -u ubuntu .venv/bin/pip install wandb huggingface_hub
 
-# Navigate to reinforcement learning directory
+# Create experiment script
+cat > /home/ubuntu/seriguela/run_all_experiments.sh << 'EXPERIMENT_SCRIPT'
+#!/bin/bash
+set -e
+cd /home/ubuntu/seriguela
+source .venv/bin/activate
 cd 2_training/reinforcement
-
-# Run experiments
-echo "Running experiments..."
 {commands_str}
+EXPERIMENT_SCRIPT
+chmod +x /home/ubuntu/seriguela/run_all_experiments.sh
+chown ubuntu:ubuntu /home/ubuntu/seriguela/run_all_experiments.sh
+
+# Run experiments as ubuntu user with proper environment
+echo "Running experiments..."
+sudo -E -u ubuntu bash -c "export HF_TOKEN='{hf_token}' && export WANDB_API_KEY='{wandb_token}' && /home/ubuntu/seriguela/run_all_experiments.sh"
 
 echo "Experiments completed!"
 echo "Stopping instance..."
