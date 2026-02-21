@@ -6,11 +6,11 @@ and dataset management.
 """
 
 from .expression import Expression
-from .dataset import Dataset
+from .dataset import RegressionDataset
 
 __all__ = [
     'Expression',
-    'Dataset',
+    'RegressionDataset',
 ]
 
 __version__ = '1.0.0'
