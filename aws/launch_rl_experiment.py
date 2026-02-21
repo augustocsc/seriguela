@@ -316,7 +316,7 @@ chown ubuntu:ubuntu /home/ubuntu/seriguela/run_all_experiments.sh
 
 # Run experiments as ubuntu user with proper environment
 echo "Running experiments..."
-sudo -E -u ubuntu bash -c "export HF_TOKEN='{hf_token}' && export WANDB_API_KEY='{wandb_token}' && /home/ubuntu/seriguela/run_all_experiments.sh"
+sudo -E -u ubuntu bash -c "export HF_TOKEN='{hf_token}' && export WANDB_API_KEY='{wandb_token}' && export HF_HOME='/home/ubuntu/.cache/huggingface' && export HOME='/home/ubuntu' && /home/ubuntu/seriguela/run_all_experiments.sh"
 
 echo "Experiments completed!"
 echo "Stopping instance..."
