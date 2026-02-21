@@ -243,7 +243,19 @@ def generate_userdata(experiment_name: str, commands: list, hf_token: str = "", 
 # Setup authentication tokens
 export HF_TOKEN="{hf_token}"
 export WANDB_API_KEY="{wandb_token}"
-wandb login $WANDB_API_KEY || true
+
+# Create .netrc for WandB authentication
+mkdir -p /home/ubuntu
+cat > /home/ubuntu/.netrc << 'NETRC'
+machine api.wandb.ai
+  login user
+  password {wandb_token}
+NETRC
+chmod 600 /home/ubuntu/.netrc
+chown ubuntu:ubuntu /home/ubuntu/.netrc
+
+# Login to services
+wandb login --key $WANDB_API_KEY || true
 huggingface-cli login --token $HF_TOKEN || true
 """
     else:
@@ -274,6 +286,11 @@ cd /home/ubuntu
 if [ ! -d "seriguela" ]; then
     git clone https://github.com/augustocsc/seriguela.git
 fi
+
+# Fix ownership for ubuntu user
+chown -R ubuntu:ubuntu /home/ubuntu/seriguela
+git config --global --add safe.directory /home/ubuntu/seriguela
+
 cd seriguela
 git fetch origin
 git checkout experiment/ppo-symbolic-regression
