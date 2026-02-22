@@ -159,15 +159,27 @@ EXPERIMENTS = {
         "description": "Complete ablation: algorithm, reward, penalty, temperature, prompt, noise",
         "commands": [
             # ============================================================
-            # 1. ALGORITHM COMPARISON (2 runs) - BoN-PPO vs BoN-GRPO
+            # 1. ALGORITHM COMPARISON (5 runs) - Critical for understanding RL contribution
             # ============================================================
-            # 1.1 BoN-PPO (baseline hybrid with buffer)
+            # 1.1 BoN-PPO (hybrid: PPO + elite buffer)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
             "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
-            # 1.2 BoN-GRPO (alternative hybrid)
+            # 1.2 BoN-GRPO (hybrid: GRPO + elite buffer)
             "python run_experiment.py --algorithm bon_grpo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 1.3 Pure PPO (NO buffer - tests if RL alone helps)
+            "python run_experiment.py --algorithm pure_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 1.4 Pure GRPO (NO buffer - tests if RL alone helps)
+            "python run_experiment.py --algorithm pure_grpo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 1.5 Best-of-N (NO RL - pure sampling baseline)
+            "python run_experiment.py --algorithm best_of_n --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
             "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
 
             # ============================================================
