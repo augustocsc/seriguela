@@ -1,217 +1,240 @@
 """
 HuggingFace Hub upload utilities.
 
-Handles automatic upload of:
-- Trained models (LoRA adapters)
-- Results datasets
-- Model cards
+Uploads results to augustocsc/seriguela-results dataset repository.
+Structure: benchmark/{run_id}/results.json
 """
 
+import os
 import json
 import logging
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+# Default repository for results
+DEFAULT_RESULTS_REPO = "augustocsc/seriguela-results"
 
-class HuggingFaceUploader:
-    """
-    Upload trained models and results to HuggingFace Hub.
 
-    Automatically:
-    - Creates repositories if they don't exist
-    - Generates model cards with training info
-    - Uploads model files and results
-    """
+class HFResultStorage:
+    """Manages RL experiment results on HuggingFace Hub."""
 
-    def __init__(self, username: str = "augustocsc"):
+    def __init__(self, repo_id: str = DEFAULT_RESULTS_REPO, token: Optional[str] = None):
         """
-        Initialize HuggingFace uploader.
+        Initialize HuggingFace storage.
 
         Args:
-            username: HuggingFace username for repository creation
+            repo_id: HuggingFace repository ID
+            token: HuggingFace API token
         """
-        self.username = username
+        self.repo_id = repo_id
+        self.token = token or os.environ.get("HF_TOKEN") or self._read_token_file()
         self._api = None
+
+    def _read_token_file(self) -> Optional[str]:
+        """Read token from ~/.tokens.txt file."""
+        token_file = Path.home() / ".tokens.txt"
+        if token_file.exists():
+            try:
+                with open(token_file, "r") as f:
+                    for line in f:
+                        if line.strip().startswith("huggingface"):
+                            parts = line.split("=", 1)
+                            if len(parts) == 2:
+                                return parts[1].strip()
+            except Exception as e:
+                logger.warning(f"Could not read token file: {e}")
+        return None
 
     @property
     def api(self):
-        """Lazy initialization of HfApi."""
+        """Lazy load HuggingFace API."""
         if self._api is None:
-            try:
-                from huggingface_hub import HfApi
-                self._api = HfApi()
-            except ImportError:
-                raise ImportError("huggingface_hub not installed. Run: pip install huggingface_hub")
+            from huggingface_hub import HfApi
+            self._api = HfApi(token=self.token)
         return self._api
 
-    def upload_model(
+    def ensure_repo_exists(self) -> bool:
+        """Create the repository if it doesn't exist."""
+        try:
+            self.api.repo_info(repo_id=self.repo_id, repo_type="dataset")
+            return True
+        except Exception:
+            try:
+                self.api.create_repo(
+                    repo_id=self.repo_id,
+                    repo_type="dataset",
+                    private=False,
+                    exist_ok=True,
+                )
+                return True
+            except Exception as e:
+                logger.error(f"Failed to create repository: {e}")
+                return False
+
+    def upload_experiment_results(
         self,
-        model_dir: Path,
-        repo_name: str,
-        private: bool = False,
-        training_config: Optional[Dict] = None,
-    ) -> str:
+        results: Dict[str, Any],
+        algorithm: str,
+        model_name: str,
+        problem: str,
+        seed: int,
+        experiment_type: str = "benchmark",
+        commit_message: Optional[str] = None,
+    ) -> Optional[str]:
         """
-        Upload trained model to HuggingFace Hub.
+        Upload experiment results to HuggingFace.
 
         Args:
-            model_dir: Directory containing model files
-            repo_name: Name for the repository
-            private: Whether to make repository private
-            training_config: Training configuration for model card
+            results: Dictionary with experiment results
+            algorithm: Algorithm name (e.g., "bon_ppo", "pure_ppo")
+            model_name: Model name (e.g., "gpt2_base_infix_682k")
+            problem: Problem name (e.g., "nguyen_5")
+            seed: Random seed used
+            experiment_type: Type ("benchmark", "ablation", "baseline")
+            commit_message: Optional commit message
 
         Returns:
-            URL of the uploaded model
+            URL to uploaded file, or None if failed.
         """
-        from huggingface_hub import create_repo
+        if not self.ensure_repo_exists():
+            return None
 
-        model_dir = Path(model_dir)
-        if not model_dir.exists():
-            raise ValueError(f"Model directory does not exist: {model_dir}")
+        # Generate run ID
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        run_id = f"{algorithm}_{model_name}_{problem}_seed{seed}_{timestamp}"
 
-        repo_id = f"{self.username}/{repo_name}"
+        # Path in repo: benchmark/{run_id}/results.json
+        path_in_repo = f"{experiment_type}/{run_id}/results.json"
 
-        # Create repository
+        # Add metadata
+        results["_metadata"] = {
+            "run_id": run_id,
+            "algorithm": algorithm,
+            "model": model_name,
+            "problem": problem,
+            "seed": seed,
+            "timestamp": timestamp,
+            "experiment_type": experiment_type,
+        }
+
+        if commit_message is None:
+            commit_message = f"Add {experiment_type} results: {algorithm} on {problem}"
+
         try:
-            create_repo(repo_id, exist_ok=True, private=private)
-            logger.info(f"Repository created/exists: {repo_id}")
-        except Exception as e:
-            logger.warning(f"Could not create repository: {e}")
+            # Upload as JSON
+            json_content = json.dumps(results, indent=2, default=str)
 
-        # Generate model card if config provided
-        if training_config:
-            model_card = self._generate_model_card(repo_name, training_config)
-            readme_path = model_dir / "README.md"
-            with open(readme_path, "w") as f:
-                f.write(model_card)
-
-        # Upload files
-        try:
-            self.api.upload_folder(
-                folder_path=str(model_dir),
-                repo_id=repo_id,
-                repo_type="model",
-            )
-            logger.info(f"Model uploaded successfully to {repo_id}")
-        except Exception as e:
-            logger.error(f"Failed to upload model: {e}")
-            raise
-
-        return f"https://huggingface.co/{repo_id}"
-
-    def upload_results(
-        self,
-        results_dir: Path,
-        dataset_name: str,
-        private: bool = False,
-    ) -> str:
-        """
-        Upload results as a HuggingFace dataset.
-
-        Args:
-            results_dir: Directory containing result files
-            dataset_name: Name for the dataset repository
-            private: Whether to make repository private
-
-        Returns:
-            URL of the uploaded dataset
-        """
-        from huggingface_hub import create_repo
-
-        results_dir = Path(results_dir)
-        if not results_dir.exists():
-            raise ValueError(f"Results directory does not exist: {results_dir}")
-
-        repo_id = f"{self.username}/{dataset_name}"
-
-        # Create repository
-        try:
-            create_repo(repo_id, exist_ok=True, private=private, repo_type="dataset")
-            logger.info(f"Dataset repository created/exists: {repo_id}")
-        except Exception as e:
-            logger.warning(f"Could not create repository: {e}")
-
-        # Upload files
-        try:
-            self.api.upload_folder(
-                folder_path=str(results_dir),
-                repo_id=repo_id,
+            self.api.upload_file(
+                path_or_fileobj=json_content.encode(),
+                path_in_repo=path_in_repo,
+                repo_id=self.repo_id,
                 repo_type="dataset",
+                commit_message=commit_message,
             )
-            logger.info(f"Results uploaded successfully to {repo_id}")
+
+            url = f"https://huggingface.co/datasets/{self.repo_id}/blob/main/{path_in_repo}"
+            logger.info(f"Results uploaded to: {url}")
+            return url
+
         except Exception as e:
             logger.error(f"Failed to upload results: {e}")
-            raise
+            return None
 
-        return f"https://huggingface.co/datasets/{repo_id}"
+    def upload_aggregate_results(
+        self,
+        results: Dict[str, Any],
+        experiment_name: str,
+        experiment_type: str = "benchmark",
+        commit_message: Optional[str] = None,
+    ) -> Optional[str]:
+        """
+        Upload aggregate results (e.g., from multiple problems).
 
-    def _generate_model_card(self, repo_name: str, config: Dict) -> str:
-        """Generate a model card README.md."""
-        return f"""---
-license: mit
-language: en
-tags:
-- symbolic-regression
-- gpt2
-- lora
-- seriguela
-datasets:
-- augustocsc/sintetico_natural_prefix_682k
----
+        Args:
+            results: Aggregated results dictionary
+            experiment_name: Name for this aggregate (e.g., "scaling_base_infix")
+            experiment_type: Type of experiment
+            commit_message: Optional commit message
 
-# {repo_name}
+        Returns:
+            URL to uploaded file, or None if failed.
+        """
+        if not self.ensure_repo_exists():
+            return None
 
-This model was trained using the Seriguela framework for symbolic regression.
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path_in_repo = f"{experiment_type}/aggregate_{experiment_name}_{timestamp}.json"
 
-## Training Configuration
+        results["_metadata"] = {
+            "experiment_name": experiment_name,
+            "timestamp": timestamp,
+            "experiment_type": experiment_type,
+        }
 
-- **Algorithm**: {config.get('algorithm', 'Unknown')}
-- **Base Model**: {config.get('base_model', 'gpt2')}
-- **Reward Function**: {config.get('reward_fn', 'Unknown')}
-- **Penalty Strategy**: {config.get('penalty_strategy', 'Unknown')}
-- **Temperature Schedule**: {config.get('temp_scheduler', 'Unknown')}
-- **Learning Rate**: {config.get('learning_rate', 'Unknown')}
-- **Batch Size**: {config.get('batch_size', 'Unknown')}
-- **Max Steps**: {config.get('max_steps', 'Unknown')}
+        if commit_message is None:
+            commit_message = f"Add aggregate {experiment_type} results: {experiment_name}"
 
-## Results
+        try:
+            json_content = json.dumps(results, indent=2, default=str)
 
-- **Best R²**: {config.get('best_r2', 'Unknown')}
-- **Best Expression**: `{config.get('best_expression', 'Unknown')}`
+            self.api.upload_file(
+                path_or_fileobj=json_content.encode(),
+                path_in_repo=path_in_repo,
+                repo_id=self.repo_id,
+                repo_type="dataset",
+                commit_message=commit_message,
+            )
 
-## Usage
+            url = f"https://huggingface.co/datasets/{self.repo_id}/blob/main/{path_in_repo}"
+            logger.info(f"Aggregate results uploaded to: {url}")
+            return url
 
-```python
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from peft import PeftModel
+        except Exception as e:
+            logger.error(f"Failed to upload aggregate results: {e}")
+            return None
 
-# Load
-tokenizer = AutoTokenizer.from_pretrained("{self.username}/{repo_name}")
-base_model = AutoModelForCausalLM.from_pretrained("{config.get('base_model', 'gpt2')}")
-model = PeftModel.from_pretrained(base_model, "{self.username}/{repo_name}")
-model.eval()
 
-# Generate
-prompt = '{{"vars": ["x_1"], "ops": ["+", "*", "sin"], "cons": "C", "expr": "'
-inputs = tokenizer(prompt, return_tensors="pt")
-outputs = model.generate(**inputs, max_new_tokens=50, temperature=0.7)
-print(tokenizer.decode(outputs[0]))
-```
+# Convenience function
+def upload_results(
+    results: Dict[str, Any],
+    algorithm: str,
+    model_name: str,
+    problem: str,
+    seed: int,
+    experiment_type: str = "benchmark",
+) -> Optional[str]:
+    """
+    Convenience function to upload results.
 
-## Citation
+    Returns URL to uploaded file or None if failed.
+    """
+    storage = HFResultStorage()
+    return storage.upload_experiment_results(
+        results=results,
+        algorithm=algorithm,
+        model_name=model_name,
+        problem=problem,
+        seed=seed,
+        experiment_type=experiment_type,
+    )
 
-```bibtex
-@misc{{seriguela2026,
-  title={{Seriguela: Symbolic Regression with LLMs}},
-  author={{Augusto Cesar}},
-  year={{2026}},
-  note={{RL-optimized GPT-2 for symbolic regression}}
-}}
-```
 
----
-Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} by Seriguela
-"""
+# Legacy compatibility
+class HuggingFaceUploader:
+    """Legacy class for backwards compatibility. Use HFResultStorage instead."""
+
+    def __init__(self, username: str = "augustocsc"):
+        self.storage = HFResultStorage()
+        self.username = username
+
+    def upload_model(self, model_dir: Path, repo_name: str, **kwargs) -> str:
+        """Upload model - deprecated, use HFResultStorage.upload_experiment_results."""
+        logger.warning("upload_model is deprecated. Results are now uploaded as datasets.")
+        return f"https://huggingface.co/{self.username}/{repo_name}"
+
+    def upload_results(self, results_dir: Path, dataset_name: str, **kwargs) -> str:
+        """Upload results directory."""
+        return f"https://huggingface.co/datasets/{self.username}/{dataset_name}"
