@@ -16,7 +16,8 @@ from pathlib import Path
 
 # AWS Configuration
 AWS_REGION = "us-east-1"
-AMI_ID = "ami-0f3d7b789119ccbfa"  # Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.9 (Ubuntu 24.04)
+# Deep Learning AMI with PyTorch pre-installed (much faster startup)
+AMI_ID = "ami-0ad2671533287584d"  # Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04)
 KEY_NAME = "chave-gpu-nova"
 SECURITY_GROUP_ID = "sg-0deaa73e23482e3f6"
 
@@ -394,6 +395,131 @@ EXPERIMENTS = {
             "python run_factorial_experiment.py --model_idx 5 --max_steps 5000 --batch_size 16"
         ],
     },
+
+    # ========== GRANULAR FACTORIAL EXPERIMENTS (18 instances) ==========
+    # Maximum parallelization: 6 models × 3 problems = 18 instances
+    # Each instance runs 1,440 configs for ONE model-problem pair
+    # This is the FASTEST approach
+
+    # Base Infix - 3 problems
+    "fact_base_infix_n1": {
+        "description": "Factorial: Base Infix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 0 --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_base_infix_n5": {
+        "description": "Factorial: Base Infix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 0 --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_base_infix_n9": {
+        "description": "Factorial: Base Infix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 0 --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
+
+    # Base Prefix - 3 problems
+    "fact_base_prefix_n1": {
+        "description": "Factorial: Base Prefix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 1 --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_base_prefix_n5": {
+        "description": "Factorial: Base Prefix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 1 --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_base_prefix_n9": {
+        "description": "Factorial: Base Prefix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 1 --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
+
+    # Medium Infix - 3 problems
+    "fact_medium_infix_n1": {
+        "description": "Factorial: Medium Infix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 2 --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_medium_infix_n5": {
+        "description": "Factorial: Medium Infix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 2 --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_medium_infix_n9": {
+        "description": "Factorial: Medium Infix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 2 --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
+
+    # Medium Prefix - 3 problems
+    "fact_medium_prefix_n1": {
+        "description": "Factorial: Medium Prefix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 3 --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_medium_prefix_n5": {
+        "description": "Factorial: Medium Prefix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 3 --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "fact_medium_prefix_n9": {
+        "description": "Factorial: Medium Prefix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 3 --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
+
+    # Large Infix - 3 problems
+    "fact_large_infix_n1": {
+        "description": "Factorial: Large Infix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 4 --problem nguyen_1 --max_steps 5000 --batch_size 16"
+        ],
+    },
+    "fact_large_infix_n5": {
+        "description": "Factorial: Large Infix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 4 --problem nguyen_5 --max_steps 5000 --batch_size 16"
+        ],
+    },
+    "fact_large_infix_n9": {
+        "description": "Factorial: Large Infix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 4 --problem nguyen_9 --max_steps 5000 --batch_size 16"
+        ],
+    },
+
+    # Large Prefix - 3 problems
+    "fact_large_prefix_n1": {
+        "description": "Factorial: Large Prefix × Nguyen-1 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 5 --problem nguyen_1 --max_steps 5000 --batch_size 16"
+        ],
+    },
+    "fact_large_prefix_n5": {
+        "description": "Factorial: Large Prefix × Nguyen-5 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 5 --problem nguyen_5 --max_steps 5000 --batch_size 16"
+        ],
+    },
+    "fact_large_prefix_n9": {
+        "description": "Factorial: Large Prefix × Nguyen-9 (1,440 configs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 5 --problem nguyen_9 --max_steps 5000 --batch_size 16"
+        ],
+    },
 }
 
 
@@ -415,7 +541,7 @@ def read_local_tokens() -> tuple[str, str]:
 
 
 def generate_userdata(experiment_name: str, commands: list, hf_token: str = "", wandb_token: str = "") -> str:
-    """Generate EC2 userdata script."""
+    """Generate EC2 userdata script for Deep Learning AMI (PyTorch pre-installed)."""
     commands_str = "\n".join([f"    {cmd}" for cmd in commands])
 
     # Token setup for ubuntu user
@@ -437,28 +563,20 @@ chown ubuntu:ubuntu /home/ubuntu/.netrc
 echo "{hf_token}" > /home/ubuntu/.cache/huggingface/token
 chmod 600 /home/ubuntu/.cache/huggingface/token
 chown -R ubuntu:ubuntu /home/ubuntu/.cache/huggingface
-
-# Export tokens for current session
-export HF_TOKEN="{hf_token}"
-export WANDB_API_KEY="{wandb_token}"
 """
     else:
         token_setup = ""
 
+    # Deep Learning AMI has PyTorch pre-installed in a conda environment
     return f"""#!/bin/bash
 set -e
-
-# Set HOME explicitly (required for userdata scripts)
-export HOME=/root
 
 # Log everything
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 echo "Starting experiment: {experiment_name}"
 echo "Date: $(date)"
-
-# Update system
-apt-get update -y
+echo "Using Deep Learning AMI with pre-installed PyTorch"
 
 {token_setup}
 
@@ -474,22 +592,17 @@ sudo -u ubuntu git fetch origin
 sudo -u ubuntu git checkout experiment/ppo-symbolic-regression
 sudo -u ubuntu git pull origin experiment/ppo-symbolic-regression
 
-# Setup Python environment as ubuntu user
-sudo -u ubuntu python3 -m venv .venv
-
-# Install dependencies
-sudo -u ubuntu .venv/bin/pip install --upgrade pip
-sudo -u ubuntu .venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
-sudo -u ubuntu .venv/bin/pip install -r requirements.txt
-sudo -u ubuntu .venv/bin/pip install wandb huggingface_hub
+# Use conda environment from Deep Learning AMI (PyTorch is pre-installed)
+# Install only the missing packages
+echo "Installing additional dependencies..."
+sudo -u ubuntu bash -c "source /opt/pytorch/bin/activate && pip install --quiet transformers peft datasets accelerate trl wandb huggingface_hub scikit-learn"
 
 # Create experiment script
 cat > /home/ubuntu/seriguela/run_all_experiments.sh << 'EXPERIMENT_SCRIPT'
 #!/bin/bash
 set -e
-cd /home/ubuntu/seriguela
-source .venv/bin/activate
-cd 2_training/reinforcement
+source /opt/pytorch/bin/activate
+cd /home/ubuntu/seriguela/2_training/reinforcement
 {commands_str}
 EXPERIMENT_SCRIPT
 chmod +x /home/ubuntu/seriguela/run_all_experiments.sh
@@ -500,15 +613,13 @@ echo "Running experiments..."
 sudo -E -u ubuntu bash -c "export HF_TOKEN='{hf_token}' && export WANDB_API_KEY='{wandb_token}' && export HF_HOME='/home/ubuntu/.cache/huggingface' && export HOME='/home/ubuntu' && /home/ubuntu/seriguela/run_all_experiments.sh"
 
 echo "Experiments completed!"
-echo "Stopping instance..."
-
-# Results are uploaded to HuggingFace via --upload_hf flag in experiments
 
 # Signal completion
 touch /tmp/experiment_complete
 
-# Optional: Stop instance after completion
-# sudo shutdown -h now
+# Auto-stop instance after completion to save costs
+echo "Stopping instance to save costs..."
+sudo shutdown -h now
 """
 
 
