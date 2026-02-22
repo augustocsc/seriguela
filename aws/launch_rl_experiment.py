@@ -37,6 +37,16 @@ EXPERIMENTS = {
         ],
     },
 
+    # Test HF upload and WandB logging
+    "test_hf_wandb": {
+        "description": "Test HF upload and WandB logging (1 run, 50 steps)",
+        "commands": [
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
+            "--max_steps 50 --batch_size 8 --seeds 42 --use_wandb --upload_hf"
+        ],
+    },
+
     # Quick test
     "nguyen_5_test": {
         "description": "Quick test on Nguyen-5",
