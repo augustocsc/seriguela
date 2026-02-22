@@ -342,6 +342,48 @@ EXPERIMENTS = {
             for i in range(1, 13)
         ],
     },
+
+    # ========== FULL FACTORIAL EXPERIMENTS ==========
+    # 6 models × 3 problems × 1,440 configs = 25,920 total runs
+    # Each factorial_* experiment runs one model on all problems with all 1,440 configs
+    # = 4,320 runs per model
+
+    "factorial_base_infix": {
+        "description": "Full factorial: Base Infix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 0 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "factorial_base_prefix": {
+        "description": "Full factorial: Base Prefix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "factorial_medium_infix": {
+        "description": "Full factorial: Medium Infix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 2 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "factorial_medium_prefix": {
+        "description": "Full factorial: Medium Prefix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 3 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "factorial_large_infix": {
+        "description": "Full factorial: Large Infix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 4 --max_steps 5000 --batch_size 16"
+        ],
+    },
+    "factorial_large_prefix": {
+        "description": "Full factorial: Large Prefix (4,320 runs)",
+        "commands": [
+            "python run_factorial_experiment.py --model_idx 5 --max_steps 5000 --batch_size 16"
+        ],
+    },
 }
 
 
