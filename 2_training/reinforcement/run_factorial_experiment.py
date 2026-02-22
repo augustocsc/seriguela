@@ -59,7 +59,7 @@ def generate_all_configs():
     return configs
 
 
-def build_command(model_repo, problem, config, max_steps, batch_size, use_wandb=True):
+def build_command(model_repo, problem, config, max_steps, batch_size, use_wandb=True, upload_hf=True):
     """Build run_experiment.py command."""
     cmd = [
         "python", "run_experiment.py",
@@ -82,6 +82,9 @@ def build_command(model_repo, problem, config, max_steps, batch_size, use_wandb=
 
     if use_wandb:
         cmd.append("--use_wandb")
+
+    if upload_hf:
+        cmd.append("--upload_hf")
 
     return cmd
 
@@ -154,7 +157,7 @@ def run_experiment(
                 print(f"\n[{run_count}/{total_runs}] {model_name} / {prob}")
                 print(f"  Config: {config_name}")
 
-                cmd = build_command(model_repo, prob, config, max_steps, batch_size, use_wandb)
+                cmd = build_command(model_repo, prob, config, max_steps, batch_size, use_wandb, upload_hf=True)
 
                 try:
                     result = subprocess.run(
