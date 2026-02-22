@@ -29,6 +29,14 @@ INSTANCE_TYPES = {
 
 # Pre-defined experiments (single seed for stress/exploration experiments)
 EXPERIMENTS = {
+    # Quick factorial verification test (19 configs covering all dimensions)
+    "quick_factorial_test": {
+        "description": "Quick test of all config dimensions (19 runs, 10 steps each)",
+        "commands": [
+            "python quick_factorial_test.py --max_steps 10"
+        ],
+    },
+
     # Quick test
     "nguyen_5_test": {
         "description": "Quick test on Nguyen-5",
