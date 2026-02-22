@@ -34,7 +34,10 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "classes"))
 
-from algorithms import BoNPPOTrainer, BoNGRPOTrainer, TrainerConfig
+from algorithms import (
+    BoNPPOTrainer, BoNGRPOTrainer, PurePPOTrainer, PureGRPOTrainer,
+    TrainerConfig, BestOfNBaseline, BoNConfig, run_best_of_n_baseline
+)
 from rewards import (
     R2ClippedReward, LengthPenalizedReward, SRICReward,
     PenaltyStrategy, PenaltyHandler, create_reward_with_penalty
@@ -153,12 +156,14 @@ def generate_nguyen_data(problem: str) -> tuple:
     x = np.random.uniform(domain[0], domain[1], (n_samples, n_vars))
 
     # Compute y using the equation
-    # Map variables
+    # Map variables - FIX: Always set x, conditionally set y
     local_vars = {}
     for i, var_name in enumerate(benchmark["vars"]):
         local_vars[var_name.replace("_", "")] = x[:, i]  # x_1 -> x1
-        local_vars["x"] = x[:, 0] if n_vars == 1 else None
-        local_vars["y"] = x[:, 1] if n_vars >= 2 else None
+
+    # Set shorthand variables for equations (FIX: x is always column 0)
+    local_vars["x"] = x[:, 0]  # Always available
+    local_vars["y"] = x[:, 1] if n_vars >= 2 else None  # Only for 2+ variables
 
     # Add safe functions
     safe_funcs = {
@@ -194,6 +199,8 @@ def create_trainer(
     trainer_classes = {
         "bon_ppo": BoNPPOTrainer,
         "bon_grpo": BoNGRPOTrainer,
+        "pure_ppo": PurePPOTrainer,
+        "pure_grpo": PureGRPOTrainer,
     }
 
     if algorithm not in trainer_classes:
@@ -227,9 +234,29 @@ def run_single_experiment(args, seed: int) -> dict:
     x, y, ground_truth, valid_variables = generate_nguyen_data(args.problem)
     logger.info(f"Generated data for {args.problem}: X shape {x.shape}")
 
+    # Add noise if requested
+    if args.noise_type != "none" and args.noise_level > 0:
+        from utils.noise_generator import add_noise, create_noise_config
+        noise_config = create_noise_config(
+            noise_type=args.noise_type,
+            noise_level=args.noise_level,
+        )
+        y_original = y.copy()
+        y = add_noise(y, noise_config, seed=seed)
+        logger.info(f"Added {args.noise_type} noise (level={args.noise_level})")
+
     # Determine notation from model name
     is_prefix = "prefix" in args.model.lower()
     logger.info(f"Using {'prefix' if is_prefix else 'infix'} notation")
+
+    # Detect base model size
+    base_model = "gpt2"
+    if "medium" in args.model.lower():
+        base_model = "gpt2-medium"
+    elif "large" in args.model.lower():
+        base_model = "gpt2-large"
+
+    model_name = args.model.split("/")[-1]
 
     # Create reward function
     reward_kwargs = {}
@@ -243,6 +270,27 @@ def run_single_experiment(args, seed: int) -> dict:
         penalty_strategy=args.penalty,
         **reward_kwargs
     )
+
+    # Handle Best-of-N baseline separately (no RL training)
+    if args.algorithm == "best_of_n":
+        results = run_best_of_n_baseline(
+            model_path=args.model,
+            base_model=base_model,
+            x=x,
+            y=y,
+            reward_fn=reward_fn,
+            penalty_handler=penalty_handler,
+            n_samples=args.max_steps * args.batch_size,  # Total samples similar to RL
+            is_prefix=is_prefix,
+            valid_variables=valid_variables,
+            ground_truth=ground_truth,
+            temperature=0.7 if args.temperature.startswith("fixed") else 0.7,
+            use_wandb=args.use_wandb,
+        )
+        results["seed"] = seed
+        results["problem"] = args.problem
+        results["model"] = args.model
+        return results
 
     # Create temperature scheduler
     temp_scheduler = create_temperature_scheduler(args.temperature)
@@ -263,15 +311,7 @@ def run_single_experiment(args, seed: int) -> dict:
     )
 
     # Create trainer config
-    model_name = args.model.split("/")[-1]
     output_dir = Path(args.output_dir) / f"{args.algorithm}_{model_name}" / args.problem / f"seed_{seed}"
-
-    # Detect base model size
-    base_model = "gpt2"
-    if "medium" in args.model.lower():
-        base_model = "gpt2-medium"
-    elif "large" in args.model.lower():
-        base_model = "gpt2-large"
 
     config = TrainerConfig(
         model_path=args.model,
@@ -288,6 +328,7 @@ def run_single_experiment(args, seed: int) -> dict:
         buffer_sample_ratio=args.buffer_ratio,
         patience=args.patience,
         delta=args.delta,
+        prompt_type=args.prompt_type,
         log_every=args.log_every,
         save_every=args.save_every,
         output_dir=str(output_dir),
@@ -323,11 +364,18 @@ def run_single_experiment(args, seed: int) -> dict:
     # Upload to HuggingFace if requested
     if args.upload_hf:
         try:
-            uploader = HuggingFaceUploader()
-            repo_name = f"seriguela-{args.algorithm}-{model_name}-{args.problem}-seed{seed}"
-            url = uploader.upload_model(output_dir / "checkpoints" / "final", repo_name)
-            logger.info(f"Model uploaded to: {url}")
-            results["hf_url"] = url
+            from utils.hf_upload import upload_results
+            url = upload_results(
+                results=results,
+                algorithm=args.algorithm,
+                model_name=model_name,
+                problem=args.problem,
+                seed=seed,
+                experiment_type="benchmark",
+            )
+            if url:
+                logger.info(f"Results uploaded to: {url}")
+                results["hf_url"] = url
         except Exception as e:
             logger.warning(f"Failed to upload to HuggingFace: {e}")
 
@@ -341,7 +389,7 @@ def main():
     parser.add_argument("--config", type=str, help="Path to YAML config file")
 
     # Algorithm
-    parser.add_argument("--algorithm", choices=["bon_ppo", "bon_grpo"],
+    parser.add_argument("--algorithm", choices=["bon_ppo", "bon_grpo", "pure_ppo", "pure_grpo", "best_of_n"],
                         default="bon_ppo", help="RL algorithm to use")
 
     # Model
@@ -368,6 +416,20 @@ def main():
     parser.add_argument("--temperature", choices=[
         "fixed_0.7", "fixed_0.9", "linear_annealing", "cosine_annealing"
     ], default="fixed_0.7", help="Temperature scheduler")
+
+    # Prompt type (for robustness testing)
+    parser.add_argument("--prompt_type", choices=["standard", "oracle", "distractor"],
+                        default="standard", help="Prompt type for robustness testing")
+
+    # Noise (for robustness testing)
+    parser.add_argument("--noise_type", choices=["none", "gaussian", "uniform"],
+                        default="none", help="Type of noise to add to data")
+    parser.add_argument("--noise_level", type=float, default=0.0,
+                        help="Noise level (fraction of signal std)")
+
+    # OOD evaluation
+    parser.add_argument("--ood_test", type=str, default=None,
+                        help="OOD test to run (e.g., 'near_ood', 'far_ood_right', 'structural_rational')")
 
     # Training
     parser.add_argument("--max_steps", type=int, default=10000, help="Maximum training steps")

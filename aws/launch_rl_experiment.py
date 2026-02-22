@@ -27,8 +27,9 @@ INSTANCE_TYPES = {
     "g5.4xlarge": {"gpu": "A10G (24GB)", "vcpus": 16, "ram": "64GB", "cost": "$1.62/hr"},
 }
 
-# Pre-defined experiments
+# Pre-defined experiments (single seed for stress/exploration experiments)
 EXPERIMENTS = {
+    # Quick test
     "nguyen_5_test": {
         "description": "Quick test on Nguyen-5",
         "commands": [
@@ -37,179 +38,287 @@ EXPERIMENTS = {
             "--max_steps 1000 --seeds 42 --use_wandb"
         ],
     },
+
+    # ========== ABLATION STUDIES (single seed) ==========
     "reward_ablation": {
         "description": "Compare all 3 reward functions",
         "commands": [
-            # R2 Clipped
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward r2_clipped --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
-            # Length Penalized
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
-            # SR-IC
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward sr_ic --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
     "penalty_ablation": {
         "description": "Compare binary vs gradient penalty",
         "commands": [
-            # Binary penalty
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty binary --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb",
-            # Gradient penalty
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
     "temperature_ablation": {
         "description": "Compare temperature strategies",
         "commands": [
-            # Fixed 0.7
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
-            # Fixed 0.9
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.9 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
-            # Linear annealing
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature linear_annealing "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
-            # Cosine annealing
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
+
+    # ========== ALGORITHM COMPARISON (single seed) ==========
     "algorithm_comparison": {
-        "description": "Compare BoN-PPO vs BoN-GRPO",
+        "description": "Compare all algorithms: BoN-PPO, BoN-GRPO, Pure-PPO, Pure-GRPO, Best-of-N",
         "commands": [
-            # BoN-PPO
+            # BoN-PPO (hybrid with elite buffer)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb",
-            # BoN-GRPO
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # BoN-GRPO (hybrid with elite buffer)
             "python run_experiment.py --algorithm bon_grpo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Pure PPO (no buffer)
+            "python run_experiment.py --algorithm pure_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Pure GRPO (no buffer)
+            "python run_experiment.py --algorithm pure_grpo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Best-of-N baseline (no RL training)
+            "python run_experiment.py --algorithm best_of_n --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
-    "all_nguyen": {
-        "description": "Run best configuration on all Nguyen problems",
+
+    # ========== PROMPT ROBUSTNESS (single seed) ==========
+    "prompt_robustness": {
+        "description": "Compare standard vs oracle vs distractor prompts",
         "commands": [
-            f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
-            for i in range(1, 13)
+            # Standard prompt
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--prompt_type standard --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Oracle prompt (helpful hints)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--prompt_type oracle --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Distractor prompt (misleading hints)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--prompt_type distractor --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
-    # Full ablation suite - runs all ablation experiments sequentially (~26h)
+
+    # ========== NOISE ROBUSTNESS (single seed) ==========
+    "noise_robustness": {
+        "description": "Test robustness to different noise levels",
+        "commands": [
+            # No noise (baseline)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type none --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Low noise (1%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.01 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # Medium noise (5%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.05 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # High noise (10%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.1 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+        ],
+    },
+
+    # ========== FULL ABLATION SUITE (single seed) ==========
+    # Complete ablation covering EVERYTHING that was missing from previous experiment
+    # Total: 21 runs on Nguyen-5
     "full_ablation_suite": {
-        "description": "Complete ablation study: reward, penalty, temperature, algorithm",
+        "description": "Complete ablation: algorithm, reward, penalty, temperature, prompt, noise",
         "commands": [
-            # Reward ablation (3 configs x 3 seeds x 5000 steps)
+            # ============================================================
+            # 1. ALGORITHM COMPARISON (2 runs) - BoN-PPO vs BoN-GRPO
+            # ============================================================
+            # 1.1 BoN-PPO (baseline hybrid with buffer)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            "--problem nguyen_5 --reward r2_clipped --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 1.2 BoN-GRPO (alternative hybrid)
+            "python run_experiment.py --algorithm bon_grpo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+
+            # ============================================================
+            # 2. REWARD FUNCTION ABLATION (3 runs) - WAS NOT LOGGED PROPERLY
+            # ============================================================
+            # 2.1 R² Clipped (pure fitness)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward r2_clipped --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 2.2 Length-Penalized R² (simplicity bias)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 2.3 SR-IC (information-theoretic complexity)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward sr_ic --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+
+            # ============================================================
+            # 3. PENALTY STRATEGY ABLATION (2 runs) - WAS NOT LOGGED PROPERLY
+            # ============================================================
+            # 3.1 Binary penalty (-1.0 for all invalid)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty binary --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 3.2 Gradient penalty (differentiated by error type)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+
+            # ============================================================
+            # 4. TEMPERATURE SCHEDULE ABLATION (4 runs) - WAS NOT LOGGED PROPERLY
+            # ============================================================
+            # 4.1 Fixed 0.7 (low, exploitative)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
-            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            "--problem nguyen_5 --reward sr_ic --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
-            # Penalty ablation (2 configs x 5 seeds x 5000 steps)
-            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            "--problem nguyen_5 --reward length_penalized --penalty binary --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb --upload_hf",
-            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb --upload_hf",
-            # Temperature ablation (4 configs x 3 seeds x 5000 steps)
-            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
-            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.7 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 4.2 Fixed 0.9 (high, explorative)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature fixed_0.9 "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 4.3 Linear annealing (1.0 → 0.5)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature linear_annealing "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 4.4 Cosine annealing (smooth decay)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 --use_wandb --upload_hf",
-            # Algorithm comparison (2 configs x 5 seeds x 5000 steps)
+            "--max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+
+            # ============================================================
+            # 5. PROMPT ROBUSTNESS (3 runs) - WAS MISSING ENTIRELY
+            # ============================================================
+            # 5.1 Standard prompt (all operators)
             "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb --upload_hf",
-            "python run_experiment.py --algorithm bon_grpo --model augustocsc/gpt2_base_infix_682k "
+            "--prompt_type standard --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 5.2 Oracle prompt (true operators - helpful hint)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            "--max_steps 5000 --seeds 42 123 456 789 1337 --use_wandb --upload_hf",
+            "--prompt_type oracle --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 5.3 Distractor prompt (wrong operators - misleading)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--prompt_type distractor --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+
+            # ============================================================
+            # 6. NOISE ROBUSTNESS (4 runs) - WAS MISSING ENTIRELY
+            # ============================================================
+            # 6.1 Clean data (0% noise - baseline)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type none --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 6.2 Low noise (1%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.01 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 6.3 Medium noise (5%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.05 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
+            # 6.4 High noise (10%)
+            "python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            "--problem nguyen_5 --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            "--noise_type gaussian --noise_level 0.1 --max_steps 5000 --seeds 42 --use_wandb --upload_hf",
         ],
     },
-    # Model scaling experiments - Base Infix (~12h)
+
+    # ========== SCALING EXPERIMENTS (single seed) ==========
     "scaling_base_infix": {
         "description": "Base model (infix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },
-    # Model scaling experiments - Base Prefix (~12h)
     "scaling_base_prefix": {
         "description": "Base model (prefix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_prefix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },
-    # Model scaling experiments - Medium Infix (~14h)
     "scaling_medium_infix": {
         "description": "Medium model (infix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_medium_infix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },
-    # Model scaling experiments - Medium Prefix (~14h)
     "scaling_medium_prefix": {
         "description": "Medium model (prefix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_medium_prefix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },
-    # Model scaling experiments - Large Infix (~16h)
     "scaling_large_infix": {
         "description": "Large model (infix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_large_infix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },
-    # Model scaling experiments - Large Prefix (~16h)
     "scaling_large_prefix": {
         "description": "Large model (prefix) on all Nguyen benchmarks",
         "commands": [
             f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_large_prefix_682k "
             f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
-            f"--max_steps 10000 --seeds 42 123 456 --use_wandb --upload_hf"
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
+            for i in range(1, 13)
+        ],
+    },
+
+    # ========== ALL NGUYEN BENCHMARKS (single seed) ==========
+    "all_nguyen": {
+        "description": "Run best config on all Nguyen problems",
+        "commands": [
+            f"python run_experiment.py --algorithm bon_ppo --model augustocsc/gpt2_base_infix_682k "
+            f"--problem nguyen_{i} --reward length_penalized --penalty gradient --temperature cosine_annealing "
+            f"--max_steps 10000 --seeds 42 --use_wandb --upload_hf"
             for i in range(1, 13)
         ],
     },

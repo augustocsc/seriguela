@@ -82,6 +82,9 @@ class TrainerConfig:
     r2_threshold: float = 0.999
     entropy_threshold: float = 0.1
 
+    # Prompt type (standard, oracle, distractor)
+    prompt_type: str = "standard"
+
     # Logging
     log_every: int = 10
     save_every: int = 1000
@@ -239,9 +242,20 @@ class BaseRLTrainer(ABC):
         logger.info(f"Model loaded with {trainable:,} trainable params")
 
     def _build_prompt(self, ops: Optional[List[str]] = None) -> str:
-        """Build JSON format prompt."""
+        """Build JSON format prompt based on prompt type."""
         vars_list = [f"x_{i+1}" for i in range(self.n_vars)]
 
+        # Handle different prompt types
+        if self.config.prompt_type in ["oracle", "distractor"]:
+            from utils.prompt_builder import create_prompt_builder
+            builder = create_prompt_builder(
+                prompt_type=self.config.prompt_type,
+                valid_variables=self.valid_variables,
+                ground_truth=self.ground_truth,
+            )
+            return builder.build_prompt()
+
+        # Standard prompt
         if ops is None:
             ops_list = ["+", "-", "*", "/", "sin", "cos", "sqrt", "log", "exp", "**"]
         else:
@@ -469,14 +483,35 @@ class BaseRLTrainer(ABC):
         # Update policy
         update_stats = self.update_policy(rollouts, advantages)
 
-        # Compute statistics
+        # Separate fresh rollouts from buffer samples (fresh have tokens)
+        fresh_rollouts = [r for r in rollouts if len(r.tokens) > 0]
+        buffer_rollouts = [r for r in rollouts if len(r.tokens) == 0]
+
+        # Compute statistics for ALL rollouts
         rewards = [r.reward_result.reward for r in rollouts if r.reward_result]
         r2_values = [r.reward_result.r2 for r in rollouts if r.reward_result]
         valid_mask = [r.reward_result.is_valid for r in rollouts if r.reward_result]
         valid_r2 = [r2 for r2, v in zip(r2_values, valid_mask) if v]
 
+        # Compute statistics for FRESH generations only (key for measuring improvement!)
+        fresh_rewards = [r.reward_result.reward for r in fresh_rollouts if r.reward_result]
+        fresh_r2_values = [r.reward_result.r2 for r in fresh_rollouts if r.reward_result]
+        fresh_valid_mask = [r.reward_result.is_valid for r in fresh_rollouts if r.reward_result]
+        fresh_valid_r2 = [r2 for r2, v in zip(fresh_r2_values, fresh_valid_mask) if v]
+
+        # Track when best was found
+        if not hasattr(self, 'best_step'):
+            self.best_step = 0
+        current_max = max(r2_values) if r2_values else 0
+        if current_max >= self.best_r2 and current_max > 0:
+            self.best_step = self.current_step
+
+        # Unique expressions this step (diversity measure)
+        unique_exprs_this_step = len(set(r.expression for r in fresh_rollouts if r.expression))
+
         stats = {
             "step": self.current_step,
+            # Overall stats (includes buffer)
             "valid_count": int(sum(valid_mask)),
             "total_count": len(rollouts),
             "valid_rate": sum(valid_mask) / len(rollouts) if rollouts else 0,
@@ -485,9 +520,32 @@ class BaseRLTrainer(ABC):
             "max_r2": float(np.max(r2_values)) if r2_values else 0.0,
             "best_r2": self.best_r2,
             "best_expression": self.best_expression,
+            "best_step": self.best_step,
             "temperature": self.temp_scheduler.get_temperature(
                 self.current_step, self.config.max_steps
             ),
+
+            # FRESH generation stats (KEY for measuring policy improvement!)
+            "fresh_count": len(fresh_rollouts),
+            "fresh_valid_count": int(sum(fresh_valid_mask)) if fresh_valid_mask else 0,
+            "fresh_valid_rate": sum(fresh_valid_mask) / len(fresh_rollouts) if fresh_rollouts else 0,
+            "fresh_mean_r2": float(np.mean(fresh_valid_r2)) if fresh_valid_r2 else 0.0,
+            "fresh_max_r2": float(np.max(fresh_r2_values)) if fresh_r2_values else 0.0,
+            "fresh_mean_reward": float(np.mean(fresh_rewards)) if fresh_rewards else 0.0,
+
+            # Distribution stats (for fresh generations)
+            "fresh_median_r2": float(np.median(fresh_valid_r2)) if fresh_valid_r2 else 0.0,
+            "fresh_std_r2": float(np.std(fresh_valid_r2)) if len(fresh_valid_r2) > 1 else 0.0,
+            "fresh_p75_r2": float(np.percentile(fresh_valid_r2, 75)) if fresh_valid_r2 else 0.0,
+            "fresh_p90_r2": float(np.percentile(fresh_valid_r2, 90)) if fresh_valid_r2 else 0.0,
+
+            # Diversity stats
+            "unique_expressions": unique_exprs_this_step,
+            "total_unique_discovered": len(self.discovered_expressions),
+
+            # Buffer stats
+            "buffer_samples_used": len(buffer_rollouts),
+
             **update_stats,
         }
 
@@ -523,9 +581,9 @@ class BaseRLTrainer(ABC):
                 if self.current_step % self.config.log_every == 0:
                     logger.info(
                         f"Step {stats['step']:5d} | "
-                        f"Valid: {stats['valid_count']}/{stats['total_count']} | "
-                        f"Mean R²: {stats['mean_r2']:.4f} | "
-                        f"Best: {self.best_r2:.4f} | "
+                        f"Fresh: {stats['fresh_valid_count']}/{stats['fresh_count']} ({stats['fresh_valid_rate']*100:.0f}%) | "
+                        f"Fresh R²: {stats['fresh_mean_r2']:.4f} (p90: {stats['fresh_p90_r2']:.4f}) | "
+                        f"Best: {self.best_r2:.4f}@{stats['best_step']} | "
                         f"T: {stats['temperature']:.2f}"
                     )
 
