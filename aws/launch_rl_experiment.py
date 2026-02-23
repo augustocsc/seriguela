@@ -520,6 +520,49 @@ EXPERIMENTS = {
             "python run_factorial_experiment.py --model_idx 5 --problem nguyen_9 --max_steps 5000 --batch_size 16"
         ],
     },
+
+    # ========== REMAINING BASE MODEL EXPERIMENTS ==========
+    # These run only the configs not yet completed
+
+    # Base Infix - remaining configs
+    "rem_base_infix_n1": {
+        "description": "Remaining: Base Infix × Nguyen-1",
+        "commands": [
+            "python run_remaining_experiment.py --model base_infix --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "rem_base_infix_n5": {
+        "description": "Remaining: Base Infix × Nguyen-5",
+        "commands": [
+            "python run_remaining_experiment.py --model base_infix --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "rem_base_infix_n9": {
+        "description": "Remaining: Base Infix × Nguyen-9",
+        "commands": [
+            "python run_remaining_experiment.py --model base_infix --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
+
+    # Base Prefix - remaining configs
+    "rem_base_prefix_n1": {
+        "description": "Remaining: Base Prefix × Nguyen-1",
+        "commands": [
+            "python run_remaining_experiment.py --model base_prefix --problem nguyen_1 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "rem_base_prefix_n5": {
+        "description": "Remaining: Base Prefix × Nguyen-5",
+        "commands": [
+            "python run_remaining_experiment.py --model base_prefix --problem nguyen_5 --max_steps 5000 --batch_size 32"
+        ],
+    },
+    "rem_base_prefix_n9": {
+        "description": "Remaining: Base Prefix × Nguyen-9",
+        "commands": [
+            "python run_remaining_experiment.py --model base_prefix --problem nguyen_9 --max_steps 5000 --batch_size 32"
+        ],
+    },
 }
 
 
