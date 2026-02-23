@@ -563,16 +563,18 @@ Due to the large configuration space (8,640 configs per model size), we first ru
 - `remaining_base_configs.json` - List of configs not yet completed
 - `aws/launch_rl_experiment.py` - AWS launcher with `rem_base_*` presets
 
-#### Phase B: Full Benchmark Evaluation (Medium/Large Models) - PENDING
+#### Phase B: Full Benchmark Evaluation (All Models) - PENDING
 
-After Phase A completes, the **top-K configurations** will be applied to:
+After Phase A completes, the **top-K configurations** will be applied to all model sizes:
 
-1. **Medium models** (355M params) - `gpt2_medium_infix_682k`, `gpt2_medium_prefix_682k`
-2. **Large models** (774M params) - `gpt2_large_infix_682k`, `gpt2_large_prefix_682k`
+1. **Base models** (124M params) - `gpt2_base_infix_682k`, `gpt2_base_prefix_682k`
+2. **Medium models** (355M params) - `gpt2_medium_infix_682k`, `gpt2_medium_prefix_682k`
+3. **Large models** (774M params) - `gpt2_large_infix_682k`, `gpt2_large_prefix_682k`
 
 **Full Benchmark Coverage:**
 - All 12 Nguyen problems (nguyen_1 through nguyen_12)
 - Top 3-5 configurations from Phase A
+- All 6 models (Base/Medium/Large × Infix/Prefix)
 - Multiple seeds for statistical significance
 
 This two-phase approach reduces total compute from ~50,000+ runs to ~10,000 runs while maintaining scientific rigor.
