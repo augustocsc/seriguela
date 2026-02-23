@@ -245,128 +245,67 @@ class Expression:
             num_samples = X.shape[0] if X.ndim > 0 else 1
             return np.full(num_samples, np.nan) # Return NaNs on error
 
-    def fit_constants(self, X, y):
+    def fit_constants(self, X, y, optimize=False):
+        """Evaluate expression with constants and return R² score.
+
+        Args:
+            X: Input data array
+            y: Target values
+            optimize: If True, optimize constants using L-BFGS-B.
+                     If False (default), use C=1 for all constants.
+
+        Returns:
+            R² score (or -inf if evaluation fails)
+        """
         X = np.array(X)
         y = np.array(y)
 
-        if self.constant_count == 0:
+        # Use C=1 for all constants (no optimization by default)
+        self.best_constants = [1.0] * self.constant_count
+
+        if not optimize or self.constant_count == 0:
+            # No optimization - just evaluate with C=1
             try:
-                y_pred = self.evaluate(X) # Vectorized call
-                if not np.all(np.isfinite(y_pred)): # Check for NaNs/Infs
+                y_pred = self.evaluate(X)
+                if not np.all(np.isfinite(y_pred)):
                     return -np.inf
-                if np.all(y_pred == y_pred[0]) and len(np.unique(y)) > 1: # Avoid R2 issues with constant prediction for non-constant y
-                    return 0.0 # Or handle as per specific requirements
+                if np.all(y_pred == y_pred[0]) and len(np.unique(y)) > 1:
+                    return 0.0
                 return r2_score(y, y_pred)
-            except Exception as e: # Broader catch for any eval issue
+            except Exception as e:
                 return -np.inf
 
+        # Only reaches here if optimize=True and constant_count > 0
         def loss(current_constants):
-
             try:
                 y_pred = self.evaluate(X, current_constants)
-                
             except Exception as e:
-                print(f"Exception during evaluation: {e}")
                 return np.inf
-            
+
             if not np.all(np.isfinite(y_pred)):
-                return np.inf 
-            
-            # MSE calculation
-            mse = np.mean((y - y_pred) ** 2)
-            
-            return mse
+                return np.inf
+
+            return np.mean((y - y_pred) ** 2)
 
         bounds = [(-2., 2.)] * self.constant_count
-                
-        initial_guess = (
-            self.best_constants
-            if self.best_constants and len(self.best_constants) == self.constant_count
-            else [.0] * self.constant_count # Default to 1.0
-        )
+        initial_guess = np.array([1.0] * self.constant_count, dtype=float)
 
-        # Ensure initial_guess is a flat numpy array
-        initial_guess = np.array(initial_guess, dtype=float).flatten()
-
-
-        # from scipy.optimize import differential_evolution
-        # # Step 1: Use Differential Evolution for global exploration
-        # print("\n--- Starting Differential Evolution ---")
-        # result_de = differential_evolution(loss, bounds,
-        #                                    popsize=70,      # Aumente para 50, 70, ou mais
-        #                                    maxiter=10000,   # Aumente para 5000, 10000, ou mais
-        #                                    strategy='rand1bin', # Tente 'rand1exp' se rand1bin não funcionar
-        #                                    tol=1e-7,        # Tolerância mais apertada
-        #                                    mutation=(0.8, 1.2), # Experimente valores mais altos
-        #                                    recombination=0.5, # Experimente valores mais baixos
-        #                                    seed=42,         # Mantém a reproducibilidade
-        #                                    disp=True,       # Exibe o progresso
-        #                                    polish=False) 
-
-        # if result_de.success:
-        #     print(f"\nDifferential Evolution finished successfully. Best raw constants: {result_de.x}, Best MSE: {result_de.fun}")
-        #     # Use the result from DE as initial guess for local optimizer
-        #     initial_guess_for_minimize = result_de.x
-            
-        #     # Step 2: (Optional but recommended) Refine with L-BFGS-B
-        #     # L-BFGS-B will be applied to the "raw" (non-rounded) values,
-        #     # but the loss function internally rounds for discrete ones.
-        #     # It might still struggle if the function is too "stepped" from rounding.
-        #     print("\n--- Starting L-BFGS-B refinement ---")
-        #     result_min = minimize(loss,
-        #                           x0=initial_guess_for_minimize,
-        #                           method='L-BFGS-B',
-        #                           bounds=bounds,
-        #                           options={'maxiter': 500, 'ftol': 1e-9, 'disp': True} # More iterations, tighter tolerance
-        #     )
-
-        #     if result_min.success:
-        #         print(f"\nL-BFGS-B refinement successful. Final raw constants: {result_min.x}, Final MSE: {result_min.fun}")
-        #         self.best_constants = list(result_min.x)
-        #     else:
-        #         print(f"\nL-BFGS-B refinement failed: {result_min.message}. Using Differential Evolution's result.")
-        #         self.best_constants = list(result_de.x)
-        # else:
-        #     print(f"\nDifferential Evolution did not converge successfully: {result_de.message}. Cannot proceed with optimization.")
-        #     return -np.inf # Indicate failure
-        
-        # try:
-        #     y_pred = self.evaluate(X) 
-        #     if not np.all(np.isfinite(y_pred)):
-        #         print("Final evaluation produced non-finite values for R2 score.")
-        #         return -np.inf
-        #     if len(np.unique(y)) == 1:
-        #         if np.allclose(y_pred, y[0]):
-        #             return 1.0
-        #         else:
-        #             return 0.0
-        #     return r2_score(y, y_pred)
-        # except Exception as e:
-        #     print(f"Error calculating final R2: {e}")
-        #     return -np.inf
-            
-        result = minimize(loss, 
+        result = minimize(loss,
                         x0=initial_guess,
                         method='L-BFGS-B',
-                        bounds=bounds,
-                        #options={'maxiter': 10, 'maxfun': 10, 'disp': True}
-        )
+                        bounds=bounds)
 
         if result.success:
             self.best_constants = result.x.tolist()
-            # print(f"Optimization successful. Final loss: {result.fun}") # Optional
             try:
-                y_pred = self.evaluate(X) # Uses self.best_constants (vectorized)
+                y_pred = self.evaluate(X)
                 if not np.all(np.isfinite(y_pred)):
                     return -np.inf
-                # Refined R2 calculation for edge cases
-                if len(np.unique(y)) == 1: # If y is constant
+                if len(np.unique(y)) == 1:
                     if np.allclose(y_pred, y[0]):
-                        return 1.0 # Perfect prediction of a constant
+                        return 1.0
                     else:
-                        return 0.0 # Or some other metric for imperfect constant prediction
-                #return mean_squared_error(y, y_pred) # Use MSE for optimization
-                #return mean_absolute_error(y, y_pred) # Use MAE for robustness
+                        return 0.0
                 return r2_score(y, y_pred)
             except Exception as e:
                 return -np.inf
