@@ -142,8 +142,16 @@ def set_seed(seed: int):
         torch.cuda.manual_seed_all(seed)
 
 
-def generate_nguyen_data(problem: str) -> tuple:
-    """Generate data for a Nguyen benchmark problem."""
+def generate_nguyen_data(problem: str, seed: Optional[int] = None) -> tuple:
+    """Generate data for a Nguyen benchmark problem.
+
+    Args:
+        problem: Name of the Nguyen benchmark
+        seed: Random seed for reproducibility (if None, uses current RNG state)
+
+    Returns:
+        Tuple of (X, y, equation, valid_variables)
+    """
     if problem not in NGUYEN_BENCHMARKS:
         raise ValueError(f"Unknown problem: {problem}. Available: {list(NGUYEN_BENCHMARKS.keys())}")
 
@@ -151,6 +159,10 @@ def generate_nguyen_data(problem: str) -> tuple:
     n_vars = len(benchmark["vars"])
     n_samples = benchmark["n_samples"]
     domain = benchmark["domain"]
+
+    # Use specific seed if provided
+    if seed is not None:
+        np.random.seed(seed)
 
     # Generate X
     x = np.random.uniform(domain[0], domain[1], (n_samples, n_vars))
@@ -179,6 +191,99 @@ def generate_nguyen_data(problem: str) -> tuple:
     y = eval(benchmark["equation"], {"__builtins__": None}, local_vars)
 
     return x, y, benchmark["equation"], set(benchmark["vars"])
+
+
+def generate_train_test_data(problem: str, seed: int) -> dict:
+    """Generate separate train and test data for a Nguyen benchmark.
+
+    Uses different random seeds for train (seed) and test (seed + 10000)
+    to ensure no data leakage.
+
+    Args:
+        problem: Name of the Nguyen benchmark
+        seed: Base random seed
+
+    Returns:
+        Dictionary with train/test data:
+        {
+            "train": {"x": ..., "y": ...},
+            "test": {"x": ..., "y": ...},
+            "equation": ...,
+            "valid_variables": ...
+        }
+    """
+    # Generate training data with base seed
+    x_train, y_train, equation, valid_vars = generate_nguyen_data(problem, seed=seed)
+
+    # Generate test data with offset seed (ensures different random points)
+    x_test, y_test, _, _ = generate_nguyen_data(problem, seed=seed + 10000)
+
+    return {
+        "train": {"x": x_train, "y": y_train},
+        "test": {"x": x_test, "y": y_test},
+        "equation": equation,
+        "valid_variables": valid_vars,
+    }
+
+
+def evaluate_on_test_set(expression_str: str, x_test: np.ndarray, y_test: np.ndarray,
+                         is_prefix: bool = False) -> dict:
+    """Evaluate an expression on the test set.
+
+    Args:
+        expression_str: The expression string to evaluate
+        x_test: Test input data
+        y_test: Test target values
+        is_prefix: Whether expression is in prefix notation
+
+    Returns:
+        Dictionary with test metrics:
+        {
+            "test_r2": float or None,
+            "test_mse": float or None,
+            "test_valid": bool,
+            "test_error": str or None
+        }
+    """
+    from sklearn.metrics import r2_score, mean_squared_error
+
+    try:
+        # Import Expression class
+        from expression import Expression
+
+        # Parse expression
+        expr = Expression(expression_str, is_prefix=is_prefix)
+
+        # Evaluate with C=1 (fit_constants with optimize=False)
+        y_pred = expr.evaluate(x_test)
+
+        # Check for valid predictions
+        if y_pred is None or not np.all(np.isfinite(y_pred)):
+            return {
+                "test_r2": None,
+                "test_mse": None,
+                "test_valid": False,
+                "test_error": "Non-finite predictions"
+            }
+
+        # Compute metrics
+        test_r2 = r2_score(y_test, y_pred)
+        test_mse = mean_squared_error(y_test, y_pred)
+
+        return {
+            "test_r2": float(test_r2),
+            "test_mse": float(test_mse),
+            "test_valid": True,
+            "test_error": None
+        }
+
+    except Exception as e:
+        return {
+            "test_r2": None,
+            "test_mse": None,
+            "test_valid": False,
+            "test_error": str(e)
+        }
 
 
 def create_trainer(
@@ -230,9 +335,16 @@ def run_single_experiment(args, seed: int) -> dict:
     # Set seed
     set_seed(seed)
 
-    # Generate data
-    x, y, ground_truth, valid_variables = generate_nguyen_data(args.problem)
-    logger.info(f"Generated data for {args.problem}: X shape {x.shape}")
+    # Generate train/test data with separate random seeds
+    data = generate_train_test_data(args.problem, seed)
+    x = data["train"]["x"]
+    y = data["train"]["y"]
+    x_test = data["test"]["x"]
+    y_test = data["test"]["y"]
+    ground_truth = data["equation"]
+    valid_variables = data["valid_variables"]
+
+    logger.info(f"Generated data for {args.problem}: train {x.shape}, test {x_test.shape}")
 
     # Add noise if requested
     if args.noise_type != "none" and args.noise_level > 0:
@@ -287,6 +399,20 @@ def run_single_experiment(args, seed: int) -> dict:
             temperature=0.7 if args.temperature.startswith("fixed") else 0.7,
             use_wandb=args.use_wandb,
         )
+
+        # Evaluate best expression on TEST SET
+        if results.get("best_expression"):
+            logger.info(f"\n--- Evaluating on TEST SET ---")
+            test_metrics = evaluate_on_test_set(
+                expression_str=results["best_expression"],
+                x_test=x_test,
+                y_test=y_test,
+                is_prefix=is_prefix,
+            )
+            results.update(test_metrics)
+            if test_metrics["test_valid"]:
+                logger.info(f"Test R²: {test_metrics['test_r2']:.6f}")
+
         results["seed"] = seed
         results["problem"] = args.problem
         results["model"] = args.model
@@ -355,6 +481,39 @@ def run_single_experiment(args, seed: int) -> dict:
 
     # Run training
     results = trainer.run()
+
+    # Evaluate best expression on TEST SET (separate from training data)
+    if results.get("best_expression"):
+        logger.info(f"\n--- Evaluating on TEST SET ---")
+        test_metrics = evaluate_on_test_set(
+            expression_str=results["best_expression"],
+            x_test=x_test,
+            y_test=y_test,
+            is_prefix=is_prefix,
+        )
+        results.update(test_metrics)
+
+        # Log test results
+        if test_metrics["test_valid"]:
+            logger.info(f"Test R²: {test_metrics['test_r2']:.6f}")
+            logger.info(f"Test MSE: {test_metrics['test_mse']:.6f}")
+            logger.info(f"Train R² (best_r2): {results.get('best_r2', 'N/A')}")
+
+            # Compute generalization gap
+            train_r2 = results.get("best_r2", 0)
+            test_r2 = test_metrics["test_r2"]
+            if train_r2 > 0 and test_r2 is not None:
+                gen_gap = train_r2 - test_r2
+                results["generalization_gap"] = float(gen_gap)
+                logger.info(f"Generalization gap: {gen_gap:.6f}")
+        else:
+            logger.warning(f"Test evaluation failed: {test_metrics['test_error']}")
+    else:
+        logger.warning("No best expression found - skipping test evaluation")
+        results["test_r2"] = None
+        results["test_mse"] = None
+        results["test_valid"] = False
+        results["test_error"] = "No best expression"
 
     # Add seed to results
     results["seed"] = seed
@@ -497,15 +656,28 @@ def main():
 
     # Aggregate results
     if all_results:
-        best_r2_values = [r["best_r2"] for r in all_results]
+        best_r2_values = [r["best_r2"] for r in all_results if r.get("best_r2") is not None]
+        test_r2_values = [r["test_r2"] for r in all_results if r.get("test_r2") is not None]
+
         logger.info(f"\n{'='*60}")
         logger.info("AGGREGATE RESULTS")
         logger.info(f"{'='*60}")
         logger.info(f"Seeds: {args.seeds}")
-        logger.info(f"Mean Best R²: {np.mean(best_r2_values):.4f}")
-        logger.info(f"Std Best R²: {np.std(best_r2_values):.4f}")
-        logger.info(f"Max Best R²: {np.max(best_r2_values):.4f}")
-        logger.info(f"Min Best R²: {np.min(best_r2_values):.4f}")
+
+        # Training R² (on training data)
+        if best_r2_values:
+            logger.info(f"Train R² - Mean: {np.mean(best_r2_values):.4f}, Std: {np.std(best_r2_values):.4f}")
+            logger.info(f"Train R² - Max: {np.max(best_r2_values):.4f}, Min: {np.min(best_r2_values):.4f}")
+
+        # Test R² (on held-out test data)
+        if test_r2_values:
+            logger.info(f"Test R² - Mean: {np.mean(test_r2_values):.4f}, Std: {np.std(test_r2_values):.4f}")
+            logger.info(f"Test R² - Max: {np.max(test_r2_values):.4f}, Min: {np.min(test_r2_values):.4f}")
+
+            # Generalization gap
+            if best_r2_values and len(best_r2_values) == len(test_r2_values):
+                gen_gaps = [b - t for b, t in zip(best_r2_values, test_r2_values)]
+                logger.info(f"Generalization Gap - Mean: {np.mean(gen_gaps):.4f}")
 
         # Save aggregate results
         aggregate = {
@@ -513,10 +685,19 @@ def main():
             "problem": args.problem,
             "algorithm": args.algorithm,
             "model": args.model,
-            "mean_best_r2": float(np.mean(best_r2_values)),
-            "std_best_r2": float(np.std(best_r2_values)),
-            "max_best_r2": float(np.max(best_r2_values)),
-            "min_best_r2": float(np.min(best_r2_values)),
+            # Training metrics
+            "mean_train_r2": float(np.mean(best_r2_values)) if best_r2_values else None,
+            "std_train_r2": float(np.std(best_r2_values)) if best_r2_values else None,
+            "max_train_r2": float(np.max(best_r2_values)) if best_r2_values else None,
+            "min_train_r2": float(np.min(best_r2_values)) if best_r2_values else None,
+            # Test metrics
+            "mean_test_r2": float(np.mean(test_r2_values)) if test_r2_values else None,
+            "std_test_r2": float(np.std(test_r2_values)) if test_r2_values else None,
+            "max_test_r2": float(np.max(test_r2_values)) if test_r2_values else None,
+            "min_test_r2": float(np.min(test_r2_values)) if test_r2_values else None,
+            # Legacy names for compatibility
+            "mean_best_r2": float(np.mean(best_r2_values)) if best_r2_values else None,
+            "std_best_r2": float(np.std(best_r2_values)) if best_r2_values else None,
             "individual_results": all_results,
         }
 
