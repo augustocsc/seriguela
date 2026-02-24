@@ -577,6 +577,13 @@ After Phase A completes, the **top-K configurations** will be applied to all mod
 - All 6 models (Base/Medium/Large × Infix/Prefix)
 - Multiple seeds for statistical significance
 
+**Resource Optimization for Phase B:**
+Phase A showed low resource utilization (~33% GPU, ~14% RAM on g5.xlarge). For Phase B, optimize:
+- **Batch size:** Increase from 32 to 64+ for Base, 48 for Medium, 32 for Large
+- **Parallel runs:** Consider running 2 experiments per GPU if memory allows
+- **Gradient accumulation:** Reduce steps if batch size increases
+- Target: >70% GPU utilization to minimize cost/time
+
 This two-phase approach reduces total compute from ~50,000+ runs to ~10,000 runs while maintaining scientific rigor.
 
 ### 11.8. Next Steps for Future Agents
