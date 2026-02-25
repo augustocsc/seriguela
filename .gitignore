@@ -117,3 +117,22 @@ userdata_*.sh
 1_data/raw/**/*.csv
 *.tar.gz
 models_compressed.tar.gz
+
+# Models and checkpoints (stored on HuggingFace)
+models/
+output/
+evaluation_results/
+evaluation_results_aws/
+results/
+
+# Test directories
+test_ppo/
+test_eval/
+
+# Logs
+*.log
+
+*.tar.gz
+2_training/reinforcement/phase_a_extracted/
+*.csv
+*.json

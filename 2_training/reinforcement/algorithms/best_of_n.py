@@ -164,23 +164,26 @@ class BestOfNBaseline:
                 expr_obj = Expression.from_infix(expression)
 
             if expr_obj is None:
-                return self.penalty_handler.get_penalty("invalid_syntax")
+                penalty = self.penalty_handler.get_penalty(ErrorType.PARSING)
+                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.PARSING)
 
             # Check variables
             expr_vars = expr_obj.get_variables()
             if not expr_vars.issubset(self.valid_variables):
-                return self.penalty_handler.get_penalty("invalid_variables")
+                penalty = self.penalty_handler.get_penalty(ErrorType.VARIABLES)
+                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.VARIABLES)
 
             # Evaluate
             y_pred = expr_obj.evaluate(self.x)
             if y_pred is None or not np.isfinite(y_pred).all():
-                return self.penalty_handler.get_penalty("numerical_error")
+                penalty = self.penalty_handler.get_penalty(ErrorType.NAN_INF)
+                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.NAN_INF)
 
             # Compute reward
             return self.reward_fn.compute(self.y, y_pred, expression)
 
         except Exception as e:
-            return self.penalty_handler.get_penalty("evaluation_error")
+            return self.penalty_handler.get_penalty(ErrorType.EVALUATION)
 
     @torch.no_grad()
     def generate_batch(self, batch_size: int) -> List[str]:
