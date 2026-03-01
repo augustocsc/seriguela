@@ -52,7 +52,6 @@ def build_command(problem: str, seed: int) -> list:
         "--patience", "999",  # Don't early stop — we want full 50 steps
         "--seeds", str(seed),
         "--output_dir", OUTPUT_DIR,
-        "--load_in_4bit",
         "--no_wandb",
     ]
     return cmd

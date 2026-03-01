@@ -57,7 +57,6 @@ def build_command(temperature: str, problem: str, seed: int) -> list:
         "--patience", "999",
         "--seeds", str(seed),
         "--output_dir", OUTPUT_DIR,
-        "--load_in_4bit",
         "--no_wandb",
     ]
     return cmd

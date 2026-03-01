@@ -54,7 +54,6 @@ def build_command(problem: str) -> list:
         "--patience", "999",  # Disable early stopping — we want the full curve
         "--seeds", str(SEED),
         "--output_dir", OUTPUT_DIR,
-        "--load_in_4bit",
         "--no_wandb",
     ]
     return cmd
