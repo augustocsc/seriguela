@@ -11,12 +11,13 @@ Usage:
 
 import json
 import sys
+import argparse
 from pathlib import Path
 from collections import defaultdict
 
-RESULTS_DIR = Path("results/pre_phase_b")
+# ─── Analysis Functions ──────────────────────────────────────────────────────
 
-# ─── Analysis Functions ───────────────────────────────────────────────────────
+RESULTS_DIR = None  # Set by main() from --results_dir arg
 
 def analyze_test1():
     """Test 1: Multi-Seed Robustness."""
@@ -203,8 +204,16 @@ def analyze_test4():
 # ─── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    global RESULTS_DIR
+    parser = argparse.ArgumentParser(description="Analyze Pre-Phase B validation results")
+    parser.add_argument("--results_dir", type=str, default="results/pre_phase_b",
+                        help="Root results dir (use Drive path on Colab: /content/drive/MyDrive/...)")
+    args = parser.parse_args()
+    RESULTS_DIR = Path(args.results_dir)
+
     print("\n" + "="*70)
     print("  PRE-PHASE B — CONSOLIDATED ANALYSIS")
+    print(f"  Results dir: {RESULTS_DIR}")
     print("="*70)
 
     tests_found = 0

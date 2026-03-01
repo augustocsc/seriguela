@@ -42,15 +42,31 @@ python scripts/pre_phase_b/test3_convergence_200.py
 
 ### On Google Colab
 ```python
-# Cell 1: Clone and install
+# Cell 1: Mount Google Drive (results persist even if session disconnects)
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Cell 2: Clone and install
 !git clone https://github.com/augustocsc/seriguela.git
 %cd seriguela
 !pip install -r requirements.txt
 
-# Cell 2: Run tests
-!python scripts/pre_phase_b/test2_nguyen5_debug.py
-!python scripts/pre_phase_b/test4_temp_compare.py
+# Cell 3: Run in PARALLEL (4 experiments at once, batch=2048, saved to Drive)
+!python scripts/pre_phase_b/run_parallel.py \\
+    --test test2 \\
+    --output_dir /content/drive/MyDrive/seriguela_results/pre_phase_b \\
+    --max_parallel 4 \\
+    --batch_size 2048
+
+# Cell 4: Or run sequentially if parallel causes OOM
+!python scripts/pre_phase_b/test2_nguyen5_debug.py \\
+    --output_dir /content/drive/MyDrive/seriguela_results/pre_phase_b \\
+    --batch_size 2048
 ```
+
+> **Why Drive matters:** Each completed experiment writes its JSON to Drive immediately.
+> If the Colab session disconnects, only the currently-running experiment is lost.
+> On reconnect, `run_parallel.py` skips already-completed experiments automatically.
 
 ### Dry Run (verify commands without executing)
 ```bash

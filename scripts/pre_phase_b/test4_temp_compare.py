@@ -25,7 +25,7 @@ from datetime import datetime
 # ─── Configuration ─────────────────────────────────────────────────────────────
 
 EXPERIMENT_RUNNER = "2_training/reinforcement/run_experiment.py"
-OUTPUT_DIR = "results/pre_phase_b/test4_temp_compare"
+DEFAULT_OUTPUT_DIR = "results/pre_phase_b/test4_temp_compare"
 
 BASE_CONFIG = {
     "algorithm": "bon_ppo",
@@ -42,7 +42,8 @@ BATCH_SIZE = 512  # T4 (16GB) — larger batch = more candidates per RL step
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-def build_command(temperature: str, problem: str, seed: int, batch_size: int) -> list:
+def build_command(temperature: str, problem: str, seed: int, batch_size: int,
+                  output_dir: str) -> list:
     """Build the command to run a single experiment."""
     cmd = [
         sys.executable, EXPERIMENT_RUNNER,
@@ -56,15 +57,16 @@ def build_command(temperature: str, problem: str, seed: int, batch_size: int) ->
         "--batch_size", str(batch_size),
         "--patience", "999",
         "--seeds", str(seed),
-        "--output_dir", OUTPUT_DIR,
+        "--output_dir", output_dir,
         "--no_wandb",
     ]
     return cmd
 
 
-def run_experiment(temperature: str, problem: str, seed: int, batch_size: int, dry_run: bool = False) -> dict:
+def run_experiment(temperature: str, problem: str, seed: int, batch_size: int,
+                  output_dir: str, dry_run: bool = False) -> dict:
     """Run a single experiment and return results."""
-    cmd = build_command(temperature, problem, seed, batch_size)
+    cmd = build_command(temperature, problem, seed, batch_size, output_dir)
     label = f"[Test4] {problem} | temp={temperature} | seed={seed}"
 
     print(f"\n{'='*60}")
@@ -79,7 +81,7 @@ def run_experiment(temperature: str, problem: str, seed: int, batch_size: int, d
     result = subprocess.run(cmd, capture_output=False)
 
     # Find result file
-    search_dir = Path(OUTPUT_DIR)
+    search_dir = Path(output_dir)
     jsons = sorted(search_dir.rglob("results_*.json"), key=lambda p: p.stat().st_mtime)
     if jsons:
         latest = jsons[-1]
@@ -103,6 +105,8 @@ def main():
     parser.add_argument("--dry_run", action="store_true", help="Print commands without executing")
     parser.add_argument("--batch_size", type=int, default=BATCH_SIZE,
                         help=f"Batch size (default: {BATCH_SIZE} for T4; use 256 for RTX 3050)")
+    parser.add_argument("--output_dir", type=str, default=DEFAULT_OUTPUT_DIR,
+                        help="Output dir (use Drive path on Colab: /content/drive/MyDrive/...)")
     args = parser.parse_args()
 
     start = datetime.now()
@@ -120,7 +124,8 @@ def main():
     for temp in TEMPERATURES:
         for problem in PROBLEMS:
             for seed in SEEDS:
-                result = run_experiment(temp, problem, seed, args.batch_size, dry_run=args.dry_run)
+                result = run_experiment(temp, problem, seed, args.batch_size,
+                                       args.output_dir, dry_run=args.dry_run)
                 all_results.append(result)
 
     # Print quick ranking
@@ -136,7 +141,7 @@ def main():
 
     # Save summary
     if not args.dry_run:
-        summary_path = Path(OUTPUT_DIR) / "test4_summary.json"
+        summary_path = Path(args.output_dir) / "test4_summary.json"
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         with open(summary_path, "w") as f:
             json.dump({
