@@ -45,8 +45,24 @@ BASE_CONFIG = {
 
 # ─── Experiment Matrices ───────────────────────────────────────────────────────
 
+def get_test1_matrix():
+    """Test 1: Multi-seed robustness — 3 seeds × 3 problems (9 runs)."""
+    jobs = []
+    for problem in ["nguyen_1", "nguyen_5", "nguyen_9"]:
+        for seed in [42, 123, 456]:
+            jobs.append({
+                "label": f"test1 | {problem} | cosine_annealing | seed={seed}",
+                "problem": problem,
+                "temperature": "cosine_annealing",
+                "seed": seed,
+                "max_steps": 50,
+                "patience": 999,
+            })
+    return jobs
+
+
 def get_test2_matrix():
-    """Test 2: Nguyen-5 failure debug."""
+    """Test 2: Nguyen-5 failure debug — 2 temps × 3 seeds (6 runs)."""
     jobs = []
     for temp in ["cosine_annealing", "fixed_0.9"]:
         for seed in [42, 123, 456]:
@@ -61,8 +77,23 @@ def get_test2_matrix():
     return jobs
 
 
+def get_test3_matrix():
+    """Test 3: Convergence profile — 3 problems × 200 steps (3 runs)."""
+    jobs = []
+    for problem in ["nguyen_1", "nguyen_5", "nguyen_9"]:
+        jobs.append({
+            "label": f"test3 | {problem} | cosine_annealing | seed=42 | 200 steps",
+            "problem": problem,
+            "temperature": "cosine_annealing",
+            "seed": 42,
+            "max_steps": 200,
+            "patience": 999,  # No early stopping — want full learning curve
+        })
+    return jobs
+
+
 def get_test4_matrix():
-    """Test 4: Temperature comparison."""
+    """Test 4: Temperature comparison — 3 temps × 2 problems × 3 seeds (18 runs)."""
     jobs = []
     for temp in ["cosine_annealing", "linear_annealing", "fixed_0.9"]:
         for problem in ["nguyen_5", "nguyen_9"]:
@@ -79,7 +110,8 @@ def get_test4_matrix():
 
 
 def get_all_matrix():
-    return get_test2_matrix() + get_test4_matrix()
+    """All tests combined — 36 total runs."""
+    return get_test1_matrix() + get_test2_matrix() + get_test3_matrix() + get_test4_matrix()
 
 
 # ─── Persistence: Skip Already Done ──────────────────────────────────────────
@@ -178,8 +210,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Parallel experiment launcher — maximizes T4 GPU utilization"
     )
-    parser.add_argument("--test", choices=["test2", "test4", "all"], default="test2",
-                        help="Which test matrix to run")
+    parser.add_argument("--test", choices=["test1", "test2", "test3", "test4", "all"], default="all",
+                        help="Which test to run (default: all)")
     parser.add_argument("--output_dir", type=str,
                         default="results/pre_phase_b",
                         help="Output directory (use Drive path on Colab: /content/drive/MyDrive/...)")
@@ -194,8 +226,12 @@ def main():
     args = parser.parse_args()
 
     # Select job matrix
-    if args.test == "test2":
+    if args.test == "test1":
+        all_jobs = get_test1_matrix()
+    elif args.test == "test2":
         all_jobs = get_test2_matrix()
+    elif args.test == "test3":
+        all_jobs = get_test3_matrix()
     elif args.test == "test4":
         all_jobs = get_test4_matrix()
     else:
