@@ -38,11 +38,11 @@ SEEDS = [42, 123, 456]
 TEMPERATURES = ["cosine_annealing", "linear_annealing", "fixed_0.9"]
 PROBLEMS = ["nguyen_5", "nguyen_9"]
 MAX_STEPS = 50
-BATCH_SIZE = 256
+BATCH_SIZE = 512  # T4 (16GB) — larger batch = more candidates per RL step
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-def build_command(temperature: str, problem: str, seed: int) -> list:
+def build_command(temperature: str, problem: str, seed: int, batch_size: int) -> list:
     """Build the command to run a single experiment."""
     cmd = [
         sys.executable, EXPERIMENT_RUNNER,
@@ -53,7 +53,7 @@ def build_command(temperature: str, problem: str, seed: int) -> list:
         "--temperature", temperature,
         "--problem", problem,
         "--max_steps", str(MAX_STEPS),
-        "--batch_size", str(BATCH_SIZE),
+        "--batch_size", str(batch_size),
         "--patience", "999",
         "--seeds", str(seed),
         "--output_dir", OUTPUT_DIR,
@@ -62,9 +62,9 @@ def build_command(temperature: str, problem: str, seed: int) -> list:
     return cmd
 
 
-def run_experiment(temperature: str, problem: str, seed: int, dry_run: bool = False) -> dict:
+def run_experiment(temperature: str, problem: str, seed: int, batch_size: int, dry_run: bool = False) -> dict:
     """Run a single experiment and return results."""
-    cmd = build_command(temperature, problem, seed)
+    cmd = build_command(temperature, problem, seed, batch_size)
     label = f"[Test4] {problem} | temp={temperature} | seed={seed}"
 
     print(f"\n{'='*60}")
@@ -101,6 +101,8 @@ def run_experiment(temperature: str, problem: str, seed: int, dry_run: bool = Fa
 def main():
     parser = argparse.ArgumentParser(description="Test 4: Temperature Schedule Comparison")
     parser.add_argument("--dry_run", action="store_true", help="Print commands without executing")
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE,
+                        help=f"Batch size (default: {BATCH_SIZE} for T4; use 256 for RTX 3050)")
     args = parser.parse_args()
 
     start = datetime.now()
@@ -118,7 +120,7 @@ def main():
     for temp in TEMPERATURES:
         for problem in PROBLEMS:
             for seed in SEEDS:
-                result = run_experiment(temp, problem, seed, dry_run=args.dry_run)
+                result = run_experiment(temp, problem, seed, args.batch_size, dry_run=args.dry_run)
                 all_results.append(result)
 
     # Print quick ranking

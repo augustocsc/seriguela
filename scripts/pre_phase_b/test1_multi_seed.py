@@ -33,11 +33,11 @@ WINNER_CONFIG = {
 SEEDS = [42, 123, 456]
 PROBLEMS = ["nguyen_1", "nguyen_5", "nguyen_9"]
 MAX_STEPS = 50
-BATCH_SIZE = 256
+BATCH_SIZE = 512  # T4 (16GB) can handle 2x the RTX 3050 batch
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-def build_command(problem: str, seed: int) -> list:
+def build_command(problem: str, seed: int, batch_size: int) -> list:
     """Build the command to run a single experiment."""
     cmd = [
         sys.executable, EXPERIMENT_RUNNER,
@@ -48,7 +48,7 @@ def build_command(problem: str, seed: int) -> list:
         "--temperature", WINNER_CONFIG["temperature"],
         "--problem", problem,
         "--max_steps", str(MAX_STEPS),
-        "--batch_size", str(BATCH_SIZE),
+        "--batch_size", str(batch_size),
         "--patience", "999",  # Don't early stop — we want full 50 steps
         "--seeds", str(seed),
         "--output_dir", OUTPUT_DIR,
@@ -57,9 +57,9 @@ def build_command(problem: str, seed: int) -> list:
     return cmd
 
 
-def run_experiment(problem: str, seed: int, dry_run: bool = False) -> dict:
+def run_experiment(problem: str, seed: int, batch_size: int, dry_run: bool = False) -> dict:
     """Run a single experiment and return results."""
-    cmd = build_command(problem, seed)
+    cmd = build_command(problem, seed, batch_size)
     label = f"[Test1] {problem} | seed={seed}"
 
     print(f"\n{'='*60}")
@@ -96,6 +96,8 @@ def run_experiment(problem: str, seed: int, dry_run: bool = False) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Test 1: Multi-Seed Robustness")
     parser.add_argument("--dry_run", action="store_true", help="Print commands without executing")
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE,
+                        help=f"Batch size (default: {BATCH_SIZE} for T4; use 256 for RTX 3050)")
     args = parser.parse_args()
 
     start = datetime.now()
@@ -110,7 +112,7 @@ def main():
     all_results = []
     for problem in PROBLEMS:
         for seed in SEEDS:
-            result = run_experiment(problem, seed, dry_run=args.dry_run)
+            result = run_experiment(problem, seed, args.batch_size, dry_run=args.dry_run)
             all_results.append(result)
 
     # Save summary

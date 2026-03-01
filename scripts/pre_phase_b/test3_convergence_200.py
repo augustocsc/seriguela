@@ -35,11 +35,11 @@ WINNER_CONFIG = {
 SEED = 42
 PROBLEMS = ["nguyen_1", "nguyen_5", "nguyen_9"]
 MAX_STEPS = 200
-BATCH_SIZE = 256
+BATCH_SIZE = 512  # T4 (16GB) — larger batch = more candidates per RL step
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-def build_command(problem: str) -> list:
+def build_command(problem: str, batch_size: int) -> list:
     """Build the command to run a single experiment."""
     cmd = [
         sys.executable, EXPERIMENT_RUNNER,
@@ -50,7 +50,7 @@ def build_command(problem: str) -> list:
         "--temperature", WINNER_CONFIG["temperature"],
         "--problem", problem,
         "--max_steps", str(MAX_STEPS),
-        "--batch_size", str(BATCH_SIZE),
+        "--batch_size", str(batch_size),
         "--patience", "999",  # Disable early stopping — we want the full curve
         "--seeds", str(SEED),
         "--output_dir", OUTPUT_DIR,
@@ -59,9 +59,9 @@ def build_command(problem: str) -> list:
     return cmd
 
 
-def run_experiment(problem: str, dry_run: bool = False) -> dict:
+def run_experiment(problem: str, batch_size: int, dry_run: bool = False) -> dict:
     """Run a single experiment and return results."""
-    cmd = build_command(problem)
+    cmd = build_command(problem, batch_size)
     label = f"[Test3] {problem} | seed={SEED} | steps={MAX_STEPS}"
 
     print(f"\n{'='*60}")
@@ -116,6 +116,8 @@ def run_experiment(problem: str, dry_run: bool = False) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Test 3: Convergence Profile (200 steps)")
     parser.add_argument("--dry_run", action="store_true", help="Print commands without executing")
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE,
+                        help=f"Batch size (default: {BATCH_SIZE} for T4; use 256 for RTX 3050)")
     args = parser.parse_args()
 
     start = datetime.now()
@@ -130,7 +132,7 @@ def main():
 
     all_results = []
     for problem in PROBLEMS:
-        result = run_experiment(problem, dry_run=args.dry_run)
+        result = run_experiment(problem, args.batch_size, dry_run=args.dry_run)
         all_results.append(result)
 
     # Save summary
