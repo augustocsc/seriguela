@@ -140,27 +140,42 @@ def is_already_done(job: dict, output_dir: str) -> bool:
     if not search_dir.exists():
         return False
 
-    # Look for any JSON containing matching config metadata
-    for json_file in search_dir.rglob("aggregate_*.json"):
-        try:
-            with open(json_file) as f:
-                data = json.load(f)
-            if (data.get("problem") == job["problem"] and
-                    str(job["seed"]) in str(data.get("seeds", []))):
-                return True
-        except Exception:
-            pass
-
     algo = job.get("algorithm", BASE_CONFIG["algorithm"])
+    temp = job["temperature"]
+
+    # In results.json, the temp_scheduler has a specific format.
     temp_map = {
         "cosine_annealing": "cosine_1.0_0.5",
         "linear_annealing": "linear_1.0_0.5",
         "fixed_0.9": "fixed_0.9",
         "fixed_0.7": "fixed_0.7"
     }
-    job_temp = temp_map.get(job["temperature"], job["temperature"])
+    job_temp_mapped = temp_map.get(temp, temp)
 
-    # Also check individual result files
+    # 1. Check aggregate JSONs
+    for json_file in search_dir.rglob("aggregate_*.json"):
+        try:
+            with open(json_file) as f:
+                data = json.load(f)
+            
+            # Aggregate files don't have temp_scheduler, but their path or name might
+            # To be safe, we only trust aggregate if it matches algo and problem,
+            # AND if it includes the seed. Since aggregate doesn't store temp,
+            # we must check if temp is in the file path to distinguish test4 runs.
+            if (data.get("problem") == job["problem"] and
+                data.get("algorithm", BASE_CONFIG["algorithm"]) == algo and
+                str(job["seed"]) in str(data.get("seeds", []))):
+                
+                # If temp is in the path, it's a new run. If not, it's an old run.
+                # old runs were ONLY cosine_annealing for test1-3.
+                if temp in str(json_file):
+                    return True
+                elif temp == "cosine_annealing" and "linear_annealing" not in str(json_file) and "fixed_0.9" not in str(json_file):
+                    return True
+        except Exception:
+            pass
+
+    # 2. Check individual result files
     for json_file in search_dir.rglob("results_*.json"):
         try:
             with open(json_file) as f:
@@ -169,7 +184,7 @@ def is_already_done(job: dict, output_dir: str) -> bool:
             if (data.get("problem") == job["problem"] and
                 data.get("seed") == job["seed"] and
                 data.get("algorithm", BASE_CONFIG["algorithm"]) == algo and
-                data.get("temp_scheduler") == job_temp):
+                data.get("temp_scheduler") == job_temp_mapped):
                 return True
         except Exception:
             pass
