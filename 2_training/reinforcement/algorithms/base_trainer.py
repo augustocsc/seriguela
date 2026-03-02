@@ -376,15 +376,11 @@ class BaseRLTrainer(ABC):
             total_log_prob=sum(log_probs_list),
         )
 
-    def collect_rollouts(self, num_samples: int) -> List[Rollout]:
-        """Collect rollouts using batched GPU generation + parallel CPU evaluation."""
-        self.model.eval()
+    # Max sequences per GPU pass — keeps VRAM under ~5GB even with 50 tokens
+    GPU_BATCH_SIZE = 256
 
-        temperature = self.temp_scheduler.get_temperature(
-            self.current_step, self.config.max_steps
-        )
-
-        # 1. Batched GPU generation (ALL samples in one pass)
+    def _generate_sub_batch(self, num_samples: int, temperature: float) -> List[Rollout]:
+        """Generate a sub-batch of rollouts on GPU. Called by collect_rollouts."""
         batch_prompt_ids = self.prompt_ids.expand(num_samples, -1)
         prompt_len = self.prompt_ids.shape[1]
 
@@ -402,7 +398,7 @@ class BaseRLTrainer(ABC):
             model_outputs = self.model(outputs)
             all_logits = model_outputs.logits  # (batch, seq_len, vocab_size)
 
-        # 2. Extract per-token log probs and build rollouts
+        # Extract per-token log probs and build rollouts
         rollouts = []
         for i in range(num_samples):
             seq = outputs[i]
@@ -439,7 +435,34 @@ class BaseRLTrainer(ABC):
                 total_log_prob=sum(log_probs_list),
             ))
 
-        # 3. Compute rewards in parallel on CPU
+        # Free GPU memory between sub-batches
+        del outputs, model_outputs, all_logits
+        torch.cuda.empty_cache()
+
+        return rollouts
+
+    def collect_rollouts(self, num_samples: int) -> List[Rollout]:
+        """Collect rollouts using sub-batched GPU generation.
+
+        Generates in chunks of GPU_BATCH_SIZE to avoid OOM, then evaluates
+        rewards on CPU. The total num_samples can be much larger than what
+        fits in GPU memory at once.
+        """
+        self.model.eval()
+
+        temperature = self.temp_scheduler.get_temperature(
+            self.current_step, self.config.max_steps
+        )
+
+        # 1. Generate in GPU-friendly sub-batches
+        rollouts = []
+        remaining = num_samples
+        while remaining > 0:
+            chunk = min(remaining, self.GPU_BATCH_SIZE)
+            rollouts.extend(self._generate_sub_batch(chunk, temperature))
+            remaining -= chunk
+
+        # 2. Compute rewards on CPU
         for rollout in rollouts:
             reward_result = self.penalty_handler.compute_with_penalty(
                 self.reward_fn,
