@@ -109,9 +109,27 @@ def get_test4_matrix():
     return jobs
 
 
+def get_test5_matrix():
+    """Test 5: RL algorithm comparison — 4 algorithms × 3 problems × 3 seeds (36 runs)."""
+    jobs = []
+    for algo in ["bon_ppo", "bon_grpo", "pure_ppo", "pure_grpo"]:
+        for problem in ["nguyen_1", "nguyen_5", "nguyen_9"]:
+            for seed in [42, 123, 456]:
+                jobs.append({
+                    "label": f"test5 | {algo} | {problem} | seed={seed}",
+                    "algorithm": algo,
+                    "problem": problem,
+                    "temperature": "cosine_annealing",
+                    "seed": seed,
+                    "max_steps": 50,
+                    "patience": 999,
+                })
+    return jobs
+
+
 def get_all_matrix():
-    """All tests combined — 36 total runs."""
-    return get_test1_matrix() + get_test2_matrix() + get_test3_matrix() + get_test4_matrix()
+    """All tests combined."""
+    return get_test1_matrix() + get_test2_matrix() + get_test3_matrix() + get_test4_matrix() + get_test5_matrix()
 
 
 # ─── Persistence: Skip Already Done ──────────────────────────────────────────
@@ -153,7 +171,7 @@ def build_command(job: dict, output_dir: str, batch_size: int) -> List[str]:
     """Build run_experiment.py command for a single job."""
     return [
         sys.executable, EXPERIMENT_RUNNER,
-        "--algorithm", BASE_CONFIG["algorithm"],
+        "--algorithm", job.get("algorithm", BASE_CONFIG["algorithm"]),
         "--model", BASE_CONFIG["model"],
         "--reward", BASE_CONFIG["reward"],
         "--penalty", BASE_CONFIG["penalty"],
@@ -210,7 +228,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Parallel experiment launcher — maximizes T4 GPU utilization"
     )
-    parser.add_argument("--test", choices=["test1", "test2", "test3", "test4", "all"], default="all",
+    parser.add_argument("--test", choices=["test1", "test2", "test3", "test4", "test5", "all"], default="all",
                         help="Which test to run (default: all)")
     parser.add_argument("--output_dir", type=str,
                         default="results/pre_phase_b",
@@ -234,6 +252,8 @@ def main():
         all_jobs = get_test3_matrix()
     elif args.test == "test4":
         all_jobs = get_test4_matrix()
+    elif args.test == "test5":
+        all_jobs = get_test5_matrix()
     else:
         all_jobs = get_all_matrix()
 
