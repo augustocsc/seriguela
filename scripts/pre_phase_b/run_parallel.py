@@ -151,13 +151,25 @@ def is_already_done(job: dict, output_dir: str) -> bool:
         except Exception:
             pass
 
+    algo = job.get("algorithm", BASE_CONFIG["algorithm"])
+    temp_map = {
+        "cosine_annealing": "cosine_1.0_0.5",
+        "linear_annealing": "linear_1.0_0.5",
+        "fixed_0.9": "fixed_0.9",
+        "fixed_0.7": "fixed_0.7"
+    }
+    job_temp = temp_map.get(job["temperature"], job["temperature"])
+
     # Also check individual result files
     for json_file in search_dir.rglob("results_*.json"):
         try:
             with open(json_file) as f:
                 data = json.load(f)
+            
             if (data.get("problem") == job["problem"] and
-                    data.get("seed") == job["seed"]):
+                data.get("seed") == job["seed"] and
+                data.get("algorithm", BASE_CONFIG["algorithm"]) == algo and
+                data.get("temp_scheduler") == job_temp):
                 return True
         except Exception:
             pass

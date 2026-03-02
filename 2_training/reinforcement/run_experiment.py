@@ -437,7 +437,7 @@ def run_single_experiment(args, seed: int) -> dict:
     )
 
     # Create trainer config
-    output_dir = Path(args.output_dir) / f"{args.algorithm}_{model_name}" / args.problem / f"seed_{seed}"
+    output_dir = Path(args.output_dir) / f"{args.algorithm}_{model_name}" / args.problem / args.temperature / f"seed_{seed}"
 
     config = TrainerConfig(
         model_path=args.model,
