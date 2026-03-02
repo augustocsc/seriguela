@@ -109,6 +109,21 @@ def get_test4_matrix():
     return jobs
 
 
+def get_test4_remaining_matrix():
+    """Hardcoded list of the 8 remaining runs from test4."""
+    return [
+        {"label": "test4 | nguyen_9 | linear_annealing | seed=123", "problem": "nguyen_9", "temperature": "linear_annealing", "seed": 123, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_9 | linear_annealing | seed=456", "problem": "nguyen_9", "temperature": "linear_annealing", "seed": 456, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_5 | fixed_0.9 | seed=42", "problem": "nguyen_5", "temperature": "fixed_0.9", "seed": 42, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_5 | fixed_0.9 | seed=123", "problem": "nguyen_5", "temperature": "fixed_0.9", "seed": 123, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_5 | fixed_0.9 | seed=456", "problem": "nguyen_5", "temperature": "fixed_0.9", "seed": 456, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_9 | fixed_0.9 | seed=42", "problem": "nguyen_9", "temperature": "fixed_0.9", "seed": 42, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_9 | fixed_0.9 | seed=123", "problem": "nguyen_9", "temperature": "fixed_0.9", "seed": 123, "max_steps": 50, "patience": 999},
+        {"label": "test4 | nguyen_9 | fixed_0.9 | seed=456", "problem": "nguyen_9", "temperature": "fixed_0.9", "seed": 456, "max_steps": 50, "patience": 999},
+    ]
+
+
+
 def get_test5_matrix():
     """Test 5: RL algorithm comparison — 4 algorithms × 3 problems × 3 seeds (36 runs)."""
     jobs = []
@@ -255,7 +270,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Parallel experiment launcher — maximizes T4 GPU utilization"
     )
-    parser.add_argument("--test", choices=["test1", "test2", "test3", "test4", "test5", "all"], default="all",
+    parser.add_argument("--test", choices=["test1", "test2", "test3", "test4", "test4_remaining", "test5", "all"], default="all",
                         help="Which test to run (default: all)")
     parser.add_argument("--output_dir", type=str,
                         default="results/pre_phase_b",
@@ -279,6 +294,8 @@ def main():
         all_jobs = get_test3_matrix()
     elif args.test == "test4":
         all_jobs = get_test4_matrix()
+    elif args.test == "test4_remaining":
+        all_jobs = get_test4_remaining_matrix()
     elif args.test == "test5":
         all_jobs = get_test5_matrix()
     else:
