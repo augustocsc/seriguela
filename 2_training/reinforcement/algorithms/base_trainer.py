@@ -403,27 +403,28 @@ class BaseRLTrainer(ABC):
         sequences = gen_output.sequences  # (batch, prompt_len + gen_len)
         scores = gen_output.scores         # tuple of (batch, vocab_size) per step
 
-        # Vectorized Log-Prob Extraction (Fully on GPU)
-        # scores is a tuple of length `gen_len`, each item is a tensor of shape (batch, vocab_size)
-        # We stack it along axis 1 to get (batch, gen_len, vocab_size)
-        all_logits = torch.stack(scores, dim=1)
+        # Vectorized Log-Prob Extraction (Fully on GPU, Memory Efficient)
+        # We process step-by-step to avoid allocating a massive (batch, gen_len, vocab_size) tensor
+        # which causes OOM (e.g., 512 * 50 * 50257 floats = ~5GB).
+        gathered_log_probs_list = []
+        for j in range(len(scores)):
+            step_logits = scores[j] # (batch, vocab_size)
+            step_log_probs = F.log_softmax(step_logits, dim=-1) # (batch, vocab_size)
+            
+            # Get the actual token generated at this step
+            # seqs are (batch, prompt_len + gen_len), so step j is at prompt_len + j
+            step_tokens = sequences[:, prompt_len + j].unsqueeze(-1) # (batch, 1)
+            
+            # Gather log_prob for the generated token
+            step_gathered = torch.gather(step_log_probs, 1, step_tokens).squeeze(-1) # (batch)
+            gathered_log_probs_list.append(step_gathered)
+            
+        if gathered_log_probs_list:
+            gathered_log_probs = torch.stack(gathered_log_probs_list, dim=1) # (batch, gen_len)
+        else:
+            gathered_log_probs = torch.empty((num_samples, 0), device=sequences.device)
         
-        # We need the generated tokens to gather their log_probs.
-        # sequences is (batch, prompt_len + max_gen_len)
-        generated_tokens_tensor = sequences[:, prompt_len:] # (batch, max_gen_len)
-
-        # Truncate all_logits to match the actual generated length (in case generation stopped early)
-        actual_gen_len = generated_tokens_tensor.shape[1]
-        all_logits = all_logits[:, :actual_gen_len, :]
-
-        # Compute log softmax across vocabulary
-        all_log_probs = F.log_softmax(all_logits, dim=-1) # (batch, gen_len, vocab_size)
-
-        # Gather the log_probs of the specific tokens we generated
-        # We use unsqueeze to make generated_tokens_tensor (batch, gen_len, 1) to match all_log_probs
-        gathered_log_probs = torch.gather(all_log_probs, 2, generated_tokens_tensor.unsqueeze(-1)).squeeze(-1) # (batch, gen_len)
-        
-        # Move back to CPU for list parsing
+        # Move back to CPU for parsing
         sequences_cpu = sequences.cpu()
         gathered_log_probs_cpu = gathered_log_probs.cpu()
 
