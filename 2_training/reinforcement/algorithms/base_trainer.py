@@ -376,8 +376,8 @@ class BaseRLTrainer(ABC):
             total_log_prob=sum(log_probs_list),
         )
 
-    # Max sequences per GPU pass — keeps VRAM under ~5GB even with 50 tokens
-    GPU_BATCH_SIZE = 256
+    # Max sequences per GPU pass — 512 uses ~3GB on T4 with FP16
+    GPU_BATCH_SIZE = 512
 
     def _generate_sub_batch(self, num_samples: int, temperature: float) -> List[Rollout]:
         """Generate a sub-batch of rollouts on GPU. Called by collect_rollouts."""
@@ -385,23 +385,52 @@ class BaseRLTrainer(ABC):
         prompt_len = self.prompt_ids.shape[1]
 
         with torch.no_grad():
-            outputs = self.model.generate(
+            # output_scores=True gives us per-step logits for free
+            # return_dict_in_generate=True combined with use_cache=True is critical
+            # Without use_cache=True, auto-regressive generation is O(N^2) instead of O(N)
+            gen_output = self.model.generate(
                 batch_prompt_ids,
                 max_new_tokens=self.config.max_new_tokens,
                 do_sample=True,
                 temperature=temperature,
                 pad_token_id=self.tokenizer.eos_token_id,
                 eos_token_id=self.tokenizer.eos_token_id,
+                output_scores=True,
+                return_dict_in_generate=True,
+                use_cache=True, # Critical for generation speed
             )
 
-            # Single forward pass for log probs (teacher forcing style)
-            model_outputs = self.model(outputs)
-            all_logits = model_outputs.logits  # (batch, seq_len, vocab_size)
+        sequences = gen_output.sequences  # (batch, prompt_len + gen_len)
+        scores = gen_output.scores         # tuple of (batch, vocab_size) per step
 
-        # Extract per-token log probs and build rollouts
+        # Vectorized Log-Prob Extraction (Fully on GPU)
+        # scores is a tuple of length `gen_len`, each item is a tensor of shape (batch, vocab_size)
+        # We stack it along axis 1 to get (batch, gen_len, vocab_size)
+        all_logits = torch.stack(scores, dim=1)
+        
+        # We need the generated tokens to gather their log_probs.
+        # sequences is (batch, prompt_len + max_gen_len)
+        generated_tokens_tensor = sequences[:, prompt_len:] # (batch, max_gen_len)
+
+        # Truncate all_logits to match the actual generated length (in case generation stopped early)
+        actual_gen_len = generated_tokens_tensor.shape[1]
+        all_logits = all_logits[:, :actual_gen_len, :]
+
+        # Compute log softmax across vocabulary
+        all_log_probs = F.log_softmax(all_logits, dim=-1) # (batch, gen_len, vocab_size)
+
+        # Gather the log_probs of the specific tokens we generated
+        # We use unsqueeze to make generated_tokens_tensor (batch, gen_len, 1) to match all_log_probs
+        gathered_log_probs = torch.gather(all_log_probs, 2, generated_tokens_tensor.unsqueeze(-1)).squeeze(-1) # (batch, gen_len)
+        
+        # Move back to CPU for list parsing
+        sequences_cpu = sequences.cpu()
+        gathered_log_probs_cpu = gathered_log_probs.cpu()
+
+        # Build rollouts
         rollouts = []
         for i in range(num_samples):
-            seq = outputs[i]
+            seq = sequences_cpu[i]
             generated_tokens = seq[prompt_len:].tolist()
 
             # Remove padding (EOS tokens at the end)
@@ -411,17 +440,10 @@ class BaseRLTrainer(ABC):
                 clean_tokens.append(t)
                 if t == eos_id:
                     break
-
-            # Compute log probs from logits
-            log_probs_list = []
-            for j, token_id in enumerate(clean_tokens):
-                logit_idx = prompt_len + j - 1
-                if logit_idx >= 0 and logit_idx < all_logits.shape[1]:
-                    logits = all_logits[i, logit_idx, :] / temperature
-                    log_probs = F.log_softmax(logits, dim=-1)
-                    log_probs_list.append(log_probs[token_id].item())
-                else:
-                    log_probs_list.append(0.0)
+            
+            # Extract only the log probs for the clean tokens
+            clean_len = len(clean_tokens)
+            log_probs_list = gathered_log_probs_cpu[i, :clean_len].tolist()
 
             # Decode text and extract expression
             text = self.tokenizer.decode(seq, skip_special_tokens=True)
@@ -434,10 +456,6 @@ class BaseRLTrainer(ABC):
                 log_probs=log_probs_list,
                 total_log_prob=sum(log_probs_list),
             ))
-
-        # Free GPU memory between sub-batches
-        del outputs, model_outputs, all_logits
-        torch.cuda.empty_cache()
 
         return rollouts
 
@@ -490,22 +508,15 @@ class BaseRLTrainer(ABC):
 
 
     def compute_policy_entropy(self) -> float:
-        """Compute current policy entropy."""
-        # Generate a few samples and compute average entropy
+        """Compute current policy entropy (single forward pass)."""
         self.model.eval()
-        total_entropy = 0.0
-        n_samples = min(10, self.config.batch_size)
-
         with torch.no_grad():
-            for _ in range(n_samples):
-                outputs = self.model(self.prompt_ids)
-                logits = outputs.logits[:, -1, :]
-                probs = F.softmax(logits, dim=-1)
-                log_probs = F.log_softmax(logits, dim=-1)
-                entropy = -(probs * log_probs).sum().item()
-                total_entropy += entropy
-
-        return total_entropy / n_samples
+            outputs = self.model(self.prompt_ids)
+            logits = outputs.logits[:, -1, :]
+            probs = F.softmax(logits, dim=-1)
+            log_probs = F.log_softmax(logits, dim=-1)
+            entropy = -(probs * log_probs).sum().item()
+        return entropy
 
     @abstractmethod
     def compute_advantages(self, rollouts: List[Rollout]) -> List[float]:
