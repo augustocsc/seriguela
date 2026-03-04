@@ -618,6 +618,19 @@ class BaseRLTrainer(ABC):
         # Unique expressions this step (diversity measure)
         unique_exprs_this_step = len(set(r.expression for r in fresh_rollouts if r.expression))
 
+        # Get top expressions for this step
+        valid_fresh = [r.reward_result for r in fresh_rollouts if r.reward_result and r.reward_result.is_valid]
+        valid_fresh.sort(key=lambda x: x.r2, reverse=True)
+        top_exprs = []
+        seen_exprs = set()
+        for res in valid_fresh:
+            if res.expression and res.expression not in seen_exprs:
+                # Ensure float for JSON serialization
+                top_exprs.append({"expression": res.expression, "r2": float(res.r2)})
+                seen_exprs.add(res.expression)
+                if len(top_exprs) >= 5:
+                    break
+
         stats = {
             "step": self.current_step,
             # Overall stats (includes buffer)
@@ -651,6 +664,7 @@ class BaseRLTrainer(ABC):
             # Diversity stats
             "unique_expressions": unique_exprs_this_step,
             "total_unique_discovered": len(self.discovered_expressions),
+            "top_expressions_this_step": top_exprs,
 
             # Buffer stats
             "buffer_samples_used": len(buffer_rollouts),
