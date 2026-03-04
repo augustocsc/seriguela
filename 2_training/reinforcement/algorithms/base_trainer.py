@@ -496,7 +496,7 @@ class BaseRLTrainer(ABC):
         # while keeping the larger logical batch size for training.
         GPU_BATCH_SIZE = 256  # Reduced from 512 for parallel stability
         rollouts = []
-        remaining = batch_size
+        remaining = num_samples
         while remaining > 0:
             chunk = min(remaining, GPU_BATCH_SIZE)
             rollouts.extend(self._generate_sub_batch(chunk, temperature))
