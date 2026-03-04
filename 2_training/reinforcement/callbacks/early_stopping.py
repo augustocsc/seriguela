@@ -110,6 +110,26 @@ class EarlyStoppingCallback:
         """Reset state for new training run."""
         self.state = EarlyStoppingState()
 
+    def state_dict(self) -> dict:
+        """Get callback state for checkpointing."""
+        return {
+            "reward_history": self.state.reward_history,
+            "best_reward": self.state.best_reward,
+            "best_r2": self.state.best_r2,
+            "best_expression": self.state.best_expression,
+            "steps_without_improvement": self.state.steps_without_improvement,
+            "total_steps": self.state.total_steps,
+        }
+
+    def load_state_dict(self, state: dict):
+        """Load callback state from checkpoint."""
+        self.state.reward_history = state.get("reward_history", [])
+        self.state.best_reward = state.get("best_reward", -float('inf'))
+        self.state.best_r2 = state.get("best_r2", -float('inf'))
+        self.state.best_expression = state.get("best_expression")
+        self.state.steps_without_improvement = state.get("steps_without_improvement", 0)
+        self.state.total_steps = state.get("total_steps", 0)
+
     def check(
         self,
         step: int,

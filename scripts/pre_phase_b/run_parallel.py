@@ -136,8 +136,8 @@ def get_test5_matrix():
                     "problem": problem,
                     "temperature": "cosine_annealing",
                     "seed": seed,
-                    "max_steps": 50,
-                    "patience": 999,
+                    "max_steps": 40,
+                    "patience": 5,  # Enable early stopping to save time
                 })
     return jobs
 
@@ -277,8 +277,8 @@ def main():
                         help="Output directory (use Drive path on Colab: /content/drive/MyDrive/...)")
     parser.add_argument("--max_parallel", type=int, default=4,
                         help="Max simultaneous experiments (default: 4, uses ~8GB on T4)")
-    parser.add_argument("--batch_size", type=int, default=2048,
-                        help="Batch size per experiment (default: 2048 for T4)")
+    parser.add_argument("--batch_size", type=int, default=1024,
+                        help="Batch size per experiment (default: 1024 for faster CPU eval)")
     parser.add_argument("--dry_run", action="store_true",
                         help="Print commands without executing")
     parser.add_argument("--skip_done", action="store_true", default=True,

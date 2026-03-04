@@ -259,6 +259,30 @@ class EliteBuffer:
         self._total_added = 0
         self._total_rejected = 0
 
+    def state_dict(self) -> dict:
+        """Get buffer state for checkpointing."""
+        return {
+            "entries": [e.to_dict() for e in self._heap],
+            "total_added": self._total_added,
+            "total_rejected": self._total_rejected,
+            "max_size": self.max_size,
+            "sample_ratio": self.sample_ratio,
+        }
+
+    def load_state_dict(self, state: dict):
+        """Load buffer state from checkpoint."""
+        self.clear()
+        self.max_size = state.get("max_size", self.max_size)
+        self.sample_ratio = state.get("sample_ratio", self.sample_ratio)
+        self._total_added = state.get("total_added", 0)
+        self._total_rejected = state.get("total_rejected", 0)
+        
+        entries = state.get("entries", [])
+        for e_dict in entries:
+            entry = BufferEntry(**e_dict)
+            heapq.heappush(self._heap, entry)
+            self._expressions.add(entry.expression)
+
     def stats(self) -> dict:
         """
         Get buffer statistics.

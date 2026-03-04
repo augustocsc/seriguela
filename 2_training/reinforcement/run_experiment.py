@@ -461,6 +461,7 @@ def run_single_experiment(args, seed: int) -> dict:
         use_wandb=args.use_wandb,
         wandb_project="seriguela",
         wandb_run_name=f"seriguela-{args.algorithm}-{model_name}-{args.problem}-seed{seed}",
+        resume=not args.no_resume,
     )
 
     # Create trainer
@@ -620,6 +621,7 @@ def main():
     # Wandb
     parser.add_argument("--use_wandb", action="store_true", help="Use Weights & Biases")
     parser.add_argument("--no_wandb", action="store_true", help="Disable Weights & Biases")
+    parser.add_argument("--no_resume", action="store_true", help="Start from scratch even if checkpoints exist")
 
     # Seeds
     parser.add_argument("--seeds", type=int, nargs="+", default=[42],

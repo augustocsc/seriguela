@@ -94,6 +94,7 @@ class TrainerConfig:
     use_wandb: bool = True
     wandb_project: str = "seriguela"
     wandb_run_name: Optional[str] = None
+    resume: bool = True
 
 
 @dataclass
@@ -168,7 +169,19 @@ class BaseRLTrainer(ABC):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.info(f"Using device: {self.device}")
 
-        # Load model
+        # Baseline
+        self.baseline = 0.0
+        self.baseline_decay = 0.95
+
+        # Check for resume
+        self.resume_info = self._check_for_resume() if config.resume else None
+        if self.resume_info:
+            logger.info(f"Resuming from step {self.resume_info['step']}")
+            self.current_step = self.resume_info['step']
+        else:
+            self.current_step = 0
+
+        # Load model (uses resume_info if available)
         self._load_model()
 
         # Build prompt
@@ -185,17 +198,9 @@ class BaseRLTrainer(ABC):
             eps=1e-5,
         )
 
-        # Tracking
-        self.best_r2 = -np.inf
-        self.best_expression = None
-        self.best_reward = -np.inf
-        self.history = []
-        self.discovered_expressions: Dict[str, float] = {}
-        self.current_step = 0
-
-        # EMA baseline for advantage estimation
-        self.baseline = 0.0
-        self.baseline_decay = 0.95
+        # Resume internal state (best_r2, discovered_expressions, optimizer, etc.)
+        if self.resume_info:
+            self._resume_from_checkpoint(self.resume_info)
 
         # Wandb
         self.wandb_run = None
@@ -203,10 +208,15 @@ class BaseRLTrainer(ABC):
             self._init_wandb()
 
     def _load_model(self):
-        """Load model and tokenizer."""
-        logger.info(f"Loading model from {self.config.model_path}")
+        # Determine where to load from
+        load_path = self.config.model_path
+        if self.resume_info and "checkpoint_path" in self.resume_info:
+            load_path = str(self.resume_info["checkpoint_path"])
+            logger.info(f"Loading checkpoint from {load_path}")
+        else:
+            logger.info(f"Loading model from {load_path}")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(load_path)
         self.tokenizer.pad_token = self.tokenizer.eos_token
 
         # Try loading as LoRA adapter first
@@ -218,13 +228,13 @@ class BaseRLTrainer(ABC):
                 base_model.resize_token_embeddings(len(self.tokenizer))
                 logger.info(f"Resized embeddings to {len(self.tokenizer)}")
 
-            model_with_lora = PeftModel.from_pretrained(base_model, self.config.model_path)
+            model_with_lora = PeftModel.from_pretrained(base_model, load_path)
             self.model = model_with_lora.merge_and_unload()
             logger.info("LoRA adapter loaded and merged successfully")
 
         except Exception as e:
             logger.info(f"LoRA load failed ({e}), loading as standalone model...")
-            self.model = AutoModelForCausalLM.from_pretrained(self.config.model_path)
+            self.model = AutoModelForCausalLM.from_pretrained(load_path)
 
         # Add LoRA for training
         lora_config = LoraConfig(
@@ -728,36 +738,138 @@ class BaseRLTrainer(ABC):
             logger.info(f"  R²={r2:.4f}: {expr}")
 
     def save_checkpoint(self):
-        """Save model checkpoint."""
+        """Save model checkpoint and trainer state."""
         checkpoint_dir = self.output_dir / "checkpoints" / f"step_{self.current_step}"
         checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Save model and tokenizer
         self.model.save_pretrained(checkpoint_dir)
         self.tokenizer.save_pretrained(checkpoint_dir)
-        logger.info(f"Checkpoint saved: {checkpoint_dir}")
+        
+        # Save trainer state (optimizer, metrics, etc.)
+        trainer_state = {
+            "step": self.current_step,
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "best_r2": self.best_r2,
+            "best_expression": self.best_expression,
+            "best_reward": self.best_reward,
+            "baseline": self.baseline,
+            "discovered_expressions": self.discovered_expressions,
+            "history": self.history,
+            "best_step": getattr(self, "best_step", 0),
+            "early_stopping_state": self.early_stopping.state_dict()
+        }
+        
+        if self.elite_buffer:
+            trainer_state["buffer_state"] = self.elite_buffer.state_dict()
+            
+        torch.save(trainer_state, checkpoint_dir / "trainer_state.pt")
+        
+        logger.info(f"Checkpoint and state saved: {checkpoint_dir}")
 
     def save_results(self):
         """Save training results."""
         results = self._get_results()
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save timestamped results
         output_path = self.output_dir / f"results_{timestamp}.json"
-
         with open(output_path, "w") as f:
+            json.dump(results, f, indent=2, default=str)
+            
+        # Also save as latest for easy resume detection
+        latest_path = self.output_dir / "results_latest.json"
+        with open(latest_path, "w") as f:
             json.dump(results, f, indent=2, default=str)
 
         logger.info(f"Results saved: {output_path}")
 
-    def _get_results(self) -> Dict:
-        """Get results dictionary."""
+    def _check_for_resume(self) -> Optional[Dict]:
+        """Check for existing checkpoints to resume from."""
+        checkpoint_root = self.output_dir / "checkpoints"
+        if not checkpoint_root.exists():
+            return None
+            
+        # Find all step_N directories
+        steps = []
+        for d in checkpoint_root.iterdir():
+            if d.is_dir() and d.name.startswith("step_"):
+                try:
+                    step_num = int(d.name.split("_")[1])
+                    steps.append((step_num, d))
+                except (ValueError, IndexError):
+                    continue
+        
+        if not steps:
+            return None
+            
+        # Get the latest step
+        latest_step, latest_dir = max(steps, key=lambda x: x[0])
+        
+        # Check for results_latest.json
+        results_latest = self.output_dir / "results_latest.json"
+        
         return {
-            "algorithm": self.__class__.__name__,
-            "best_r2": self.best_r2,
-            "best_expression": self.best_expression,
-            "total_steps": self.current_step,
-            "history": self.history,
-            "discovered_expressions": dict(list(self.discovered_expressions.items())[:100]),
-            "config": self.config.__dict__,
-            "reward_fn": self.reward_fn.name,
-            "penalty_strategy": self.penalty_handler.strategy.value,
-            "temp_scheduler": self.temp_scheduler.name,
-            "early_stopping_summary": self.early_stopping.get_summary(),
+            "step": latest_step,
+            "checkpoint_path": latest_dir,
+            "results_path": results_latest if results_latest.exists() else None
         }
+
+    def _resume_from_checkpoint(self, resume_info: Dict):
+        """Restore internal state from checkpoint."""
+        checkpoint_path = resume_info["checkpoint_path"]
+        state_path = checkpoint_path / "trainer_state.pt"
+        
+        # 1. Try to load from trainer_state.pt (new format)
+        if state_path.exists():
+            try:
+                logger.info(f"Loading trainer state from {state_path}")
+                state = torch.load(state_path, map_location=self.device)
+                
+                self.best_r2 = state.get("best_r2", -np.inf)
+                self.best_expression = state.get("best_expression")
+                self.best_reward = state.get("best_reward", -np.inf)
+                self.baseline = state.get("baseline", 0.0)
+                self.discovered_expressions = state.get("discovered_expressions", {})
+                self.history = state.get("history", [])
+                self.best_step = state.get("best_step", 0)
+                
+                if "optimizer_state_dict" in state:
+                    self.optimizer.load_state_dict(state["optimizer_state_dict"])
+                    logger.info("Optimizer state restored")
+                    
+                if "early_stopping_state" in state:
+                    self.early_stopping.load_state_dict(state["early_stopping_state"])
+                    logger.info("Early stopping state restored")
+                    
+                if "buffer_state" in state and self.elite_buffer:
+                    self.elite_buffer.load_state_dict(state["buffer_state"])
+                    logger.info("Elite buffer state restored")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load trainer_state.pt: {e}")
+
+        # 2. Fallback: Try to load from results_latest.json (old format/redundancy)
+        results_path = resume_info.get("results_path")
+        if results_path and results_path.exists():
+            try:
+                logger.info(f"Loading state from {results_path}")
+                with open(results_path, "r") as f:
+                    data = json.load(f)
+                    self.best_r2 = data.get("best_r2", -np.inf)
+                    self.best_expression = data.get("best_expression")
+                    self.history = data.get("history", [])
+                    self.discovered_expressions = data.get("discovered_expressions", {})
+                    # baseline isn't usually in results, but we try anyway
+                    self.baseline = data.get("baseline", 0.0)
+            except Exception as e:
+                logger.warning(f"Failed to load results_latest.json: {e}")
+        
+        # Default initialization if resume fails or is partial
+        if not hasattr(self, "best_r2"):
+            self.best_r2 = -np.inf
+            self.best_expression = None
+            self.best_reward = -np.inf
+            self.history = []
+            self.discovered_expressions = {}
+            self.best_step = 0
