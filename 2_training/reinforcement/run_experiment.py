@@ -16,6 +16,9 @@ Usage:
 """
 
 import os
+# Optimizing memory management for parallel runs on Google Colab
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
 import sys
 import json
 import yaml

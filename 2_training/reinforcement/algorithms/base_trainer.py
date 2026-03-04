@@ -492,10 +492,13 @@ class BaseRLTrainer(ABC):
         )
 
         # 1. Generate in GPU-friendly sub-batches
+        # We use a small internal batch for generation to avoid OOM
+        # while keeping the larger logical batch size for training.
+        GPU_BATCH_SIZE = 256  # Reduced from 512 for parallel stability
         rollouts = []
-        remaining = num_samples
+        remaining = batch_size
         while remaining > 0:
-            chunk = min(remaining, self.GPU_BATCH_SIZE)
+            chunk = min(remaining, GPU_BATCH_SIZE)
             rollouts.extend(self._generate_sub_batch(chunk, temperature))
             remaining -= chunk
 
