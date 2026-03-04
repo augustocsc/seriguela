@@ -136,8 +136,8 @@ def get_test5_matrix():
                     "problem": problem,
                     "temperature": "cosine_annealing",
                     "seed": seed,
-                    "max_steps": 40,
-                    "patience": 5,  # Enable early stopping to save time
+                    "max_steps": 50,
+                    "patience": 999,  # Reversed to 999 for scientific comparison
                 })
     return jobs
 
