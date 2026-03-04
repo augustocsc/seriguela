@@ -307,9 +307,6 @@ class PurePPOTrainer(BaseRLTrainer):
                     early_stopped = True
                     break
 
-            if self.device.type == "cuda":
-                torch.cuda.empty_cache()
-
         return {
             "policy_loss": total_policy_loss / max(num_updates, 1),
             "entropy_loss": total_entropy_loss / max(num_updates, 1),

@@ -237,9 +237,6 @@ class BoNGRPOTrainer(BaseRLTrainer):
             )
             self.optimizer.step()
 
-        if self.device.type == "cuda":
-            torch.cuda.empty_cache()
-
         return {
             "policy_loss": total_policy_loss / max(valid_count, 1),
             "entropy_loss": total_entropy_loss / max(valid_count, 1),

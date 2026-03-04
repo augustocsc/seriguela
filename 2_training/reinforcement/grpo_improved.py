@@ -323,9 +323,6 @@ class ImprovedGRPO:
                 self.best_r2 = r2
                 self.best_expression = expr_str
 
-            if self.device.type == "cuda":
-                torch.cuda.empty_cache()
-
         return results
 
     def compute_advantages(self, results: List[Dict]) -> Tuple[List[float], dict]:
@@ -403,8 +400,6 @@ class ImprovedGRPO:
         self.optimizer.zero_grad()
 
         for _ in range(num_groups):
-            if self.device.type == "cuda":
-                torch.cuda.empty_cache()
 
             # Generate group
             group_results = self.generate_group()

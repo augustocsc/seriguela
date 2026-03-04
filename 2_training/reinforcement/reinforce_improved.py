@@ -323,10 +323,6 @@ class ImprovedREINFORCE:
                 self.best_r2 = r2
                 self.best_expression = expr_str
 
-            # Clear cache periodically
-            if self.device.type == "cuda":
-                torch.cuda.empty_cache()
-
         return results
 
     def update_baseline(self, rewards: List[float]):
@@ -352,9 +348,6 @@ class ImprovedREINFORCE:
         effective_batch = batch_size * grad_accum_steps
 
         for accum_step in range(grad_accum_steps):
-            # Clear cache before each mini-batch
-            if self.device.type == "cuda":
-                torch.cuda.empty_cache()
 
             results = self.generate_batch(batch_size)
             all_results.extend(results)
