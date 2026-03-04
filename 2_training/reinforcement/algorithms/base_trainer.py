@@ -173,6 +173,14 @@ class BaseRLTrainer(ABC):
         self.baseline = 0.0
         self.baseline_decay = 0.95
 
+        # Tracking
+        self.best_r2 = -np.inf
+        self.best_expression = None
+        self.best_reward = -np.inf
+        self.history = []
+        self.discovered_expressions: Dict[str, float] = {}
+        self.best_step = 0
+
         # Check for resume
         self.resume_info = self._check_for_resume() if config.resume else None
         if self.resume_info:
@@ -867,6 +875,7 @@ class BaseRLTrainer(ABC):
         
         # Default initialization if resume fails or is partial
         if not hasattr(self, "best_r2"):
+            # This should not happen as defaults are set in __init__
             self.best_r2 = -np.inf
             self.best_expression = None
             self.best_reward = -np.inf
