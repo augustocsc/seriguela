@@ -792,6 +792,41 @@ class BaseRLTrainer(ABC):
         
         logger.info(f"Checkpoint and state saved: {checkpoint_dir}")
 
+    def _get_results(self) -> Dict:
+        """Assemble final results dictionary."""
+        top_expressions = sorted(
+            self.discovered_expressions.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:20]
+
+        return {
+            "best_r2": float(self.best_r2) if np.isfinite(self.best_r2) else 0.0,
+            "best_expression": self.best_expression,
+            "best_reward": float(self.best_reward) if np.isfinite(self.best_reward) else 0.0,
+            "best_step": getattr(self, "best_step", 0),
+            "total_steps": self.current_step,
+            "total_unique_expressions": len(self.discovered_expressions),
+            "top_expressions": [{"expression": e, "r2": float(r2)} for e, r2 in top_expressions],
+            "discovered_expressions": {k: float(v) for k, v in self.discovered_expressions.items()},
+            "history": self.history,
+            "algorithm": self.__class__.__name__,
+            "config": {
+                "model_path": self.config.model_path,
+                "batch_size": self.config.batch_size,
+                "max_steps": self.config.max_steps,
+                "learning_rate": self.config.learning_rate,
+                "ppo_epochs": self.config.ppo_epochs,
+                "clip_epsilon": self.config.clip_epsilon,
+                "entropy_coef": self.config.entropy_coef,
+                "patience": self.config.patience,
+                "prompt_type": self.config.prompt_type,
+            },
+            "reward_fn": self.reward_fn.name,
+            "penalty_strategy": self.penalty_handler.strategy.value,
+            "temp_scheduler": self.temp_scheduler.name,
+        }
+
     def save_results(self):
         """Save training results."""
         results = self._get_results()
