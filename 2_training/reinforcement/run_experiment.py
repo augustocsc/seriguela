@@ -706,7 +706,8 @@ def main():
             "individual_results": all_results,
         }
 
-        output_path = Path(args.output_dir) / f"aggregate_{args.algorithm}_{args.problem}.json"
+        seeds_str = "_".join(str(s) for s in args.seeds)
+        output_path = Path(args.output_dir) / f"aggregate_{args.algorithm}_{args.problem}_seed{seeds_str}.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w") as f:
             json.dump(aggregate, f, indent=2, default=str)
