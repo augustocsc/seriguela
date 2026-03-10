@@ -43,8 +43,8 @@ SEEDS = [42, 123, 456]
 TEMPERATURE = "cosine_annealing"
 REWARD = "sr_ic"
 PENALTY = "gradient"
-MAX_STEPS = 50
-BATCH_SIZE = 64
+MAX_STEPS = 500
+BATCH_SIZE = 1024
 TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 OUTPUT_DIR = f"../../results/pre_phase__t6_{TIMESTAMP}"
 
