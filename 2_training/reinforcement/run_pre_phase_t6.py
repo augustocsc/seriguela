@@ -32,6 +32,7 @@ import sys
 import subprocess
 import time
 import datetime
+import shutil
 from pathlib import Path
 
 # Configuration matching Test 5
@@ -147,35 +148,36 @@ def main():
     print("=" * 70)
 
     print("\n" + "=" * 70)
-    print("PUSHING RESULTS TO GIT")
+    print("SAVING RESULTS TO GOOGLE DRIVE")
     print("=" * 70)
+    
+    # Target directory on Google Drive
+    drive_base = Path("/content/drive/MyDrive/seriguela_results")
+    drive_target = drive_base / Path(OUTPUT_DIR).name
+    
     try:
-        # Assumes SCRIPT_DIR is inside the git repo
-        repo_root = SCRIPT_DIR.parent.parent
-        
-        # Pull first to avoid conflicts in Colab
-        subprocess.run(["git", "pull", "--rebase"], cwd=repo_root, check=False)
-        
-        # We need to construct the relative path from the repo root
-        # OUTPUT_DIR is "../../results/pre_phase__t6_TIMESTAMP"
-        # We just want "results/pre_phase__t6_TIMESTAMP"
-        folder_name = Path(OUTPUT_DIR).name
-        relative_path = f"results/{folder_name}"
-        
-        print(f"Adding folder: {relative_path}")
-        
-        # Add the specific results folder (use -f because 'results/' might be in .gitignore)
-        subprocess.run(["git", "add", "-f", relative_path], cwd=repo_root, check=True)
-        
-        # Commit
-        subprocess.run(["git", "commit", "-m", f"chore: add Test 6 results for {TIMESTAMP}"], cwd=repo_root, check=True)
-        
-        # Push
-        subprocess.run(["git", "push"], cwd=repo_root, check=True)
-        print(f"✅ Successfully pushed results from {OUTPUT_DIR} to git!")
+        # Check if drive is mounted
+        if not Path("/content/drive").exists():
+            print("⚠️ Google Drive not found at /content/drive.")
+            print("Did you forget to mount it? Run this in Colab:")
+            print("from google.colab import drive")
+            print("drive.mount('/content/drive')")
+            print("\nAfter mounting, you can manually copy with:")
+            print(f"!cp -r {OUTPUT_DIR} /content/drive/MyDrive/seriguela_results/")
+        else:
+            print(f"Copying {OUTPUT_DIR} -> {drive_target}")
+            
+            # Create base dir if it doesn't exist
+            drive_base.mkdir(parents=True, exist_ok=True)
+            
+            # Copy everything
+            shutil.copytree(OUTPUT_DIR, drive_target, dirs_exist_ok=True)
+            
+            print(f"✅ Successfully saved results to Google Drive!")
+            
     except Exception as e:
-        print(f"❌ Failed to push to git: {e}")
-        print("You may need to push manually or check git credentials in Colab.")
+        print(f"❌ Failed to copy to Google Drive: {e}")
+        print("You may need to copy manually.")
 
 
 if __name__ == "__main__":
