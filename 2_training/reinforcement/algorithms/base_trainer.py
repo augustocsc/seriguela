@@ -107,6 +107,7 @@ class Rollout:
     total_log_prob: float
     reward_result: Optional[RewardResult] = None
     advantage: float = 0.0
+    from_buffer: bool = False
 
 
 class BaseRLTrainer(ABC):
@@ -652,6 +653,7 @@ class BaseRLTrainer(ABC):
                         error_type=None,
                         expression=entry.expression,
                     )
+                    buffer_rollout.from_buffer = True
                     rollouts.append(buffer_rollout)
                     buffer_retokenized += 1
 
@@ -661,9 +663,9 @@ class BaseRLTrainer(ABC):
         # Update policy
         update_stats = self.update_policy(rollouts, advantages)
 
-        # Separate fresh rollouts from buffer samples (fresh have tokens)
-        fresh_rollouts = [r for r in rollouts if len(r.tokens) > 0]
-        buffer_rollouts = [r for r in rollouts if len(r.tokens) == 0]
+        # Separate fresh rollouts from buffer samples
+        fresh_rollouts = [r for r in rollouts if not r.from_buffer]
+        buffer_rollouts = [r for r in rollouts if r.from_buffer]
 
         # Compute statistics for ALL rollouts
         rewards = [r.reward_result.reward for r in rollouts if r.reward_result]
