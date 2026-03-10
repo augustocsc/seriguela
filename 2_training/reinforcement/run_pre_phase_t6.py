@@ -31,6 +31,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import sys
 import subprocess
 import time
+import datetime
 from pathlib import Path
 
 # Configuration matching Test 5
@@ -43,7 +44,8 @@ REWARD = "sr_ic"
 PENALTY = "gradient"
 MAX_STEPS = 50
 BATCH_SIZE = 64
-OUTPUT_DIR = "../../results/pre_phase__t6"
+TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+OUTPUT_DIR = f"../../results/pre_phase__t6_{TIMESTAMP}"
 
 # Working directory
 SCRIPT_DIR = Path(__file__).parent
@@ -143,6 +145,30 @@ def main():
     print(f"\nResults saved to: {OUTPUT_DIR}")
     print("Compare with Test 5 results in: results/pre_phase__t5/")
     print("=" * 70)
+
+    print("\n" + "=" * 70)
+    print("PUSHING RESULTS TO GIT")
+    print("=" * 70)
+    try:
+        # Assumes SCRIPT_DIR is inside the git repo
+        repo_root = SCRIPT_DIR.parent.parent
+        output_abs = Path(OUTPUT_DIR).resolve()
+        
+        # Pull first to avoid conflicts in Colab
+        subprocess.run(["git", "pull", "--rebase"], cwd=repo_root, check=False)
+        
+        # Add the specific results folder
+        subprocess.run(["git", "add", str(output_abs)], cwd=repo_root, check=True)
+        
+        # Commit
+        subprocess.run(["git", "commit", "-m", f"chore: add Test 6 results for {TIMESTAMP}"], cwd=repo_root, check=True)
+        
+        # Push
+        subprocess.run(["git", "push"], cwd=repo_root, check=True)
+        print(f"✅ Successfully pushed results from {OUTPUT_DIR} to git!")
+    except Exception as e:
+        print(f"❌ Failed to push to git: {e}")
+        print("You may need to push manually or check git credentials in Colab.")
 
 
 if __name__ == "__main__":
