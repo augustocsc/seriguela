@@ -529,6 +529,74 @@ class BaseRLTrainer(ABC):
         return rollouts
 
 
+    def retokenize_expression(self, expression: str) -> Optional[Rollout]:
+        """Re-tokenize a buffer expression under the current policy.
+
+        Takes an expression string, reconstructs the full text
+        (prompt + expression), tokenizes the expression portion,
+        and does a forward pass to get the current policy's log_probs.
+
+        This allows buffer samples to participate in gradient updates
+        with up-to-date action probabilities.
+
+        Args:
+            expression: The expression string (e.g. 'x_1**2 + x_1')
+
+        Returns:
+            A Rollout with real tokens and log_probs, or None if
+            the expression cannot be re-tokenized.
+        """
+        try:
+            # Reconstruct the full text as the model would have generated it
+            full_text = self.prompt + expression + '"'
+
+            # Tokenize the full text
+            full_ids = self.tokenizer.encode(full_text, return_tensors="pt").to(self.device)
+
+            # The generated tokens are everything after the prompt
+            prompt_len = self.prompt_ids.shape[1]
+            if full_ids.shape[1] <= prompt_len:
+                return None
+
+            generated_token_ids = full_ids[0, prompt_len:].tolist()
+
+            if len(generated_token_ids) == 0:
+                return None
+
+            # Forward pass to get current policy's log_probs for these tokens
+            self.model.eval()
+            with torch.no_grad():
+                outputs = self.model(full_ids[:, :-1])
+                logits = outputs.logits
+
+                # Get logits for the generated portion only
+                gen_logits = logits[:, prompt_len - 1:, :]
+
+                # Compute log_probs
+                log_probs_all = F.log_softmax(gen_logits, dim=-1)
+
+                # Gather log_probs for the actual generated tokens
+                target_tokens = torch.tensor(
+                    generated_token_ids, device=self.device
+                ).unsqueeze(0).unsqueeze(-1)
+                log_probs_selected = log_probs_all.gather(
+                    2, target_tokens
+                ).squeeze(-1).squeeze(0)
+
+                log_probs_list = log_probs_selected.tolist()
+
+            return Rollout(
+                text=full_text,
+                expression=expression,
+                tokens=generated_token_ids,
+                log_probs=log_probs_list,
+                total_log_prob=sum(log_probs_list),
+            )
+
+        except Exception as e:
+            logger.debug(f"Failed to retokenize '{expression}': {e}")
+            return None
+
     def compute_policy_entropy(self) -> float:
         """Compute current policy entropy (single forward pass)."""
         self.model.eval()
@@ -566,18 +634,16 @@ class BaseRLTrainer(ABC):
                 current_step=self.current_step
             )
 
-        # Sample from buffer and add to rollouts
+        # Sample from buffer, re-tokenize under current policy, and add to rollouts
+        buffer_retokenized = 0
         if self.elite_buffer is not None and len(self.elite_buffer) > 0:
             buffer_samples = self.elite_buffer.sample(self.config.batch_size)
             for entry in buffer_samples:
-                # Create rollout from buffer entry (no tokens/log_probs)
-                buffer_rollout = Rollout(
-                    text="",
-                    expression=entry.expression,
-                    tokens=[],
-                    log_probs=[],
-                    total_log_prob=entry.log_prob,
-                    reward_result=RewardResult(
+                # Re-tokenize under current policy to get real tokens/log_probs
+                buffer_rollout = self.retokenize_expression(entry.expression)
+                if buffer_rollout is not None:
+                    # Attach the known reward from the buffer
+                    buffer_rollout.reward_result = RewardResult(
                         reward=entry.reward,
                         r2=entry.r2,
                         mse=0.0,
@@ -585,9 +651,9 @@ class BaseRLTrainer(ABC):
                         complexity=entry.complexity,
                         error_type=None,
                         expression=entry.expression,
-                    ),
-                )
-                rollouts.append(buffer_rollout)
+                    )
+                    rollouts.append(buffer_rollout)
+                    buffer_retokenized += 1
 
         # Compute advantages
         advantages = self.compute_advantages(rollouts)

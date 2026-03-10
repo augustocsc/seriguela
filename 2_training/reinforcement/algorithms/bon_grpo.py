@@ -96,6 +96,9 @@ class BoNGRPOTrainer(BaseRLTrainer):
 
         This makes the algorithm robust to reward scale.
         """
+        import random
+        random.shuffle(rollouts)
+
         n_samples = len(rollouts)
         advantages = np.zeros(n_samples)
 
