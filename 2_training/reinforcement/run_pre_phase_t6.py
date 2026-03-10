@@ -74,6 +74,30 @@ def run_experiment(algorithm, problem, seed):
     ]
 
     return cmd
+    
+def copy_to_drive():
+    """Copies current results to Google Drive."""
+    print("  [Auto-Save] Copying current results to Google Drive...")
+    drive_base = Path("/content/drive/MyDrive/seriguela_results")
+    drive_target = drive_base / Path(OUTPUT_DIR).name
+    
+    try:
+        # Check if drive is mounted
+        if not Path("/content/drive").exists():
+            print("  ⚠️ Google Drive not found at /content/drive. Skipping auto-save.")
+            return False
+            
+        # Create base dir if it doesn't exist
+        drive_base.mkdir(parents=True, exist_ok=True)
+        
+        # Copy everything
+        shutil.copytree(OUTPUT_DIR, drive_target, dirs_exist_ok=True)
+        print(f"  ✅ Successfully saved partial results to {drive_target}")
+        return True
+    except Exception as e:
+        print(f"  ❌ Failed to copy to Google Drive: {e}")
+        return False
+        
 
 
 def main():
@@ -119,15 +143,18 @@ def main():
                     if result.returncode == 0:
                         completed += 1
                         print(f"  ✓ Completed in {elapsed:.0f}s ({completed}/{total_runs})")
+                        copy_to_drive()
                     else:
                         failed += 1
                         failed_runs.append(run_id)
                         print(f"  ✗ Failed (exit code {result.returncode})")
+                        copy_to_drive()
 
                 except Exception as e:
                     failed += 1
                     failed_runs.append(run_id)
                     print(f"  ✗ Exception: {e}")
+                    copy_to_drive()
 
     total_time = time.time() - start_time
 
@@ -146,38 +173,9 @@ def main():
     print(f"\nResults saved to: {OUTPUT_DIR}")
     print("Compare with Test 5 results in: results/pre_phase__t5/")
     print("=" * 70)
-
-    print("\n" + "=" * 70)
-    print("SAVING RESULTS TO GOOGLE DRIVE")
-    print("=" * 70)
     
-    # Target directory on Google Drive
-    drive_base = Path("/content/drive/MyDrive/seriguela_results")
-    drive_target = drive_base / Path(OUTPUT_DIR).name
-    
-    try:
-        # Check if drive is mounted
-        if not Path("/content/drive").exists():
-            print("⚠️ Google Drive not found at /content/drive.")
-            print("Did you forget to mount it? Run this in Colab:")
-            print("from google.colab import drive")
-            print("drive.mount('/content/drive')")
-            print("\nAfter mounting, you can manually copy with:")
-            print(f"!cp -r {OUTPUT_DIR} /content/drive/MyDrive/seriguela_results/")
-        else:
-            print(f"Copying {OUTPUT_DIR} -> {drive_target}")
-            
-            # Create base dir if it doesn't exist
-            drive_base.mkdir(parents=True, exist_ok=True)
-            
-            # Copy everything
-            shutil.copytree(OUTPUT_DIR, drive_target, dirs_exist_ok=True)
-            
-            print(f"✅ Successfully saved results to Google Drive!")
-            
-    except Exception as e:
-        print(f"❌ Failed to copy to Google Drive: {e}")
-        print("You may need to copy manually.")
+    # Final copy just to be sure
+    copy_to_drive()
 
 
 if __name__ == "__main__":
