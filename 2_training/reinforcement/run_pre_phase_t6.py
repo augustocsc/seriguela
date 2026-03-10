@@ -152,13 +152,20 @@ def main():
     try:
         # Assumes SCRIPT_DIR is inside the git repo
         repo_root = SCRIPT_DIR.parent.parent
-        output_abs = Path(OUTPUT_DIR).resolve()
         
         # Pull first to avoid conflicts in Colab
         subprocess.run(["git", "pull", "--rebase"], cwd=repo_root, check=False)
         
-        # Add the specific results folder
-        subprocess.run(["git", "add", str(output_abs)], cwd=repo_root, check=True)
+        # We need to construct the relative path from the repo root
+        # OUTPUT_DIR is "../../results/pre_phase__t6_TIMESTAMP"
+        # We just want "results/pre_phase__t6_TIMESTAMP"
+        folder_name = Path(OUTPUT_DIR).name
+        relative_path = f"results/{folder_name}"
+        
+        print(f"Adding folder: {relative_path}")
+        
+        # Add the specific results folder (use -f because 'results/' might be in .gitignore)
+        subprocess.run(["git", "add", "-f", relative_path], cwd=repo_root, check=True)
         
         # Commit
         subprocess.run(["git", "commit", "-m", f"chore: add Test 6 results for {TIMESTAMP}"], cwd=repo_root, check=True)
