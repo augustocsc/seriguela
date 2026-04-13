@@ -1,0 +1,124 @@
+\chapter{Results}
+
+This chapter presents the experimental results of the Seriguela pipeline, organized according to the two-phase experimental strategy described in Chapter 3. Phase A focuses on configuration search using Base models, while Phase B extends the best configurations to larger model scales.
+
+\section{Experimental Setup}
+
+\subsection{Factorial Design}
+
+The experiments follow a full factorial design to systematically evaluate the impact of each methodological choice. Table \ref{tab:factorial_design} summarizes the factors and their levels.
+
+\begin{table}[h!]
+    \centering
+    \caption{Factorial design for the ablation study.}
+    \label{tab:factorial_design}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Factor} & \textbf{Levels} & \textbf{Count} \\
+    \midrule
+    Model (Phase A) & Base Infix, Base Prefix & 2 \\
+    Benchmark Problems & Nguyen-1, Nguyen-5, Nguyen-9 & 3 \\
+    RL Algorithm & BoN-PPO, BoN-GRPO, Pure PPO, Pure GRPO, Best-of-N & 5 \\
+    Reward Function & R² Clipped, Length-Penalized, SR-IC & 3 \\
+    Penalty Strategy & Binary, Gradient & 2 \\
+    Temperature & Fixed (0.7, 0.9), Linear, Cosine & 4 \\
+    Prompt Type & Standard, Oracle, Distractor & 3 \\
+    Noise Level & 0\%, 1\%, 5\%, 10\% & 4 \\
+    \midrule
+    \textbf{Total Configurations} & $2 \times 3 \times 5 \times 3 \times 2 \times 4 \times 3 \times 4$ & \textbf{8,640} \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Evaluation Metrics}
+
+The following metrics are used to evaluate model performance:
+
+\begin{itemize}
+    \item \textbf{Best R²:} The highest coefficient of determination achieved on the test set.
+    \item \textbf{Valid Rate:} Percentage of generated expressions that are syntactically valid and evaluable.
+    \item \textbf{Exact Recovery Rate:} Percentage of problems where the ground-truth expression (or symbolic equivalent) was discovered.
+    \item \textbf{Complexity Ratio:} Ratio of generated expression complexity to ground-truth complexity.
+\end{itemize}
+
+\section{Phase A: Configuration Search (Base Models)}
+
+This section presents results from the full factorial experiment on Base models (GPT-2, 124M parameters), designed to identify optimal hyperparameter configurations before scaling to larger models.
+
+\subsection{Algorithm Comparison}
+    % Compare BoN-PPO, BoN-GRPO, Pure PPO, Pure GRPO, Best-of-N
+    % Best R² by algorithm
+    % Convergence speed
+    % Stability across seeds
+
+\subsection{Reward Function Analysis}
+    % Compare R² Clipped, Length-Penalized, SR-IC
+    % Impact on expression complexity
+    % Trade-off between fit and simplicity
+
+\subsection{Penalty Strategy Comparison}
+    % Binary vs Gradient penalties
+    % Impact on valid expression rate
+    % Learning dynamics
+
+\subsection{Temperature Scheduling Effects}
+    % Fixed vs Annealing strategies
+    % Exploration-exploitation trade-off
+    % Final performance comparison
+
+\subsection{Prompt Sensitivity Analysis}
+    % Standard vs Oracle vs Distractor prompts
+    % Robustness to misleading context
+    % Operator adherence metrics
+
+\subsection{Noise Robustness Evaluation}
+    % Performance degradation across noise levels
+    % Overfitting analysis
+    % Generalization to clean test data
+
+\subsection{Notation Comparison: Infix vs Prefix}
+    % Valid rate by notation
+    % Expression quality comparison
+    % Structural differences in generated expressions
+
+\subsection{Summary of Best Configurations}
+    % Top-K configurations identified
+    % Statistical significance tests
+    % Configurations selected for Phase B
+
+\section{Phase B: Full Benchmark Evaluation (Medium and Large Models)}
+
+This section presents results from applying the best configurations identified in Phase A to larger model scales across the complete Nguyen benchmark suite.
+
+\subsection{Model Scaling Effects}
+    % Base (124M) vs Medium (355M) vs Large (774M)
+    % Scaling laws for symbolic regression
+    % Diminishing returns analysis
+
+\subsection{Complete Nguyen Benchmark Results}
+    % Results for all 12 Nguyen problems
+    % Per-problem analysis
+    % Difficulty ranking
+
+\subsection{Best Expressions Discovered}
+    % Case studies of discovered expressions
+    % Comparison with ground truth
+    % Symbolic equivalence analysis
+
+\section{Comparative Evaluation}
+
+\subsection{Comparison with Baseline Methods}
+    % Genetic Programming baselines
+    % Neural-guided SR methods
+    % Statistical significance tests
+
+\subsection{Computational Efficiency}
+    % Training time comparison
+    % Inference speed
+    % Resource utilization
+
+\section{Summary of Findings}
+
+    % Key insights from experiments
+    % Answers to research questions
+    % Limitations observed

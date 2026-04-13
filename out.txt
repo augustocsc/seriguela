@@ -1,7 +1,0 @@
-Special constants found: [1]
-Found 1 constants in the expression: tan(x_1**C + cos(x_1))
-Testing expression validity with constants: [[1.0]]
-Expression is valid on dataset.
-Bounds for optimization: [(1, 3)]
-Fitted constants: [1.0]
-R2 score: -1.8028651105117532e-05

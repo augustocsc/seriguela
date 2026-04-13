@@ -1,0 +1,111 @@
+\documentclass[Ingles, hidelinks]{ic-tese-v3} % or [Ingles,Final]
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{amsmath}    % Basic math packages
+\usepackage{amssymb}    % For \mathbb and other symbols
+\usepackage{bm}         % For bold math symbols (\bm is better than \mathbf for some cases)
+\usepackage{svg}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{amsmath}  % For mathematical symbols
+\usepackage{xcolor}
+\usepackage{listings}  % For code listings
+\usepackage{wrapfig}
+\usepackage[numbers]{natbib}
+
+\usepackage{enumitem}     % For compact itemize
+\usepackage{graphicx}     % For minipage scaling
+
+\usepackage{xcolor}  % For text color and colorbox
+\usepackage{algorithm} % For the algorithm floating environment
+\usepackage{algpseudocode} % For pseudocode within the algorithm environment
+\usepackage{tabularx} % For tables with adjustable column widths (optional, but good)
+\usepackage{ragged2e} % For \RaggedRight, useful with tabularx p-columns
+\usepackage{tikz} % For custom boxes if needed, but colorbox is usually enough
+
+
+\usepackage{longtable}
+\usepackage{geometry}
+
+
+\newcommand{\param}[1]{\texttt{#1}} % For parameter names
+\newcommand{\func}[1]{\texttt{#1}} % For function names
+
+\begin{document}
+\autor{Augusto Cesar Silva Cruz} % Correct command for author
+\titulo{Título da Dissertação ou Tese em Português} 
+\title{The Dissertation or Thesis Title in English}
+
+% Advisors section - corrected to use \orientador and \coorientador
+\orientador{Prof. Dr. André Santanchè} % Main advisor
+\coorientador{Prof. Dr. Hélio Pedrini} % Co-advisor (optional)
+
+% Degree type - corrected command
+\mestrado % For Master's (use \doutorado for PhD)
+
+% Defense date - corrected command
+\datadadefesa{23}{07}{2025}
+
+% For final version, uncomment and fill evaluators:
+%\avaliadorA{Prof. Dr. Primeiro Avaliador}{Instituição do primeiro avaliador}
+%\avaliadorB{Profa. Dra. Segunda Avaliadora}{Instituição da segunda avaliadora}
+
+% For final version catalog sheet:
+%\fichacatalografica{arquivo.pdf}
+
+% This command must stay here:
+\paginasiniciais
+
+% Dedication (optional):
+%\prefacesection{Dedicatória}
+%Texto da dedicatória...
+
+% Epigraph (optional):
+%\begin{epigrafe}
+%{\it
+%Text of epigraph...}
+%\hfill (Author)
+%\end{epigrafe}
+
+% Acknowledgements:
+\prefacesection{Agradecimentos}
+Os agradecimentos devem ocupar uma única página.
+
+% Abstract in Portuguese (required):
+\begin{resumo}
+O resumo deve ter no máximo 500 palavras e deve ocupar uma única página.
+\end{resumo}
+
+% Abstract in English (required):
+\begin{abstract}
+The abstract must have at most 500 words and must fit in a single page.
+\end{abstract}
+
+% Lists (optional):
+\listoffigures
+\listoftables
+
+% Table of contents:
+\tableofcontents
+
+% This command must stay here:
+\fimdaspaginasiniciais
+
+% Chapters:
+\input{chapters/1.introduction}
+\input{chapters/2.concepts_and_works} % Fixed filename (no spaces)
+\input{chapters/3.materials and methods}
+\input{chapters/4.results}
+\input{chapters/5.conclusion}
+
+% Bibliography:
+\bibliographystyle{apalike}
+\bibliography{bibliography/ic-tese-v3}
+
+% Appendices (optional):
+%\begin{appendices}
+%\chapter{Título do Apêndice}
+%Conteúdo do apêndice...
+%\end{appendices}
+\end{document}
+

@@ -1,0 +1,564 @@
+%https://arxiv.org/pdf/2505.03977?
+
+\chapter{Materials and Methods}
+This chapter details the methodology for the Seriguela pipeline and is intended to describe: the data engineering process for generating, cleaning, and augmenting the mathematical expression dataset; the model's training methodology, including the initial supervised fine-tuning and the subsequent reinforcement learning refinement; the benchmark datasets and evaluation metrics used to assess accuracy and model complexity; and the essential implementation details regarding the software and hardware environment.
+
+\section{Overview of the Proposed Seriguela Pipeline}
+
+\begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/Overview.pdf} % Adjusted width for better margins
+        \caption[End-to-end pipeline of the Seriguela Pipeline]{End-to-end pipeline of the Seriguela Pipeline.}
+        \label{fig:pipeline}
+    \end{figure}
+
+    As illustrated in Figure~\ref{fig:pipeline}, our approach implements a three-stage methodology for symbolic regression:
+    
+    \begin{enumerate}
+        \item \textbf{Data Engineering Phase}: A dataset of expressions is generated, evaluated to remove invalid expressions, and finally augmented with prompt format and new variables.
+        
+        \item \textbf{Model Fine-Tuning}: A pre-trained language model (LM) is specialized through supervised learning on mathematical expressions, transforming it into a domain-specific expression generator.
+        
+        \item \textbf{Expression Discovery}: The fine-tuned Language Model is iteratively optimized using reinforcement learning algorithms. This process takes tabular data as input, with columns representing features and a designated target variable, to explore and refine mathematical expressions. The intended outcome is a mathematical expression that effectively fits the input data.
+    \end{enumerate}
+    
+    The first and second blocks are applied only once. After fine-tuning, the LLM for Expression Generation is used in an optimization loop using the input data. For each input data set, the model restarts the process.
+    
+    \section{Dataset Engineering}
+       \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/Data Engeneering.pdf} 
+        \caption[Data Engineering pipeline of the expression dataset]{Data Engineering pipeline of the expression dataset. From 1.1. Data Generation, followed by 1.2. Data Cleaning and finally 1.3. Prompt Engineering.}
+        \label{fig:DataEngineering}
+    \end{figure}
+Large Language Models (LLMs), such as GPT-2, are pre-trained on vast amounts of natural language text. However, their core objective of predicting the next most probable token is not inherently suited for generating the syntactically precise and computable language of mathematics. When prompted to formulate an equation, a base GPT-2 model often produces descriptive text, incorrect formats, or syntactically invalid expressions instead of a usable formula, as illustrated by the examples in Table \ref{tab:gpt2-comparison}.
+
+To address this limitation, the model must be specialized through supervised fine-tuning on a dedicated dataset of mathematical expressions. This process recalibrates the model's internal weights, teaching it the specific structure and tokens required to generate valid formulas when prompted. The data engineering pipeline developed for this work consists of three main stages: Dataset Generation, Data Cleaning, and Prompt Preparation. This pipeline is visually outlined in Figure \ref{fig:DataEngineering}.
+
+        \subsection{Dataset Generation}
+        \begin{table}[h]
+    \centering
+    \caption{Equation generation configuration parameters}
+    \label{tab:eq_config}
+    \begin{tabular}{p{3cm}p{5cm}p{4cm}}
+    \toprule
+    \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+    \midrule
+    \texttt{max\_len} & 20 & Maximum token length for generated equations \\
+    \addlinespace
+    
+    \texttt{operators} & 
+    \begin{minipage}[t]{\linewidth}
+        \texttt{add:10, mul:10, sub:5, div:5,} \texttt{sqrt:4, pow2:4,} \texttt{exp:4, sin:4, cos:4,} \texttt{tan:4, asin:2}
+    \end{minipage} &
+    Operator weights\\
+    \addlinespace
+    
+    \texttt{max\_ops} & 5 & Maximum operations per equation \\
+    \addlinespace
+    
+    \texttt{variables} & \texttt{x\_1, x\_2, x\_3, ..., x\_10}& 
+    \begin{minipage}[t]{\linewidth}
+        \vspace{-0.5em}
+        \begin{itemize}[leftmargin=*,nosep,noitemsep]
+            \item Base variables
+            \item Extensible via \texttt{x\_n} convention
+        \end{itemize}
+    \end{minipage} \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The first step in engineering the dataset was to generate a large volume of diverse mathematical expressions for the fine-tuning process. In this work, mathematical expressions are treated as tree structures, where the internal nodes represent operators (e.g., $+, sin, ×$) and the leaves represent operands such as variables (e.g., $x_1 ,x_2$) or constants.
+
+            To generate these expression trees randomly while avoiding a bias towards overly simple or complex structures, this work adopted the algorithm proposed by Lample and Charton, \cite{lample2019deep}. This method ensures that different tree structures have a more uniform probability of being generated, which is crucial for creating a balanced and diverse dataset. The algorithm operates on trees where internal nodes can have one child (unary operators like $sin$) or two children (binary operators like $+$). A detailed technical explanation of this generation algorithm is provided in Chapter 2.
+
+Using this approach, an initial dataset of expressions was generated. The expressions were first created in prefix notation and then converted to the more common infix format for subsequent steps. The key parameters that configured the expression generation are outlined in Table \ref{tab:eq_config}. After data cleaning and augmentation, the final dataset contains \textbf{758,255 expressions}, split into 682,429 training samples (90\%) and 75,826 validation samples (10\%). The dataset is publicly available on HuggingFace as \texttt{augustocsc/sintetico\_natural\_prefix\_682k}.
+
+Table \ref{tab:dataset_stats} summarizes the final dataset statistics, including the multiple representation formats available for each expression.
+
+\begin{table}[h!]
+    \centering
+    \caption{Final dataset statistics and available columns.}
+    \label{tab:dataset_stats}
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Statistic} & \textbf{Value} \\
+    \midrule
+    Total expressions & 758,255 \\
+    Training split & 682,429 (90\%) \\
+    Validation split & 75,826 (10\%) \\
+    File format & Parquet (143 MB) \\
+    \midrule
+    \textbf{Column} & \textbf{Description} \\
+    \midrule
+    \texttt{infix\_expr\_n} & Infix notation (natural variables) \\
+    \texttt{prefix\_expr\_n} & Prefix notation (natural variables) \\
+    \texttt{i\_prompt\_n} & Complete infix prompt for training \\
+    \texttt{p\_prompt\_n\_converted} & Complete prefix prompt for training \\
+    \texttt{skeleton} & Expression template with variable wildcards \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+Table \ref{tab:dataset_examples} illustrates concrete examples from the dataset, showing the same expression in different formats. Each sample contains the raw expression in both infix and prefix notations, alongside the structured prompt format used for training.
+
+\begin{table}[h!]
+    \centering
+    \caption{Example expressions from the dataset in different formats.}
+    \label{tab:dataset_examples}
+    \begin{tabular}{p{2.5cm}p{10cm}}
+    \toprule
+    \textbf{Format} & \textbf{Example} \\
+    \midrule
+    Infix & \texttt{x\_1*x\_2 + exp(x\_2)} \\
+    Prefix & \texttt{+ * x\_1 x\_2 exp x\_2} \\
+    Skeleton & \texttt{V*V + exp(V)} \\
+    \midrule
+    Infix & \texttt{cos(x\_1 + C*x\_2)/sin(C*(C*x\_1 + C)**2)} \\
+    Prefix & \texttt{/ cos + x\_1 * C x\_2 sin * C ** + * C x\_1 C C} \\
+    Skeleton & \texttt{cos(V + C*V)/sin(C*(C*V + C)**C)} \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The dataset includes a comprehensive set of mathematical operators, summarized in Table \ref{tab:operators}, covering basic arithmetic, trigonometric functions, and transcendental operations. This diversity ensures the model learns to generate expressions spanning a wide range of mathematical forms commonly encountered in symbolic regression.
+
+\begin{table}[h!]
+    \centering
+    \caption{Mathematical operators available in the dataset.}
+    \label{tab:operators}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Category} & \textbf{Operators} & \textbf{Arity} \\
+    \midrule
+    Arithmetic & $+$, $-$, $\times$, $\div$, $**$ (power) & Binary \\
+    Trigonometric & $\sin$, $\cos$, $\tan$, $\arcsin$ & Unary \\
+    Transcendental & $\exp$, $\log$ & Unary \\
+    Other & $\sqrt{\cdot}$, $|\cdot|$ (abs) & Unary \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+Variables follow the naming convention \texttt{x\_1}, \texttt{x\_2}, ..., \texttt{x\_10}, allowing expressions with up to 10 input features. Constants are represented by the placeholder \texttt{C} in the training data, which are later optimized numerically during the expression discovery phase.
+
+    \begin{table}[h!]
+        \centering
+        \caption{Comparison of the GPT-2 model's output before and after fine-tuning, demonstrating its improved ability to generate syntactically correct expressions.}
+        \label{tab:gpt2-comparison}
+        \ttfamily
+        \begin{tabularx}{\textwidth}{ >{\RaggedRight}X >{\RaggedRight}X }
+        \toprule
+        
+        % Sub-header for the first section
+        \multicolumn{2}{c}{\textbf{Base Model}} \\
+        \midrule
+        \textbf{Prompt} & \textbf{Result} \\
+        \midrule
+        
+        % First example
+        Generate a mathematical expression that represents the kinetic energy of an object with mass m and velocity v. 
+        & 
+        For example, if you want to calculate the kinetic energy of a baseball, you can use the following formula: $K=nx$ \\
+        \addlinespace
+        
+        % Second example
+        Write a trigonometric expression involving sine and cosine that simplifies to 1.
+        &
+        Write a trigonometric expression involving sin and cosine that simplifies to 1. \\
+        \addlinespace
+        
+        % Third example
+        Instruction: Generate a mathematical expression using variables [x\_1, x\_2, x\_3, x\_4], operands [+, -, *, exp], and [C] as a constant. Expression:
+        &
+        $x_1 = -(x_2 \cdot x_3) + (x_4 \cdot \exp)$ The expression above is a mathematical expression. \\
+        \midrule[1pt]
+        
+        % Sub-header for the second section
+        \multicolumn{2}{c}{\textbf{After Fine-Tuning}} \\
+        \midrule
+        
+        % The prompt section - now consistent with the rest
+        vars: x\_1, x\_2, x\_3, x\_4, x\_5, x\_6, x\_7, x\_8, x\_9 \\ 
+        oper: *, **, +, -, abs, asin, cos, exp, log, sin, sqrt, tan \\ 
+        cons: C \\ 
+        expr:
+        &
+        $x_7 + \exp(C \cdot x_2^C) + C$ \\
+        \bottomrule
+        \end{tabularx}
+    \end{table}
+        \subsection{Data Cleaning}
+            To ensure the dataset's integrity, expressions were validated and cleaned. A SymPy \cite{sympy} parser was utilized to check the syntactic validity of each expression, specifically identifying issues such as missing closing parentheses. Additionally, any duplicate expressions were removed to maintain uniqueness within the dataset.
+        
+    \subsection{Prompt Engineering}
+    \label{sec:prompt_engineering}
+    
+    After the generation and cleaning stages, the dataset consisted of a simple list of valid mathematical expressions. However, this raw format was unsuitable for fine-tuning the LLM for two main reasons:
+    \begin{enumerate}
+        \item \textbf{Lack of a Guiding Structure:} The expressions alone did not provide a contextual prompt that could be used to guide the model's generation process during inference.
+        \item \textbf{Limited Diversity:} The generation algorithm did not produce expressions with a wide range of variables (often limited to five or fewer), and the constants were not yet optimized for exploration.
+    \end{enumerate}
+    
+    To address these issues, a prompt engineering phase was implemented to transform each raw expression into a structured training sample. The goal was to create a format that was \textbf{human-readable}, \textbf{token-efficient}, and provided the model with clear context about the elements available for generation.
+    
+    The final prompt structure aggregates the available variables, operators, and constants, followed by the target expression. This resulted in the following format:
+    \begin{verbatim}
+    vars: x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9
+    oper: *, **, +, -, abs, asin, cos, exp, log, sin, sqrt, tan
+    cons: C
+    expr: x_7 + exp(C*x_2**C) + C
+    \end{verbatim}
+    
+    To enhance the diversity and robustness of the training data, the context provided in the \texttt{vars:} and \texttt{oper:} lists was intentionally expanded. For each training sample, a random number of additional variables and operators were added to these lists, beyond what was strictly required by the target expression. This strategy teaches the model to be flexible and generate expressions that utilize only a subset of the available elements, thereby better simulating real-world scenarios where not all features are relevant.
+    
+    Finally, to evaluate model performance on different notations, both the \textbf{infix} (standard notation) and \textbf{prefix} (Polish notation) representations of the expressions were retained in the final dataset.
+    
+\section{Supervised Fine-Tuning and Reinforcement Learning}
+\label{sec:sft_and_rl}
+With a structured dataset of mathematical expressions prepared, the next phase of the pipeline focuses on teaching the pre-trained language model to generate syntactically correct and relevant equations. This is a two-stage process: first, the model is specialized on the domain of mathematical expressions through supervised fine-tuning; second, it is further optimized to find expressions that fit a specific dataset using deep reinforcement learning.
+
+\subsection{Supervised Fine-Tuning Setup}
+\label{sec:sft_setup}
+The engineered dataset was partitioned into training (90\%) and validation (10\%) sets. For input processing, the original GPT-2 tokenizer was employed without modification, as its vocabulary adequately covered the mathematical symbols and variables in our data. A key advantage of this tokenizer is its fine-grained nature; words like \texttt{asin} are broken down into smaller tokens (\texttt{as}, \texttt{in}), and variables like \texttt{x\_1} are tokenized into separate parts (\texttt{x}, \texttt{\_}, \texttt{1}). This sub-word tokenization, illustrated in Figure \ref{fig:tokenization}, enables the model to generalize and generate variables beyond those seen during training, such as \texttt{x\_99}.
+
+The fine-tuning process was conducted using the Hugging Face \texttt{Trainer} class, which facilitates efficient training of large models using a Graphical Processing Unit (GPU). To reduce computational cost and memory usage, Parameter-Efficient Fine-Tuning (PEFT) with LoRA was employed. The key hyperparameters for the training process are detailed in Table \ref{tab:hyperparameters}, which are also implemented inside the Hugging Face library.
+
+% Placeholder for the simplified tokenization figure
+\begin{figure}[h!]
+    \centering
+    % Replace with your actual figure file
+    \includegraphics[width=0.8\textwidth]{figures/GPT-2 Tokenization Result.pdf} 
+    \caption{GPT-2 tokenization result for a sample prompt, showing how expressions are broken into smaller tokens. The "Token IDs" column has been removed for clarity.}
+    \label{fig:tokenization}
+\end{figure}
+
+% Table for Hyperparameters
+\begin{table}[h!]
+\centering
+\caption{Hyperparameters for Supervised Fine-Tuning.}
+\label{tab:hyperparameters}
+\begin{tabularx}{0.8\textwidth}{lX}
+\toprule
+\textbf{Parameter Category} & \textbf{Value / Setting} \\
+\midrule
+\textbf{Optimization} & \\
+\quad Optimizer & AdamW (\texttt{adamw\_torch\_fused}) \\
+\quad Learning Rate & $5 \times 10^{-5}$ with cosine decay schedule \\
+\quad AdamW Betas & $\beta_1 = 0.9$, $\beta_2 = 0.999$ \\
+\quad Epsilon & $1 \times 10^{-8}$ \\
+\quad Weight Decay & 0.01 \\
+\addlinespace
+\textbf{Training} & \\
+\quad Epochs & 3 \\
+\quad Per-Device Batch Size & 16 \\
+\quad Gradient Accumulation & 4 (Effective Batch Size: 64) \\
+\quad Mixed Precision & BF16 \\
+\addlinespace
+\textbf{LoRA (PEFT)} & \\
+\quad Rank (r) & 8 \\
+\quad Alpha ($\alpha$) & 32 \\
+\quad Dropout & 0.05 \\
+\quad Target Modules & \texttt{c\_attn} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+After training, the LoRA adapters were merged into the base model's weights. Finally, a value head was added to the merged model, preparing it for the subsequent reinforcement learning phase.
+
+\subsection{Trained Models}
+\label{sec:trained_models}
+To investigate the effect of model scale and notation format on expression generation quality, we trained six model variants representing all combinations of three model sizes (Base, Medium, Large) and two notation formats (Infix, Prefix). Table \ref{tab:models_trained} summarizes the trained models.
+
+\begin{table}[h!]
+    \centering
+    \caption{Summary of trained models with their configurations.}
+    \label{tab:models_trained}
+    \begin{tabular}{lllll}
+    \toprule
+    \textbf{Model} & \textbf{Base} & \textbf{Parameters} & \textbf{LoRA Rank} & \textbf{HuggingFace Repository} \\
+    \midrule
+    Base Infix & GPT-2 & 124M & 8 & \texttt{augustocsc/gpt2\_base\_infix\_682k} \\
+    Base Prefix & GPT-2 & 124M & 8 & \texttt{augustocsc/gpt2\_base\_prefix\_682k} \\
+    Medium Infix & GPT-2 Medium & 355M & 16 & \texttt{augustocsc/gpt2\_medium\_infix\_682k} \\
+    Medium Prefix & GPT-2 Medium & 355M & 16 & \texttt{augustocsc/gpt2\_medium\_prefix\_682k} \\
+    Large Infix & GPT-2 Large & 774M & 16 & \texttt{augustocsc/gpt2\_large\_infix\_682k} \\
+    Large Prefix & GPT-2 Large & 774M & 16 & \texttt{augustocsc/gpt2\_large\_prefix\_682k} \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+All six models were fine-tuned on the same dataset of 682,429 expressions using identical training configurations (3 epochs, with batch size adjusted per model size to fit GPU memory). The LoRA rank was increased from 8 to 16 for Medium and Large models to provide sufficient capacity for learning the more complex representations in larger architectures. All trained models and the dataset are publicly available on HuggingFace for reproducibility.
+
+\section{Expression Discovery with Reinforcement Learning}
+\label{sec:expression_discovery}
+
+While supervised fine-tuning teaches the model the language of mathematics, it does not guarantee that the generated expressions will accurately model a specific dataset. To guide the model towards finding an optimal expression for a given problem, a reinforcement learning (RL) framework was implemented. This section describes the RL formulation, the algorithms investigated, the reward functions, and the supporting components.
+
+\subsection{Problem Formulation}
+
+The expression discovery task is framed as a reinforcement learning problem where the fine-tuned LLM acts as a policy that generates candidate expressions, which are then evaluated against a target dataset.
+
+\begin{itemize}
+    \item \textbf{State ($s$):} The initial prompt containing the set of available variables and operators derived from the target dataset's features.
+    \item \textbf{Action ($a$):} The generation of a complete candidate mathematical expression string by the LLM.
+    \item \textbf{Reward ($r$):} A scalar value quantifying the quality of the generated expression, balancing accuracy (fit to data) and complexity (expression length).
+\end{itemize}
+
+In practice, the discovery process begins by loading a tabular dataset and the fine-tuned model. A batch of expressions is generated from a prompt derived from the dataset's features. Each expression is parsed and evaluated. For syntactically valid expressions containing constants, a numerical optimization routine (L-BFGS-B) finds optimal constant values in the range $[-10, 10]$ that minimize the error against the dataset.
+
+\subsection{Reinforcement Learning Algorithms}
+
+To systematically investigate the effectiveness of different RL approaches for symbolic regression, we implemented six algorithms organized into three categories: policy gradient methods, trust-region methods, and hybrid approaches. Table \ref{tab:rl_algorithms} summarizes the implemented algorithms.
+
+\begin{table}[h!]
+    \centering
+    \caption{Summary of implemented reinforcement learning algorithms.}
+    \label{tab:rl_algorithms}
+    \begin{tabular}{llll}
+    \toprule
+    \textbf{Algorithm} & \textbf{Type} & \textbf{Baseline} & \textbf{Elite Buffer} \\
+    \midrule
+    REINFORCE & Policy Gradient & EMA & No \\
+    Pure PPO & Trust Region & EMA & No \\
+    Pure GRPO & Group Relative & Group Stats & No \\
+    BoN-PPO & Hybrid & EMA & Yes \\
+    BoN-GRPO & Hybrid & Group Stats & Yes \\
+    Best-of-N & Sampling (no RL) & N/A & N/A \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{REINFORCE}
+
+REINFORCE \cite{Williams1992Simple} is the simplest policy gradient method, computing gradients directly from sampled trajectories. The policy gradient is estimated as:
+\begin{equation}
+    \nabla_\theta J(\theta) = \mathbb{E}\left[ \nabla_\theta \log \pi_\theta(a|s) \cdot (R - b) \right]
+\end{equation}
+where $b$ is a baseline (exponential moving average of rewards) used for variance reduction. While simple, REINFORCE suffers from high variance and can be unstable for complex problems.
+
+\subsubsection{Proximal Policy Optimization (PPO)}
+
+PPO \cite{Schulman2017ProximalPO} improves upon REINFORCE by constraining policy updates to prevent destructively large changes. The clipped surrogate objective is:
+\begin{equation}
+    L^{CLIP}(\theta) = \mathbb{E}\left[ \min\left( r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t \right) \right]
+\end{equation}
+where $r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$ is the probability ratio, $\hat{A}_t$ is the advantage estimate, and $\epsilon$ is the clipping parameter. The algorithm performs multiple epochs of updates per batch while monitoring KL divergence to ensure stability.
+
+\subsubsection{Group Relative Policy Optimization (GRPO)}
+
+GRPO, inspired by DeepSeek-R1 \cite{deepseek_r1_2025}, uses ranking-based advantages computed within groups of samples rather than absolute reward values. For a group of $N$ samples:
+\begin{equation}
+    \hat{A}_i = \frac{\text{rank}(r_i) - \mu_{rank}}{\sigma_{rank}}
+\end{equation}
+where $\text{rank}(r_i)$ is the rank of sample $i$ within the group. This approach is more robust to reward scale and distribution, making it particularly suitable for symbolic regression where reward distributions can be highly skewed.
+
+\subsubsection{Best-of-N Hybrid Methods (BoN-PPO, BoN-GRPO)}
+
+The hybrid methods combine pure RL algorithms with an elite buffer mechanism. The elite buffer maintains the top-$K$ expressions discovered during training, ranked by $R^2$ score. During each training step:
+\begin{enumerate}
+    \item Generate fresh expressions from the current policy (80\% of batch)
+    \item Sample high-quality expressions from the elite buffer (20\% of batch)
+    \item Apply the respective RL update (PPO or GRPO) to the mixed batch
+\end{enumerate}
+
+This approach provides stability by anchoring the policy to known good solutions while still exploring new expressions.
+
+\subsubsection{Best-of-N Baseline}
+
+The Best-of-N baseline is a non-RL diagnostic method that samples $N$ expressions from the frozen fine-tuned model and returns the best one by reward. This establishes an upper bound on what the fine-tuned model can achieve without further optimization and serves as a comparison baseline for the RL methods.
+
+\subsection{Reward Functions}
+\label{sec:reward_functions}
+
+Three reward functions were implemented to investigate different optimization objectives. Table \ref{tab:reward_functions} summarizes their formulations.
+
+\begin{table}[h!]
+    \centering
+    \caption{Implemented reward functions for expression evaluation.}
+    \label{tab:reward_functions}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Reward Function} & \textbf{Formula} & \textbf{Purpose} \\
+    \midrule
+    R² Clipped & $R = \max(0, R^2)$ & Pure accuracy \\
+    Length-Penalized & $R = \max(0, R^2) - \alpha \cdot L$ & Accuracy + simplicity \\
+    SR-IC & $R = -\log(\text{MSE} + \epsilon) - \lambda \cdot C$ & Information criterion \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{R² Clipped} focuses purely on curve-fitting quality, clipping the coefficient of determination to $[0, 1]$.
+
+\textbf{Length-Penalized R²} balances accuracy with expression simplicity by subtracting a penalty proportional to expression length $L$, where $\alpha$ (default 0.01) controls the trade-off.
+
+\textbf{SR-IC (Symbolic Regression Information Criterion)} uses a logarithmic MSE term with complexity penalty, inspired by information-theoretic model selection criteria like AIC/BIC.
+
+\subsection{Penalty Strategies for Invalid Expressions}
+
+Two strategies were implemented for handling syntactically invalid or unevaluable expressions:
+
+\textbf{Binary Penalty:} All invalid expressions receive the same penalty of $-1.0$, providing a uniform negative signal.
+
+\textbf{Gradient Penalty:} Differentiated penalties based on error type provide a richer learning signal:
+\begin{itemize}
+    \item Parsing error (syntax invalid): $-1.0$
+    \item Variable error (undefined variables): $-0.7$
+    \item NaN/Inf error (numerical issues): $-0.5$
+    \item Negative $R^2$ (worse than mean): $-0.3$
+    \item Weak $R^2$ ($R^2 \in [0, 0.5)$): $0.0$
+\end{itemize}
+
+The gradient penalty strategy encourages the model to first learn syntactic validity before optimizing for accuracy.
+
+\subsection{Temperature Scheduling}
+
+Temperature controls the randomness of token sampling during generation. Three scheduling strategies were implemented:
+
+\begin{itemize}
+    \item \textbf{Fixed:} Constant temperature throughout training (default: $T = 0.7$)
+    \item \textbf{Linear Annealing:} $T(t) = T_{max} - (T_{max} - T_{min}) \cdot \frac{t}{T_{total}}$
+    \item \textbf{Cosine Annealing:} Smooth cosine decrease from $T_{max}$ to $T_{min}$
+\end{itemize}
+
+Annealing strategies allow initial exploration (high temperature) followed by exploitation (low temperature) as training progresses.
+
+\subsection{Elite Buffer Mechanism}
+
+The elite buffer, used in BoN-PPO and BoN-GRPO, maintains a collection of high-quality expressions discovered during training. Key parameters include:
+
+\begin{itemize}
+    \item \textbf{Maximum size:} 1000 expressions
+    \item \textbf{Sample ratio:} 20\% of each training batch
+    \item \textbf{Ranking metric:} $R^2$ score
+    \item \textbf{Deduplication:} Enabled to prevent storing identical expressions
+\end{itemize}
+
+The buffer is implemented as a min-heap for efficient top-$K$ maintenance, automatically replacing the worst expression when a better one is found.
+
+\subsection{Early Stopping Criteria}
+
+Four early stopping criteria were implemented to prevent unnecessary computation:
+
+\begin{enumerate}
+    \item \textbf{Convergence:} No improvement in best reward for $N$ consecutive steps (patience = 5)
+    \item \textbf{Exact Recovery:} $R^2 \geq 0.999$ indicating near-perfect fit
+    \item \textbf{Policy Collapse:} Policy entropy below threshold (0.1), indicating mode collapse
+    \item \textbf{Maximum Steps:} Hard limit on training iterations (default: 10,000)
+\end{enumerate}
+
+\subsection{Prompt Conditioning Strategies}
+\label{sec:prompt_conditioning}
+
+A key question in applying LLMs to symbolic regression is how sensitive the model is to the information provided in the prompt. To investigate this, three prompt conditioning strategies were implemented:
+
+\textbf{Standard Prompt:} The default strategy provides all available operators from the mathematical library, regardless of whether they are needed for the target expression. This simulates real-world scenarios where the user does not know the exact form of the solution.
+
+\textbf{Oracle Prompt:} Provides exactly the operators required to construct the ground-truth expression. This establishes an upper bound on performance when perfect prior knowledge is available.
+
+\textbf{Distractor Prompt:} Deliberately injects irrelevant operators (e.g., suggesting logarithms for a purely trigonometric function) while omitting some useful ones. This tests the model's robustness to misleading context.
+
+The comparison between these strategies reveals the degree to which the RL-optimized policy can overcome suboptimal prompting and discover correct expressions despite incomplete or incorrect guidance.
+
+\subsection{Noise Injection for Robustness Testing}
+\label{sec:noise_injection}
+
+Real-world data is inherently noisy due to measurement errors and environmental factors. To evaluate the robustness of the trained models, Gaussian noise was injected into the target values during both training and evaluation:
+
+\begin{equation}
+    y_{noisy} = y + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+\end{equation}
+
+where $\sigma$ is defined as a fraction of the standard deviation of the original target values. Four noise levels were tested:
+
+\begin{itemize}
+    \item \textbf{Level 0:} $\sigma = 0$ (no noise, baseline)
+    \item \textbf{Level 1:} $\sigma = 0.01 \cdot \text{std}(y)$ (1\% noise)
+    \item \textbf{Level 2:} $\sigma = 0.05 \cdot \text{std}(y)$ (5\% noise)
+    \item \textbf{Level 3:} $\sigma = 0.10 \cdot \text{std}(y)$ (10\% noise)
+\end{itemize}
+
+This experimental design allows us to assess whether the RL algorithms can discover robust expressions that generalize beyond the noise in the training data, rather than overfitting to spurious patterns.
+
+\subsection{Algorithm Hyperparameters}
+
+Table \ref{tab:rl_hyperparams} summarizes the key hyperparameters used across the RL algorithms.
+
+\begin{table}[h!]
+    \centering
+    \caption{Hyperparameters for reinforcement learning algorithms.}
+    \label{tab:rl_hyperparams}
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Parameter} & \textbf{Value} \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Common Parameters}} \\
+    Learning rate & $1 \times 10^{-5}$ \\
+    Batch size & 64 \\
+    Max new tokens & 50 \\
+    Temperature & 0.7 (fixed) \\
+    Entropy coefficient & 0.01 \\
+    \midrule
+    \multicolumn{2}{l}{\textit{PPO-Specific}} \\
+    Clip epsilon ($\epsilon$) & 0.2 \\
+    PPO epochs per step & 4 \\
+    Max KL divergence & 0.1 \\
+    \midrule
+    \multicolumn{2}{l}{\textit{GRPO-Specific}} \\
+    Group size & 8 \\
+    KL penalty coefficient & 0.1 \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Buffer (BoN methods)}} \\
+    Buffer size & 1000 \\
+    Sample ratio & 0.2 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+    \section{Benchmark Datasets}
+        \subsection{Selected Symbolic Regression Problems}
+    For evaluation, we utilize the Nguyen benchmark suite \cite{uy_semantically-based_2011}, a widely adopted collection of symbolic regression problems that has become a standard for comparing SR methods. The Nguyen benchmarks consist of 12 problems (Nguyen-1 through Nguyen-12) with varying complexity, involving polynomials, trigonometric functions, and transcendental operations. Table \ref{tab:nguyen_benchmarks} summarizes the benchmark functions used in this work.
+
+\begin{table}[h!]
+    \centering
+    \caption{Nguyen benchmark functions used for evaluation.}
+    \label{tab:nguyen_benchmarks}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{ID} & \textbf{Function} & \textbf{Variables} \\
+    \midrule
+    Nguyen-1 & $x^3 + x^2 + x$ & 1 \\
+    Nguyen-2 & $x^4 + x^3 + x^2 + x$ & 1 \\
+    Nguyen-3 & $x^5 + x^4 + x^3 + x^2 + x$ & 1 \\
+    Nguyen-4 & $x^6 + x^5 + x^4 + x^3 + x^2 + x$ & 1 \\
+    Nguyen-5 & $\sin(x^2) \cos(x) - 1$ & 1 \\
+    Nguyen-6 & $\sin(x) + \sin(x + x^2)$ & 1 \\
+    Nguyen-7 & $\log(x + 1) + \log(x^2 + 1)$ & 1 \\
+    Nguyen-8 & $\sqrt{x}$ & 1 \\
+    Nguyen-9 & $\sin(x) + \sin(y^2)$ & 2 \\
+    Nguyen-10 & $2\sin(x)\cos(y)$ & 2 \\
+    Nguyen-11 & $x^y$ & 2 \\
+    Nguyen-12 & $x^4 - x^3 + \frac{y^2}{2} - y$ & 2 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+    These benchmarks were chosen for their widespread use in the symbolic regression literature, enabling direct comparison with other methods. The problems range from simple polynomials (Nguyen-1 to Nguyen-4) to more complex compositions involving trigonometric and logarithmic functions (Nguyen-5 to Nguyen-7), providing a comprehensive test of the model's ability to discover diverse mathematical structures.
+            
+    %\section{Evaluation Metrics}%
+%        \subsection{Accuracy and Goodness-of-Fit}%
+        %$R^2$, Mean Squared Error (MSE), Normalized Root MSE (NRMSE).
+        
+        %\subsection{Model Complexity}
+            %Expression length, depth of parse tree, and number of operators.        
+        %\subsection{Generalization Ability}
+            %Performance on unseen data points.
+            %Overfitting analysis.
+
+    \section{Implementation Details}
+
+    \subsection{Software and Frameworks}
+    The entire implementation was developed using \textbf{Python}. Key machine learning operations, including model definition, training, and inference, were facilitated by the \textbf{PyTorch} deep learning framework. For the Large Language Model (LLM) components, the \textbf{Hugging Face Transformers} library was extensively utilized for model loading, tokenization, and fine-tuning. The reinforcement learning algorithms (REINFORCE, PPO, GRPO, and their variants) were implemented from scratch using PyTorch, providing fine-grained control over the training dynamics. Symbolic mathematics operations, such as expression parsing, validation, and constant optimization, relied on the \textbf{SymPy} package. Data handling and numerical computations were managed using \textbf{NumPy} and \textbf{Pandas}. Training progress and metrics were logged and visualized using \textbf{Weights \& Biases}. Additionally, the \textbf{scikit-learn (sklearn)} library provides functionalities for performance metrics, including $R^2$ score and mean squared error, as well as optimization routines like \texttt{scipy.optimize.minimize} for constant fitting using the L-BFGS-B algorithm.
+    
+    \subsection{Hardware Environment}
+    The computational experiments were conducted on a high-performance system. The central processing unit (CPU) consisted of \textbf{two AMD EPYC 7513 32-Core Processors}, providing a total of 64 physical cores and 128 threads, with each core operating at a base frequency of 3.56 GHz. The system was provisioned with \textbf{514 GiB of system memory (RAM)}. For accelerated deep learning computations, a single \textbf{NVIDIA A100 GPU with 80 GB of dedicated memory} was utilized.

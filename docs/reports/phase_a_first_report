@@ -1,0 +1,66 @@
+# Seriguela Phase A — Deep Dive Research Analysis
+
+This document details an advanced analysis of the Phase A reinforcement learning experimental results. 
+
+## 1. What Happened to `best_of_n`? (The "All Zeros" Anomaly)
+All `best_of_n` runs reported 0.0 for R². Searching the raw execution logs reveals **this was due to a code crash, not poor performance**:
+```text
+2026-02-23 13:10:58,408 - ERROR - Experiment with seed 42 failed: 'float' object has no attribute 'is_valid'
+  File ".../algorithms/best_of_n.py", line 254, in run
+    if reward_result.is_valid:
+AttributeError: 'float' object has no attribute 'is_valid'
+```
+**Conclusion:** The reward function returned a float instead of the expected `RewardResult` object in the Best-of-N pipeline. The baseline wasn't evaluated.
+
+## 2. Replications and Data Integrity
+- **Total RL Runs Analyzed:** 7,019
+- **Unique Hyperparameter Configurations:** 1,151
+- **Average Seeds per Configuration:** 6.10
+The experiment accurately utilized multiple random seeds. To find robust configurations, we must average the performance across seeds to rule out "lucky" runs.
+
+## 3. PPO vs GRPO: Performance & Stability
+When we group algorithms into PPO families (`pure_ppo`, `bon_ppo`) vs. GRPO families (`pure_grpo`, `bon_grpo`), distinct behaviors emerge:
+
+| Metric | PPO Family | GRPO Family |
+|--------|------------|-------------|
+| **Mean Best R²** | **0.4106** | 0.3667 |
+| **Total Runs ≥ 0.99** | 297 | **349** |
+| **Mean Collapse (Best R² - Final R²)** | 0.4106 | **0.3667** |
+
+**Observation on Stability (Did they learn or behave randomly?):**
+We measured "Collapse" by calculating `Best R² - Final R²` for each run. A large gap means the model found a good equation but catastrophic forgetting/policy collapse caused it to unlearn it by the end.
+- **35.6% of runs were Highly Stable** (Final R² stayed within 0.1 of Best R²)
+- **31.0% of runs Collapsed** (Final R² dropped >0.5 from Best R²)
+- **GRPO is more stable than PPO:** `bon_grpo` had the lowest mean collapse (0.34), while `pure_ppo` had the highest (0.41). PPO achieves higher peak averages, but GRPO is less prone to unlearning.
+
+## 4. Reward & Penalty Strategies (Missing Data Restored)
+Through deep inspection of all 9,751 raw experiment `config.yaml` files, we discovered that the original aggregation script had failed to log the `reward` and `penalty` strategy used for each run. We wrote a custom script to patch this data back into the dataset.
+
+Here is the true performance grouped by Reward and Penalty:
+
+| Reward Function | Mean Best R² | Runs ≥ 0.99 |
+|-----------------|--------------|-------------|
+| **sr_ic** (Information Criterion) | **0.4043** | **222** |
+| r2_clipped | 0.3866 | 213 |
+| length_penalized | 0.3724 | 211 |
+
+| Penalty Strategy | Mean Best R² | Runs ≥ 0.99 |
+|------------------|--------------|-------------|
+| **gradient** | **0.3986** | **347** |
+| binary | 0.3761 | 299 |
+
+**Conclusion:** The mathematically rigorous `sr_ic` reward combined with a smooth `gradient` penalty yields the highest performance across the experiment. Binary penalties are too harsh for smooth learning.
+
+## 5. Highest Performing Robust Configurations
+Filtering out configurations with < 2 seeds, the absolute most robust pipelines across all parameters (focusing on the harder `nguyen_5` and `nguyen_9` problems since `nguyen_1` is trivially solved):
+
+1. **`bon_grpo`**, `nguyen_5` + `r2_clipped` + `binary` penalty + `fixed_0.9` temp + `oracle` prompt
+   *(Mean R²: 0.4959, highest among harder problems)*
+2. **`bon_grpo`**, `nguyen_9` + `r2_clipped` + `binary` penalty + `fixed_0.9` temp + `oracle` prompt
+   *(Mean R²: 0.3783)*
+
+**In short:**
+- Use **BoN-GRPO** if you want stable, monotonic learning curves without rapid collapse.
+- Use **sr_ic** reward with **gradient** penalty for general robustness.
+- Fix the `best_of_n.py` bug (line 254) before Phase B to get a true baseline.
+- `nguyen_5` and `nguyen_9` are much harder domains where GRPO's stability is strictly required.

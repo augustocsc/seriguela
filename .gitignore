@@ -134,5 +134,5 @@ test_eval/
 
 *.tar.gz
 2_training/reinforcement/phase_a_extracted/
-*.csv
 *.json
+

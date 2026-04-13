@@ -40,7 +40,8 @@ def merge_results():
     
     for base in search_dirs:
         if os.path.exists(base):
-            folders = sorted(glob.glob(os.path.join(base, "pre_phase__t6_*")), reverse=True)
+            entries = glob.glob(os.path.join(base, "pre_phase__t6_*"))
+            folders = sorted([e for e in entries if os.path.isdir(e)], reverse=True)
             if folders:
                 t6_folder = folders[0]
                 break
