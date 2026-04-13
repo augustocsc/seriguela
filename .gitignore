@@ -121,9 +121,6 @@ models_compressed.tar.gz
 # Models and checkpoints (stored on HuggingFace)
 models/
 output/
-evaluation_results/
-evaluation_results_aws/
-results/
 
 # Test directories
 test_ppo/
@@ -134,5 +131,4 @@ test_eval/
 
 *.tar.gz
 2_training/reinforcement/phase_a_extracted/
-*.json
 

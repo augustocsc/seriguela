@@ -1,22 +1,3 @@
-{
-  "default": {
-    "region": "us-east-1",
-    "instance_type": "g5.xlarge",
-    "ami_id": "ami-0c55b159cbfafe1f0",
-    "key_name": "chave-gpu",
-    "security_group_id": "sg-0deaa73e23482e3f6",
-    "security_group_name": "seriguela-sg",
-    "instance_name": "seriguela-training",
-    "volume_size": 100,
-    "volume_type": "gp3"
-  },
-  "training": {
-    "instance_type": "g5.xlarge",
-    "spot_instance": true,
-    "max_price": "0.50"
-  },
-  "large_training": {
-    "instance_type": "p4d.24xlarge",
-    "spot_instance": false
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:06274958b788e0b9415cce164d6b7cb56289940e8f9c1fe0e5d2bf8c76f673db
+size 533
