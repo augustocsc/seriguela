@@ -132,3 +132,15 @@ test_eval/
 *.tar.gz
 2_training/reinforcement/phase_a_extracted/
 
+# Cleanup patterns (added 2026-05-12 — see docs/reports/THESIS_PLAN.md)
+.monitor_complete
+*_temp.py
+aws_launch_*.json
+results/*-teste/
+results/**/*-*-001.zip
+.ipynb_checkpoints/
+
+# Colab autonomous pipeline runtime artifacts
+experiments/heartbeat.json
+experiments/_running.lock
+
