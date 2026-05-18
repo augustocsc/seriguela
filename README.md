@@ -1,16 +1,18 @@
 # Seriguela - Symbolic Regression with Large Language Models
 
-A research project exploring the application of GPT-2 and other LLMs to symbolic regression through fine-tuning and reinforcement learning.
+A Master's thesis research project exploring reinforcement learning optimization of GPT-2 models fine-tuned for symbolic regression. Compares PPO vs GRPO with elite-buffer augmentation across problem difficulty levels and evaluates against the SRBench benchmark.
 
-## 🏆 Key Results (Model Scaling Study - Feb 2025)
+## Models (HuggingFace)
 
-| Model | Parameters | Valid Rate (Quality) | Valid Rate (Nguyen) | Avg R² | Max R² |
-|-------|-----------|---------------------|---------------------|---------|--------|
-| Base | 124M | 99.4% | 62.5% | 0.9190 | 0.9994 |
-| Medium | 355M | 99.2% | 75.2% | 0.9812 | 0.9999 |
-| **Large** | **774M** | **100%** 🏆 | **89.0%** 🏆 | **0.9852** 🏆 | **1.0000** 🏆⭐ |
+Six LoRA-fine-tuned GPT-2 models (682K synthetic expressions, JSON-structured format):
 
-**Breakthrough**: First model to achieve **100% valid rate** and **R²=1.0 perfect fit** on Nguyen-8
+| Model | Parameters | Valid Rate (Nguyen, zero-shot best-of-100) | Avg R² |
+|-------|-----------|-------------------------------------------|---------|
+| Base | 124M | 62.5% | 0.919 |
+| Medium | 355M | 75.2% | 0.981 |
+| Large | 774M | 89.0% | 0.985 |
+
+> Note: R² values are from zero-shot best-of-100 sampling. RL fine-tuning experiments are ongoing (see `docs/reports/THESIS_PLAN.md`).
 
 ---
 
@@ -99,23 +101,24 @@ python create_visualizations.py
 ## 📊 Complete Documentation
 
 - **Developer Guide**: [CLAUDE.md](CLAUDE.md) - Commands, architecture, workflows
-- **Scientific Report**: [docs/reports/SCIENTIFIC_REPORT_MODEL_SCALING.md](docs/reports/SCIENTIFIC_REPORT_MODEL_SCALING.md) - Complete academic analysis
+- **Thesis Plan**: [docs/reports/THESIS_PLAN.md](docs/reports/THESIS_PLAN.md) - Current status, hypotheses, experimental design
+- **Phase A Post-Mortem**: [docs/reports/phase_a_post_mortem.md](docs/reports/phase_a_post_mortem.md) - Analysis of Phase A limitations
 - **Training Guide**: [docs/guides/TRAINING_CONFIG_REGISTRY.md](docs/guides/TRAINING_CONFIG_REGISTRY.md) - Exact configurations for reproducibility
-- **Model Cards**: [docs/model_cards/](docs/model_cards/) - Detailed model documentation
+- **Archive**: [docs/archive/](docs/archive/) - Historical reports from earlier phases
 
 ---
 
 ## 🎓 Citation
 
 ```bibtex
-@misc{seriguela2025,
-  title={Scaling Laws for Symbolic Regression with LLMs},
+@misc{seriguela2026,
+  title={Elite Buffer-Augmented RL for LLM-based Symbolic Regression: PPO vs GRPO},
   author={Augusto Cesar},
-  year={2025},
-  note={First 100% valid rate + R²=1.0 achieved with GPT-2 Large}
+  year={2026},
+  note={Master's thesis research — GPT-2 models with LoRA fine-tuning and RL optimization}
 }
 ```
 
 ---
 
-**Status**: ✅ Production-ready | 📊 Publication-ready | **Last Updated**: 2026-02-20
+**Status**: Research in progress | **Last Updated**: 2026-05-18

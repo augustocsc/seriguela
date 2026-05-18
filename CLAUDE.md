@@ -12,10 +12,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Model scaling effects on compositional complexity
 - Benchmark evaluation (Nguyen benchmarks 1-12)
 
-**Status (Feb 2025)**: ✅ **Training Complete**
-- 6 models trained: Base/Medium/Large in both Infix and Prefix notation
+**Status (May 2026)**: 🔬 **RL Experiments in Progress**
+- 6 models trained (SFT complete): Base/Medium/Large × Infix/Prefix, all on HuggingFace
 - JSON structured format is the standard approach
-- Models ready for evaluation
+- Phase A (~9.7K W&B runs) statistically compromised — see `docs/reports/phase_a_post_mortem.md`
+- Valid RL data: 36 JSONs in `results/pre_phase__t5_and_t6_merged/` (test5/test6, March 2026)
+- Current work: Fase 0 cleanup → Fase 1 bug fixes + model selection pilot
+- Thesis plan and experimental design: `docs/reports/THESIS_PLAN.md`
 
 ---
 
