@@ -18,57 +18,386 @@
 # Para cancelar: mudar status: pending → skipped
 
 meta:
-  version: "1.0"
+  version: "1.1"
   project: seriguela
   created: "2026-05-18"
+  updated: "2026-05-22"
   description: "Fila principal de experimentos — editada por Claude, executada no Colab"
   colab_runner: "colab/seriguela_runner.ipynb"
 
 defaults:
   # Parâmetros padrão herdados por todos os experimentos (podem ser sobrescritos)
-  script: "2_training/reinforcement/run_pre_phase_t6.py"
+  script: "2_training/reinforcement/run_experiment.py"
   max_hours: 1.5
   retry_on_oom: true  # reduz batch_size pela metade e tenta de novo
 
 queue:
-  # ──────────────────────────────────────────────────────────────────────────
-  # FASE 1 — Piloto zero-shot (modelo selection)
-  # Roda com best_of_n puro (sem RL) para comparar os 6 modelos
-  # Custo: ~5h T4 free tier (não usa units Pro)
-  # ──────────────────────────────────────────────────────────────────────────
-
-  # Nota: Fase 1 requer os bug fixes antes de rodar!
-  # - best_of_n.py:254 (RewardResult wrapper)
-  # - run_experiment.py:163 (bug 2-variáveis)
-  # Adicionar experimentos aqui após as correções serem feitas.
-
-  # PLACEHOLDER — substitua pelos experimentos reais após os bug fixes da Fase 1
-  # - id: phase1_base_infix_bon_n5_seed42
-  #   status: pending
-  #   script: 2_training/reinforcement/run_pre_phase_t6.py
-  #   args:
-  #     model: "augustocsc/gpt2_base_infix_682k"
-  #     algorithm: best_of_n
-  #     problem: nguyen_5
-  #     seed: 42
-  #     max_steps: 1
-  #     n_samples: 512
-  #     reward: sr_ic
-  #   estimated_minutes: 5
-  #   output_dir: "results/phase_1/base_infix/bon_n5_seed42/"
-  #   phase: 1
-  #   created: "2026-05-18"
+  # ══════════════════════════════════════════════════════════════════════════════
+  # FASE 1 — Piloto zero-shot best-of-N (seleção de modelo)
+  # Objetivo: identificar qual(is) dos 6 modelos valem RL na Fase 2
+  # Algoritmo: best_of_n puro (SEM treino RL — pure inference)
+  # Problema: nguyen_1 (fácil), nguyen_5 (trig médio), nguyen_9 (multi-var difícil)
+  # Seeds: 5 seeds por entrada (aggregate gerado automaticamente)
+  # Samples: 512 por seed (max_steps=8 × batch_size=64)
+  # Reward: sr_ic (recompensa uniforme para fase 2)
+  # GPU: T4 free tier — não usa Colab Pro units!
+  # Estimativa total: ~4-6h T4 (modelos maiores são mais lentos)
+  # ══════════════════════════════════════════════════════════════════════════════
 
   # ──────────────────────────────────────────────────────────────────────────
-  # FASE 1.5 — Scout runs de plateau
-  # Determina MAX_STEPS ótimo para a Fase 2
+  # GPT-2 BASE INFIX (124M)
   # ──────────────────────────────────────────────────────────────────────────
 
-  # Adicionar após Fase 1 piloto completar
+  - id: phase1_base_infix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_infix/nguyen_1/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_base_infix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_infix/nguyen_5/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_base_infix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_infix/nguyen_9/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
 
   # ──────────────────────────────────────────────────────────────────────────
-  # FASE 2 — Experimento RL principal (em aberto)
-  # Será populado após Fase 1 + decisão de modelo
+  # GPT-2 BASE PREFIX (124M)
   # ──────────────────────────────────────────────────────────────────────────
 
-  # Será populado automaticamente por Claude após análise da Fase 1
+  - id: phase1_base_prefix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_prefix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_prefix/nguyen_1/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_base_prefix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_prefix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_prefix/nguyen_5/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_base_prefix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_prefix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/base_prefix/nguyen_9/"
+    estimated_minutes: 15
+    phase: 1
+    created: "2026-05-22"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GPT-2 MEDIUM INFIX (355M)
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: phase1_medium_infix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_infix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_infix/nguyen_1/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_medium_infix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_infix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_infix/nguyen_5/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_medium_infix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_infix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_infix/nguyen_9/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GPT-2 MEDIUM PREFIX (355M)
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: phase1_medium_prefix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_prefix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_prefix/nguyen_1/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_medium_prefix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_prefix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_prefix/nguyen_5/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_medium_prefix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_medium_prefix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/medium_prefix/nguyen_9/"
+    estimated_minutes: 25
+    phase: 1
+    created: "2026-05-22"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GPT-2 LARGE INFIX (774M)
+  # Nota: Large pode precisar de batch_size=32 em T4 16GB — daemon fará retry
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: phase1_large_infix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_infix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_infix/nguyen_1/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_large_infix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_infix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_infix/nguyen_5/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_large_infix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_infix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_infix/nguyen_9/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GPT-2 LARGE PREFIX (774M)
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: phase1_large_prefix_bon_nguyen1
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_prefix_682k"
+      problem: nguyen_1
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_prefix/nguyen_1/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_large_prefix_bon_nguyen5
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_prefix_682k"
+      problem: nguyen_5
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_prefix/nguyen_5/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  - id: phase1_large_prefix_bon_nguyen9
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_large_prefix_682k"
+      problem: nguyen_9
+      reward: sr_ic
+      penalty: gradient
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456, 789, 1011]
+      no_wandb: true
+    output_dir: "results/phase_1/large_prefix/nguyen_9/"
+    estimated_minutes: 40
+    retry_on_oom: true
+    phase: 1
+    created: "2026-05-22"
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # FASE 1.5 — Scout runs para calibrar MAX_STEPS da Fase 2
+  # Objetivo: determinar em quantos steps RL o modelo converge (evitar gastar
+  # GPU em steps além do plateau)
+  # SERÁ POPULADO após análise dos resultados da Fase 1
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  # Claude adiciona as entradas da Fase 1.5 aqui após decidir o(s) melhor(es)
+  # modelo(s) com base nos resultados da Fase 1.
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # FASE 2 — Experimento RL principal
+  # 5 algoritmos × 4 problemas × 5 seeds = 100 runs (1 modelo)
+  # SERÁ POPULADO após Fase 1 + decisão de modelo + scout de plateau
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  # Claude adiciona as entradas da Fase 2 aqui após:
+  #   1. Análise dos resultados da Fase 1 (model selection)
+  #   2. Scout runs da Fase 1.5 (calibrar MAX_STEPS)
+  #   3. Decisão escrita em docs/reports/THESIS_PLAN.md

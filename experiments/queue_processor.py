@@ -191,8 +191,10 @@ def build_command(exp: dict, defaults: dict) -> list:
     args = exp.get("args", {})
     for key, value in args.items():
         if isinstance(value, list):
-            for v in value:
-                cmd.extend([f"--{key}", str(v)])
+            # Use nargs="+" style: --flag val1 val2 val3 (not repeated --flag)
+            # This is required for argparse nargs="+" arguments like --seeds
+            cmd.append(f"--{key}")
+            cmd.extend([str(v) for v in value])
         elif isinstance(value, bool):
             if value:
                 cmd.append(f"--{key}")
