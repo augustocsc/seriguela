@@ -14,7 +14,7 @@ from .model_loader import ModelLoader
 from .generator import ExpressionGenerator, GenerationConfig
 from .extractor import ExpressionExtractor
 from .validator import ExpressionValidator, ValidationResult
-from .metrics import MetricsCalculator, QualityMetrics
+from .metrics import MetricsCalculator, QualityMetrics, symbolic_match, symbolic_match_rate
 from .storage import ResultStorage
 from .hf_storage import HFResultStorage
 
@@ -27,6 +27,8 @@ __all__ = [
     "ValidationResult",
     "MetricsCalculator",
     "QualityMetrics",
+    "symbolic_match",
+    "symbolic_match_rate",
     "ResultStorage",
     "HFResultStorage",
 ]

@@ -6,6 +6,7 @@ Calculates quality metrics for expression generation:
 - Diversity rate: Percentage of unique expressions
 - Constraint adherence: Percentage following prompt constraints
 - Complexity statistics
+- Symbolic match: Semantic equivalence via sympy simplification
 """
 
 import logging
@@ -307,3 +308,173 @@ def calculate_metrics(
     """
     calculator = MetricsCalculator()
     return calculator.calculate(results, allowed_vars, allowed_ops)
+
+
+def symbolic_match(
+    predicted: str,
+    ground_truth: str,
+    variables: Optional[List[str]] = None,
+    timeout_seconds: float = 5.0,
+) -> bool:
+    """
+    Check if two expressions are symbolically equivalent using sympy.
+
+    Goes beyond R² by checking mathematical identity: an expression like
+    ``2*sin(x_1)*cos(x_1)`` should match ``sin(2*x_1)`` even though their
+    string representations differ.
+
+    Strategy (tried in order, returns True on first success):
+    1. Direct ``simplify(pred - truth) == 0``
+    2. ``simplify(expand(pred) - expand(truth)) == 0``
+    3. ``trigsimp(pred - truth) == 0``
+    4. Numerical spot-check at 5 random positive points (fallback for
+       expressions where algebraic simplification times out)
+
+    Args:
+        predicted: Predicted expression string in infix notation
+                   (e.g. ``"sin(x_1) + C*x_2"``).
+        ground_truth: Ground truth expression string in infix notation.
+        variables: Variable names present in the expressions
+                   (e.g. ``["x_1", "x_2"]``). If None, auto-declares
+                   ``x_1`` … ``x_9`` plus ``x``, ``y``, ``C``.
+        timeout_seconds: Max wall-clock time for sympy simplification.
+                         Numerical fallback is used if exceeded.
+
+    Returns:
+        True if the expressions are symbolically (or numerically) equivalent,
+        False otherwise. Returns False on any parse error.
+    """
+    try:
+        import sympy as sp
+        from sympy import symbols, sympify, simplify, expand, trigsimp
+
+        # ── 1. Build symbol namespace ────────────────────────────────────────
+        if variables is None:
+            var_names = [f"x_{i}" for i in range(1, 10)] + ["x", "y", "C"]
+        else:
+            # Accept both "x_1" and "x1" spellings; add constants
+            var_names = list(variables) + ["C", "x", "y"]
+
+        # Map both "x_1" and "x1" to the same sympy symbol for robustness
+        sym_dict: Dict[str, Any] = {}
+        for v in var_names:
+            sym = symbols(v.replace("_", ""))   # "x_1" → symbol x1
+            sym_dict[v] = sym                   # allow "x_1" in expr string
+            sym_dict[v.replace("_", "")] = sym  # allow "x1"  in expr string
+
+        # ── 2. Parse both expressions ────────────────────────────────────────
+        def _parse(expr_str: str):
+            """Safely parse an expression string into a sympy expression."""
+            if not expr_str or not expr_str.strip():
+                return None
+            try:
+                return sympify(expr_str.strip(), locals=sym_dict)
+            except Exception:
+                return None
+
+        pred_sym = _parse(predicted)
+        truth_sym = _parse(ground_truth)
+
+        if pred_sym is None or truth_sym is None:
+            return False
+
+        # ── 3. Algebraic equivalence checks ─────────────────────────────────
+        import signal
+
+        def _timeout_handler(signum, frame):
+            raise TimeoutError()
+
+        def _try_simplify(expr):
+            """Attempt simplification with optional timeout (Unix only)."""
+            try:
+                # signal.alarm only works on Unix; on Windows just run directly
+                has_alarm = hasattr(signal, "SIGALRM")
+                if has_alarm:
+                    signal.signal(signal.SIGALRM, _timeout_handler)
+                    signal.alarm(max(1, int(timeout_seconds)))
+                result = simplify(expr)
+                if has_alarm:
+                    signal.alarm(0)
+                return result
+            except (TimeoutError, Exception):
+                if hasattr(signal, "SIGALRM"):
+                    signal.alarm(0)
+                return None
+
+        diff = pred_sym - truth_sym
+
+        # Method 1: direct simplify
+        simplified = _try_simplify(diff)
+        if simplified is not None and simplified == 0:
+            return True
+
+        # Method 2: expand then simplify
+        try:
+            simplified2 = _try_simplify(expand(pred_sym) - expand(truth_sym))
+            if simplified2 is not None and simplified2 == 0:
+                return True
+        except Exception:
+            pass
+
+        # Method 3: trigsimp
+        try:
+            trig_diff = trigsimp(diff)
+            if trig_diff == 0:
+                return True
+        except Exception:
+            pass
+
+        # ── 4. Numerical spot-check fallback ─────────────────────────────────
+        # Evaluate at 5 random positive points; all must match within 1e-8.
+        import numpy as np
+        import random
+
+        all_symbols = list(sym_dict.values())
+        n_points = 5
+        matches = 0
+        for _ in range(n_points):
+            point = {s: random.uniform(0.5, 2.5) for s in set(all_symbols)}
+            try:
+                p_val = complex(pred_sym.subs(point))
+                t_val = complex(truth_sym.subs(point))
+                if abs(p_val - t_val) < 1e-8:
+                    matches += 1
+            except Exception:
+                continue
+
+        return matches == n_points
+
+    except ImportError:
+        logger.warning("sympy not available; symbolic_match returning False")
+        return False
+    except Exception as e:
+        logger.debug(
+            f"symbolic_match failed for '{predicted}' vs '{ground_truth}': {e}"
+        )
+        return False
+
+
+def symbolic_match_rate(
+    predictions: List[str],
+    ground_truth: str,
+    variables: Optional[List[str]] = None,
+) -> float:
+    """
+    Compute the fraction of predictions that symbolically match the ground truth.
+
+    Useful for aggregating over Best-of-N samples or across seeds.
+
+    Args:
+        predictions: List of predicted expression strings.
+        ground_truth: Ground truth expression string.
+        variables: Variable names (passed to ``symbolic_match``).
+
+    Returns:
+        Float in [0, 1]: fraction of predictions that match.
+    """
+    if not predictions:
+        return 0.0
+    matches = sum(
+        1 for p in predictions if symbolic_match(p, ground_truth, variables)
+    )
+    return matches / len(predictions)

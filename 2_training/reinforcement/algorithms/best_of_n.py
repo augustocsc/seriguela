@@ -30,7 +30,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "classes"))
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-from rewards import BaseReward, PenaltyHandler, RewardResult
+from rewards import BaseReward, PenaltyHandler, RewardResult, ErrorType
 from schedulers import TemperatureScheduler
 from expression import Expression
 
@@ -155,35 +155,30 @@ class BestOfNBaseline:
         return None
 
     def compute_reward(self, expression: str) -> RewardResult:
-        """Compute reward for an expression."""
+        """Compute reward for an expression using the configured reward function.
+
+        Delegates entirely to self.reward_fn.compute(), which handles parsing,
+        variable validation, evaluation, and reward computation internally and
+        returns a properly typed RewardResult.
+        """
         try:
-            # Parse expression
-            if self.is_prefix:
-                expr_obj = Expression.from_prefix(expression)
-            else:
-                expr_obj = Expression.from_infix(expression)
-
-            if expr_obj is None:
-                penalty = self.penalty_handler.get_penalty(ErrorType.PARSING)
-                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.PARSING)
-
-            # Check variables
-            expr_vars = expr_obj.get_variables()
-            if not expr_vars.issubset(self.valid_variables):
-                penalty = self.penalty_handler.get_penalty(ErrorType.VARIABLES)
-                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.VARIABLES)
-
-            # Evaluate
-            y_pred = expr_obj.evaluate(self.x)
-            if y_pred is None or not np.isfinite(y_pred).all():
-                penalty = self.penalty_handler.get_penalty(ErrorType.NAN_INF)
-                return RewardResult(reward=penalty, is_valid=False, error_type=ErrorType.NAN_INF)
-
-            # Compute reward
-            return self.reward_fn.compute(self.y, y_pred, expression)
-
+            return self.reward_fn.compute(
+                expression=expression,
+                x=self.x,
+                y=self.y,
+                is_prefix=self.is_prefix,
+            )
         except Exception as e:
-            return self.penalty_handler.get_penalty(ErrorType.EVALUATION)
+            logger.debug(f"Unexpected error computing reward for '{expression}': {e}")
+            return RewardResult(
+                reward=-1.0,
+                r2=0.0,
+                mse=float("inf"),
+                is_valid=False,
+                complexity=0,
+                error_type=ErrorType.NAN_INF,
+                expression=expression or "",
+            )
 
     @torch.no_grad()
     def generate_batch(self, batch_size: int) -> List[str]:
