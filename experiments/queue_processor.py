@@ -250,19 +250,28 @@ def run_experiment(exp: dict, defaults: dict) -> tuple[bool, Optional[str]]:
                 cmd,
                 cwd=str(REPO_ROOT),
                 timeout=timeout_sec,
-                capture_output=False,  # Streaming para stdout do notebook
+                capture_output=True,
                 text=True
             )
+
+            # Repassa stdout/stderr para o notebook (visibilidade + logging)
+            if result.stdout:
+                print(result.stdout, end="", flush=True)
+            if result.stderr:
+                print(result.stderr, end="", flush=True)
 
             if result.returncode == 0:
                 log(f"Experimento {exp_id} CONCLUÍDO com sucesso")
                 return True, None
             else:
-                error_msg = f"Exit code {result.returncode}"
-                log(f"Experimento {exp_id} FALHOU: {error_msg}")
+                stderr_tail = result.stderr[-2000:] if result.stderr else ""
+                error_msg = f"Exit code {result.returncode}" + (f"\n{stderr_tail}" if stderr_tail else "")
+                log(f"Experimento {exp_id} FALHOU: Exit code {result.returncode}")
+                if stderr_tail:
+                    log(f"Stderr (últimas linhas):\n{stderr_tail}")
 
                 # Checa se foi OOM para tentar com batch menor
-                if attempt < max_attempts and "CUDA out of memory" in error_msg:
+                if attempt < max_attempts and "CUDA out of memory" in (result.stderr or ""):
                     log("OOM detectado — reduzindo batch_size pela metade e tentando novamente...")
                     # Modifica o batch_size nos args do experimento
                     if "args" in exp and "batch_size" in exp["args"]:

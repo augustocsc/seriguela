@@ -34,8 +34,10 @@ import torch
 
 # Add project paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+REINFORCEMENT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "classes"))
+sys.path.insert(0, str(REINFORCEMENT_ROOT))
 
 from algorithms import (
     BoNPPOTrainer, BoNGRPOTrainer, PurePPOTrainer, PureGRPOTrainer,
