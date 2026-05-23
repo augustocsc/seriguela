@@ -155,6 +155,12 @@ def t_import_run_experiment():
 # SUITE 2 — Queue processor command building
 # ═════════════════════════════════════════════════════════════════════════════
 
+@test("experiments/__init__.py exists (required for `from experiments.queue_processor import ...`)")
+def t_experiments_package():
+    init = SCRIPT_DIR / "__init__.py"
+    assert init.exists(), f"Missing {init} — experiments/ won't be importable as a package"
+
+
 @test("queue_processor: imports without CUDA")
 def t_qp_import():
     sys.path.insert(0, str(SCRIPT_DIR))
@@ -349,6 +355,7 @@ def main():
         t_import_callbacks,
         t_import_hf_upload,
         t_import_run_experiment,
+        t_experiments_package,
         t_qp_import,
         t_qp_build_command,
         t_qp_schema,
@@ -362,15 +369,15 @@ def main():
         t()
 
     print(f"\n[Queue processor]")
-    for t in tests[8:11]:
+    for t in tests[8:12]:
         t()
 
     print(f"\n[Best-of-N end-to-end]")
-    for t in tests[11:13]:
+    for t in tests[12:14]:
         t()
 
     print(f"\n[fp16 support]")
-    for t in tests[13:]:
+    for t in tests[14:]:
         t()
 
     print("\n" + "═" * 60)
