@@ -161,17 +161,12 @@ def t_experiments_package():
     assert init.exists(), f"Missing {init} — experiments/ won't be importable as a package"
 
 
-@test("queue_processor: imports without CUDA")
+@test("queue_processor: `from experiments.queue_processor import run_queue_loop` works")
 def t_qp_import():
-    sys.path.insert(0, str(SCRIPT_DIR))
-    import importlib
-    spec = importlib.util.spec_from_file_location(
-        "queue_processor", str(SCRIPT_DIR / "queue_processor.py")
-    )
-    mod = importlib.util.module_from_spec(spec)
-    # Don't exec (it would start a daemon) — just parse
-    src = (SCRIPT_DIR / "queue_processor.py").read_text(encoding="utf-8")
-    compile(src, "queue_processor.py", "exec")
+    # This mirrors exactly what Colab Cell 6 does
+    # REPO_ROOT must already be on sys.path (set at top of this script)
+    from experiments.queue_processor import run_queue_loop
+    assert callable(run_queue_loop)
 
 
 @test("queue_processor: build_command produces correct nargs=+ seeds")
