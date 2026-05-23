@@ -17,8 +17,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - JSON structured format is the standard approach
 - Phase A (~9.7K W&B runs) statistically compromised — see `docs/reports/phase_a_post_mortem.md`
 - Valid RL data: 36 JSONs in `results/pre_phase__t5_and_t6_merged/` (test5/test6, March 2026)
-- Current work: Fase 0 cleanup → Fase 1 bug fixes + model selection pilot
+- Current work: Fase 1 pilot (18 experiments) running on Colab via queue daemon
 - Thesis plan and experimental design: `docs/reports/THESIS_PLAN.md`
+
+**⏰ DEADLINE**: Less than 2 days of Colab compute remain (as of 2026-05-23). Every hour counts.
+All changes must be pre-validated with `python experiments/test_smoke.py` before pushing.
 
 ---
 
@@ -511,15 +514,75 @@ See [docs/guides/WANDB_NAMING.md](docs/guides/WANDB_NAMING.md) for complete nami
 
 ---
 
+## Local Development Machine
+
+**Hardware** (user's laptop — for local testing only, NOT for training):
+- CPU: Intel i5-12450HX (8 cores / 12 threads, 2.4 GHz)
+- RAM: 16 GB
+- GPU: NVIDIA RTX 3050 6GB Laptop (Compute 8.6) — almost fully used by Windows
+- Disk: ~7 GB free (tight — don't download model weights locally)
+
+**Consequence**: All model training and experiment runs happen on **Google Colab** (T4 16GB).
+Local machine is only for: code editing, import validation, and running `test_smoke.py`.
+
+---
+
+## Mandatory: Smoke Test Before Pushing
+
+**RULE**: Before pushing any change touching Colab-facing scripts, run:
+
+```bash
+python experiments/test_smoke.py
+```
+
+This test:
+- Validates all imports in `run_experiment.py` (catches path bugs like the sys.path fix)
+- Validates `queue.yaml` schema and `--seeds` command building
+- Runs a full Best-of-N mini-experiment (2 samples) with a tiny mocked model on CPU
+- Checks output JSON structure
+- Runs in <60s on any machine, no GPU or HF download required
+
+**Exit 0 = safe to push. Exit 1 = fix before pushing.**
+
+If you add a new module to `run_experiment.py`'s imports, add a corresponding import test to `experiments/test_smoke.py`.
+
+---
+
+## Colab GPU Optimization
+
+**Target GPU**: NVIDIA T4 (free tier) — 16GB VRAM, fp16 native
+
+**Key decisions** (do not change without re-running smoke test):
+- **fp16 inference** (`BoNConfig(fp16=True)` — default): halves VRAM, ~2x throughput
+  - Base (124M) fp16 ≈ 250MB weights → `batch_size=128` fits comfortably
+  - Medium (355M) fp16 ≈ 700MB weights → `batch_size=128` fits comfortably
+  - Large (774M) fp16 ≈ 1.5GB weights → `batch_size=64` conservative margin
+- **Model cache on Drive** (`HF_HOME=/content/drive/MyDrive/seriguela_models`): avoid
+  re-downloading 774MB per session
+- **No W&B for Phase 1** (`no_wandb: true`): removes ~5s overhead per run
+
+**Phase 1 time budget** (18 experiments on T4 with fp16):
+- 6× Base: ~8 min each = ~48 min
+- 6× Medium: ~15 min each = ~90 min
+- 6× Large: ~20 min each = ~120 min
+- Total Phase 1: **~4.5h** (was ~8h with fp32 + batch_size=64)
+
+**Phase 2 time budget** (after model selection — placeholder):
+- 5 algorithms × 4 problems × 5 seeds = 100 runs
+- Estimated 30-60 min per run depending on model size and MAX_STEPS
+
+---
+
 ## Best Practices
 
-1. **Use HuggingFace models**: Don't retrain from scratch - use our 6 pre-trained models
-2. **Choose appropriate model size**: Base (124M), Medium (355M), or Large (774M) depending on your needs
-3. **Track experiments**: Enable W&B logging with standardized naming
-4. **Use config files**: Store hyperparameters in `configs/` for reproducibility
-5. **Stop AWS instances**: Always stop instances when not in use to avoid charges
-6. **Version control**: Commit config files but never commit model weights or keys
-7. **Check GPU**: Verify GPU availability with `nvidia-smi` and `torch.cuda.is_available()`
+1. **Run smoke test first**: `python experiments/test_smoke.py` before every push touching Colab scripts
+2. **Use HuggingFace models**: Don't retrain from scratch - use our 6 pre-trained models
+3. **Choose appropriate model size**: Base (124M), Medium (355M), or Large (774M) depending on your needs
+4. **Track experiments**: Enable W&B logging with standardized naming
+5. **Use config files**: Store hyperparameters in `configs/` for reproducibility
+6. **Stop AWS instances**: Always stop instances when not in use to avoid charges
+7. **Version control**: Commit config files but never commit model weights or keys
+8. **Check GPU**: Verify GPU availability with `nvidia-smi` and `torch.cuda.is_available()`
 
 ---
 

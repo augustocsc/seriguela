@@ -51,6 +51,7 @@ class BoNConfig:
     use_wandb: bool = False
     wandb_project: str = "seriguela"
     wandb_run_name: Optional[str] = None
+    fp16: bool = True  # half precision on CUDA (2x VRAM, 2x throughput on T4)
 
 
 class BestOfNBaseline:
@@ -105,12 +106,19 @@ class BestOfNBaseline:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        base_model = AutoModelForCausalLM.from_pretrained(self.config.base_model)
-        self.model = PeftModel.from_pretrained(base_model, self.config.model_path)
+        use_fp16 = self.config.fp16 and self.device.type == "cuda"
+        dtype = torch.float16 if use_fp16 else torch.float32
+
+        base_model = AutoModelForCausalLM.from_pretrained(
+            self.config.base_model, torch_dtype=dtype
+        )
+        self.model = PeftModel.from_pretrained(
+            base_model, self.config.model_path, torch_dtype=dtype
+        )
         self.model = self.model.to(self.device)
         self.model.eval()  # Never train
 
-        logger.info(f"Model loaded on {self.device}")
+        logger.info(f"Model loaded on {self.device} (dtype={dtype})")
 
     def _build_prompt(self):
         """Build the generation prompt."""
