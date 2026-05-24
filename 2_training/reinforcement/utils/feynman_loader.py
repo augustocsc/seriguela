@@ -1,0 +1,142 @@
+"""
+Feynman and Strogatz benchmark loader for run_experiment.py.
+
+Reads pre-downloaded CSV files from 1_data/benchmarks/{feynman,strogatz}/,
+renames physical variable names to x_1, x_2, ..., and splits 75/25 train/test.
+
+Usage:
+    from utils.feynman_loader import load_benchmark_data
+
+    data = load_benchmark_data("feynman_I_14_3", seed=42)
+    # data = {"train": {"x": ..., "y": ...}, "test": ..., "equation": ..., "valid_variables": ...}
+"""
+
+import json
+import numpy as np
+import pandas as pd
+from pathlib import Path
+from typing import Optional
+
+# Root of the seriguela repo (2 levels up from this file)
+_REPO_ROOT = Path(__file__).parent.parent.parent.parent
+_FEYNMAN_DIR = _REPO_ROOT / "1_data" / "benchmarks" / "feynman"
+_STROGATZ_DIR = _REPO_ROOT / "1_data" / "benchmarks" / "strogatz"
+
+
+def load_benchmark_data(problem: str, seed: int, test_fraction: float = 0.25,
+                        n_samples: Optional[int] = None) -> dict:
+    """Load a Feynman or Strogatz benchmark problem.
+
+    Variable names are remapped to x_1, x_2, ... so the model receives
+    the same format it was trained on.
+
+    Args:
+        problem:       Problem name, e.g. "feynman_I_14_3" or "strogatz_bacres1"
+        seed:          Random seed for reproducible train/test split
+        test_fraction: Fraction of data used for test set (default 0.25, SRBench protocol)
+        n_samples:     If given, subsample this many rows from the full dataset
+                       (100K rows). None = use all rows.
+
+    Returns:
+        {
+            "train": {"x": np.ndarray, "y": np.ndarray},
+            "test":  {"x": np.ndarray, "y": np.ndarray},
+            "equation": str,           # ground-truth formula (if available)
+            "valid_variables": set,    # {"x_1", "x_2", ...}
+            "original_vars": list,     # physical names ["m", "g", "z"]
+            "var_map": dict,           # {"m": "x_1", "g": "x_2", "z": "x_3"}
+        }
+    """
+    if problem.startswith("feynman"):
+        data_dir = _FEYNMAN_DIR
+    elif problem.startswith("strogatz"):
+        data_dir = _STROGATZ_DIR
+    else:
+        raise ValueError(f"Unknown benchmark type for problem '{problem}'. "
+                         f"Expected 'feynman_*' or 'strogatz_*'.")
+
+    csv_path = data_dir / f"{problem}.csv"
+    meta_path = data_dir / f"{problem}.meta.json"
+
+    if not csv_path.exists():
+        raise FileNotFoundError(
+            f"CSV not found: {csv_path}\n"
+            f"Run 1_data/benchmarks/download_all_benchmarks.py to fetch data."
+        )
+
+    # --- Load CSV ---
+    df = pd.read_csv(csv_path)
+
+    # Identify feature columns (everything except 'target')
+    target_col = "target"
+    feature_cols = [c for c in df.columns if c != target_col]
+    n_vars = len(feature_cols)
+
+    # Subsample if requested (default: use all, up to 100K rows)
+    rng = np.random.RandomState(seed)
+    if n_samples is not None and n_samples < len(df):
+        idx = rng.choice(len(df), size=n_samples, replace=False)
+        df = df.iloc[idx].reset_index(drop=True)
+
+    # --- Variable remapping: physical names → x_1, x_2, ... ---
+    var_map = {phys: f"x_{i+1}" for i, phys in enumerate(feature_cols)}
+    original_vars = feature_cols
+
+    X = df[feature_cols].values.astype(np.float64)
+    y = df[target_col].values.astype(np.float64)
+
+    # --- Train/test split (75/25, SRBench protocol) ---
+    n_total = len(df)
+    n_test = max(1, int(n_total * test_fraction))
+    idx_all = rng.permutation(n_total)
+    idx_test = idx_all[:n_test]
+    idx_train = idx_all[n_test:]
+
+    x_train = X[idx_train]
+    y_train = y[idx_train]
+    x_test = X[idx_test]
+    y_test = y[idx_test]
+
+    # --- Ground-truth equation (remapped to x_1/x_2/...) ---
+    equation = _get_equation(problem, meta_path, var_map)
+
+    valid_variables = {f"x_{i+1}" for i in range(n_vars)}
+
+    return {
+        "train": {"x": x_train, "y": y_train},
+        "test":  {"x": x_test,  "y": y_test},
+        "equation": equation,
+        "valid_variables": valid_variables,
+        "original_vars": original_vars,
+        "var_map": var_map,
+        "n_vars": n_vars,
+    }
+
+
+def _get_equation(problem: str, meta_path: Path, var_map: dict) -> str:
+    """Extract and remap ground-truth equation from feynman_equations.py."""
+    try:
+        import importlib.util
+        equations_py = _FEYNMAN_DIR.parent / "feynman_equations.py"
+        if equations_py.exists():
+            spec = importlib.util.spec_from_file_location("feynman_eq", equations_py)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            eqs = getattr(mod, "FEYNMAN_EQUATIONS", {})
+            if problem in eqs:
+                expr = eqs[problem]["equation"]
+                # Remap physical variable names to x_1, x_2, ...
+                # Sort by length descending to avoid partial replacements
+                for phys, xi in sorted(var_map.items(), key=lambda kv: -len(kv[0])):
+                    expr = expr.replace(phys, xi)
+                return expr
+    except Exception:
+        pass
+
+    # Fallback: return problem name as placeholder
+    return f"unknown ({problem})"
+
+
+def is_feynman_or_strogatz(problem: str) -> bool:
+    """Return True if the problem name belongs to Feynman/Strogatz benchmarks."""
+    return problem.startswith("feynman") or problem.startswith("strogatz")

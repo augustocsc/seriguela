@@ -384,6 +384,115 @@ queue:
     created: "2026-05-22"
 
   # ══════════════════════════════════════════════════════════════════════════════
+  # ETAPA 0 — Validação do pipeline Feynman/Strogatz (go/no-go para Fase 1b)
+  # Objetivo: confirmar que var_remapper + constant_fitter funcionam em problemas
+  # de física real antes de gastar horas de A100 em 124 problemas completos.
+  # Modelo: base_infix (já selecionado pela Fase 1)
+  # Seeds: apenas 3 (smoke test — não é dado de pesquisa)
+  # Cobertura: 2 vars simples, 2 vars linear, 3 vars, 4 vars, 9 vars (OOD)
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  - id: etapa0_feynman_2v_gaussian
+    name: "Etapa 0 — feynman_I_6_2a (2 vars, gaussian)"
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: feynman_I_6_2a
+      reward: sr_ic
+      penalty: gradient
+      n_samples: 512
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456]
+      no_wandb: true
+    output_dir: "results/etapa0/feynman_I_6_2a/"
+    estimated_minutes: 5
+    retry_on_oom: true
+    phase: "etapa0"
+    created: "2026-05-24"
+
+  - id: etapa0_feynman_2v_friction
+    name: "Etapa 0 — feynman_I_12_1 (2 vars, mu*Nn — linear)"
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: feynman_I_12_1
+      reward: sr_ic
+      penalty: gradient
+      n_samples: 512
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456]
+      no_wandb: true
+    output_dir: "results/etapa0/feynman_I_12_1/"
+    estimated_minutes: 5
+    retry_on_oom: true
+    phase: "etapa0"
+    created: "2026-05-24"
+
+  - id: etapa0_feynman_3v_energy
+    name: "Etapa 0 — feynman_I_14_3 (3 vars, m*g*z)"
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: feynman_I_14_3
+      reward: sr_ic
+      penalty: gradient
+      n_samples: 512
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456]
+      no_wandb: true
+    output_dir: "results/etapa0/feynman_I_14_3/"
+    estimated_minutes: 5
+    retry_on_oom: true
+    phase: "etapa0"
+    created: "2026-05-24"
+
+  - id: etapa0_feynman_4v_distance
+    name: "Etapa 0 — feynman_I_8_14 (4 vars, euclidean distance)"
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: feynman_I_8_14
+      reward: sr_ic
+      penalty: gradient
+      n_samples: 512
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456]
+      no_wandb: true
+    output_dir: "results/etapa0/feynman_I_8_14/"
+    estimated_minutes: 5
+    retry_on_oom: true
+    phase: "etapa0"
+    created: "2026-05-24"
+
+  - id: etapa0_feynman_9v_gravity
+    name: "Etapa 0 — feynman_I_9_18 (9 vars, gravitational force — OOD test)"
+    status: pending
+    args:
+      algorithm: best_of_n
+      model: "augustocsc/gpt2_base_infix_682k"
+      problem: feynman_I_9_18
+      reward: sr_ic
+      penalty: gradient
+      n_samples: 512
+      max_steps: 8
+      batch_size: 64
+      seeds: [42, 123, 456]
+      no_wandb: true
+    output_dir: "results/etapa0/feynman_I_9_18/"
+    estimated_minutes: 5
+    retry_on_oom: true
+    phase: "etapa0"
+    created: "2026-05-24"
+
+  # ══════════════════════════════════════════════════════════════════════════════
   # FASE 1.5 — Scout runs para calibrar MAX_STEPS da Fase 2
   # Objetivo: determinar em quantos steps RL o modelo converge (evitar gastar
   # GPU em steps além do plateau)

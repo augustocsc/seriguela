@@ -199,13 +199,17 @@ def generate_nguyen_data(problem: str, seed: Optional[int] = None) -> tuple:
 
 
 def generate_train_test_data(problem: str, seed: int) -> dict:
-    """Generate separate train and test data for a Nguyen benchmark.
+    """Generate separate train and test data for a benchmark problem.
 
-    Uses different random seeds for train (seed) and test (seed + 10000)
-    to ensure no data leakage.
+    Supports Nguyen benchmarks (generated on-the-fly) and Feynman/Strogatz
+    benchmarks (loaded from pre-downloaded CSV files in 1_data/benchmarks/).
+
+    For Nguyen: uses different random seeds for train vs test to avoid leakage.
+    For Feynman/Strogatz: uses a deterministic 75/25 stratified split (SRBench
+    protocol), with variable names remapped to x_1, x_2, ...
 
     Args:
-        problem: Name of the Nguyen benchmark
+        problem: Problem name, e.g. "nguyen_5", "feynman_I_14_3", "strogatz_bacres1"
         seed: Base random seed
 
     Returns:
@@ -217,10 +221,20 @@ def generate_train_test_data(problem: str, seed: int) -> dict:
             "valid_variables": ...
         }
     """
-    # Generate training data with base seed
-    x_train, y_train, equation, valid_vars = generate_nguyen_data(problem, seed=seed)
+    from utils.feynman_loader import is_feynman_or_strogatz, load_benchmark_data
 
-    # Generate test data with offset seed (ensures different random points)
+    if is_feynman_or_strogatz(problem):
+        # Feynman/Strogatz: load from CSV, 75/25 split, remap vars to x_1/x_2/...
+        data = load_benchmark_data(problem, seed=seed, test_fraction=0.25)
+        return {
+            "train": data["train"],
+            "test": data["test"],
+            "equation": data["equation"],
+            "valid_variables": data["valid_variables"],
+        }
+
+    # Nguyen: generate on-the-fly with separate seeds for train/test
+    x_train, y_train, equation, valid_vars = generate_nguyen_data(problem, seed=seed)
     x_test, y_test, _, _ = generate_nguyen_data(problem, seed=seed + 10000)
 
     return {
@@ -702,6 +716,10 @@ def main():
             "std_test_r2": float(np.std(test_r2_values)) if test_r2_values else None,
             "max_test_r2": float(np.max(test_r2_values)) if test_r2_values else None,
             "min_test_r2": float(np.min(test_r2_values)) if test_r2_values else None,
+            "median_test_r2": float(np.median(test_r2_values)) if test_r2_values else None,
+            # Solution rate: fraction of seeds where test R² >= 0.999 (SRBench standard)
+            "solution_rate": float(sum(1 for r in test_r2_values if r >= 0.999) / len(test_r2_values)) if test_r2_values else None,
+            "n_solved": int(sum(1 for r in test_r2_values if r >= 0.999)) if test_r2_values else 0,
             # Legacy names for compatibility
             "mean_best_r2": float(np.mean(best_r2_values)) if best_r2_values else None,
             "std_best_r2": float(np.std(best_r2_values)) if best_r2_values else None,
