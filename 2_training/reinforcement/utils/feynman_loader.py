@@ -59,10 +59,7 @@ def load_benchmark_data(problem: str, seed: int, test_fraction: float = 0.25,
     meta_path = data_dir / f"{problem}.meta.json"
 
     if not csv_path.exists():
-        raise FileNotFoundError(
-            f"CSV not found: {csv_path}\n"
-            f"Run 1_data/benchmarks/download_all_benchmarks.py to fetch data."
-        )
+        _auto_download(problem, csv_path, meta_path)
 
     # --- Load CSV ---
     df = pd.read_csv(csv_path)
@@ -111,6 +108,52 @@ def load_benchmark_data(problem: str, seed: int, test_fraction: float = 0.25,
         "var_map": var_map,
         "n_vars": n_vars,
     }
+
+
+def _auto_download(problem: str, csv_path: Path, meta_path: Path):
+    """Download CSV from PMLB if not present locally."""
+    import urllib.request
+    import gzip
+    import shutil
+
+    # Build PMLB URL from problem name
+    base_url = f"https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/{problem}/{problem}.tsv.gz"
+
+    print(f"[feynman_loader] Downloading {problem} from PMLB...", flush=True)
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+
+    gz_path = csv_path.with_suffix(".tsv.gz")
+    tsv_path = csv_path.with_suffix(".tsv")
+
+    try:
+        urllib.request.urlretrieve(base_url, gz_path)
+
+        # Decompress gz → tsv
+        with gzip.open(gz_path, 'rb') as f_in, open(tsv_path, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+        gz_path.unlink()
+
+        # Convert tsv → csv (rename 'target' col if needed)
+        import pandas as pd
+        df = pd.read_csv(tsv_path, sep='\t')
+        # PMLB uses 'target' as the last column — rename if it's the output
+        if 'target' not in df.columns:
+            df = df.rename(columns={df.columns[-1]: 'target'})
+        df.to_csv(csv_path, index=False)
+        tsv_path.unlink()
+
+        print(f"[feynman_loader] Downloaded {problem}: {len(df)} rows, {len(df.columns)-1} features", flush=True)
+
+    except Exception as e:
+        # Cleanup partial files
+        for p in [gz_path, tsv_path]:
+            if p.exists():
+                p.unlink()
+        raise RuntimeError(
+            f"Failed to download {problem} from PMLB: {e}\n"
+            f"URL tried: {base_url}\n"
+            f"Run manually: 1_data/benchmarks/download_all_benchmarks.py"
+        ) from e
 
 
 def _get_equation(problem: str, meta_path: Path, var_map: dict) -> str:
