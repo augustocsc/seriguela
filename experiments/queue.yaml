@@ -401,7 +401,6 @@ queue:
       problem: feynman_I_6_2a
       reward: sr_ic
       penalty: gradient
-      n_samples: 512
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
@@ -420,7 +419,6 @@ queue:
       problem: feynman_I_12_1
       reward: sr_ic
       penalty: gradient
-      n_samples: 512
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
@@ -439,7 +437,6 @@ queue:
       problem: feynman_I_14_3
       reward: sr_ic
       penalty: gradient
-      n_samples: 512
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
@@ -458,7 +455,6 @@ queue:
       problem: feynman_I_8_14
       reward: sr_ic
       penalty: gradient
-      n_samples: 512
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
@@ -477,7 +473,6 @@ queue:
       problem: feynman_I_9_18
       reward: sr_ic
       penalty: gradient
-      n_samples: 512
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
