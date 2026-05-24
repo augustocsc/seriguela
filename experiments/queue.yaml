@@ -405,7 +405,6 @@ queue:
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
-      no_wandb: true
     output_dir: "results/etapa0/feynman_I_6_2a/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -425,7 +424,6 @@ queue:
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
-      no_wandb: true
     output_dir: "results/etapa0/feynman_I_12_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -445,7 +443,6 @@ queue:
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
-      no_wandb: true
     output_dir: "results/etapa0/feynman_I_14_3/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -465,7 +462,6 @@ queue:
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
-      no_wandb: true
     output_dir: "results/etapa0/feynman_I_8_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -485,7 +481,6 @@ queue:
       max_steps: 8
       batch_size: 64
       seeds: [42, 123, 456]
-      no_wandb: true
     output_dir: "results/etapa0/feynman_I_9_18/"
     estimated_minutes: 5
     retry_on_oom: true

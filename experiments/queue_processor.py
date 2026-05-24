@@ -91,10 +91,51 @@ def git_commit_batch(message: str):
                 log("git push OK")
             else:
                 log(f"git push WARN (continuando): {push.stderr.strip()[:100]}")
+                # Push falhou — salva resultados no W&B Artifacts como backup
+                wandb_backup_results()
         else:
             log(f"git commit WARN: {result.stderr.strip()[:200]}")
     except Exception as e:
         log(f"git commit FAILED (non-fatal): {e}")
+
+
+def wandb_backup_results():
+    """Salva results/ como W&B Artifact quando o git push falha.
+
+    Só executa se WANDB_API_KEY estiver disponível. Não fatal.
+    """
+    try:
+        import wandb
+        api_key = os.environ.get("WANDB_API_KEY")
+        if not api_key:
+            log("wandb backup: WANDB_API_KEY não encontrado, pulando")
+            return
+
+        results_dir = REPO_ROOT / "results"
+        jsons = list(results_dir.rglob("aggregate_*.json"))
+        if not jsons:
+            log("wandb backup: nenhum JSON de resultado encontrado")
+            return
+
+        log(f"wandb backup: enviando {len(jsons)} JSONs para W&B Artifacts...")
+        run = wandb.init(
+            project="seriguela",
+            entity="symbolic-gression",
+            job_type="results-backup",
+            name=f"backup-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+            reinit=True,
+        )
+        artifact = wandb.Artifact(
+            "experiment-results",
+            type="dataset",
+            description=f"Auto-backup — {len(jsons)} JSONs (git push falhou)",
+        )
+        artifact.add_dir(str(results_dir), name="results")
+        run.log_artifact(artifact)
+        run.finish()
+        log(f"wandb backup OK: {len(jsons)} arquivos salvos em W&B Artifacts")
+    except Exception as e:
+        log(f"wandb backup FAILED (non-fatal): {e}")
 
 
 def write_heartbeat(current_exp_id: Optional[str] = None, done_count: int = 0):
