@@ -345,7 +345,7 @@ def create_trainer(
     )
 
 
-def run_single_experiment(args, seed: int) -> dict:
+def run_single_experiment(args, seed: int, bon_model=None, bon_tokenizer=None) -> dict:
     """Run a single experiment with specified seed."""
     logger.info(f"\n{'='*60}")
     logger.info(f"Running experiment with seed {seed}")
@@ -412,11 +412,14 @@ def run_single_experiment(args, seed: int) -> dict:
             reward_fn=reward_fn,
             penalty_handler=penalty_handler,
             n_samples=args.max_steps * args.batch_size,  # Total samples similar to RL
+            batch_size=args.batch_size,
             is_prefix=is_prefix,
             valid_variables=valid_variables,
             ground_truth=ground_truth,
             temperature=0.7 if args.temperature.startswith("fixed") else 0.7,
             use_wandb=args.use_wandb,
+            model=bon_model,
+            tokenizer=bon_tokenizer,
         )
 
         # Evaluate best expression on TEST SET
@@ -664,11 +667,39 @@ def main():
     if args.no_wandb:
         args.use_wandb = False
 
+    # For best_of_n, load model once and share across seeds (avoids 10x reload)
+    bon_model, bon_tokenizer = None, None
+    if args.algorithm == "best_of_n":
+        logger.info("best_of_n: pre-loading model once for all seeds...")
+        import torch
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        from peft import PeftModel
+
+        base_model_name = "gpt2"
+        if "medium" in args.model.lower():
+            base_model_name = "gpt2-medium"
+        elif "large" in args.model.lower():
+            base_model_name = "gpt2-large"
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        use_fp16 = device.type == "cuda"
+        dtype = torch.float16 if use_fp16 else torch.float32
+
+        bon_tokenizer = AutoTokenizer.from_pretrained(args.model)
+        if bon_tokenizer.pad_token is None:
+            bon_tokenizer.pad_token = bon_tokenizer.eos_token
+
+        _base = AutoModelForCausalLM.from_pretrained(base_model_name, torch_dtype=dtype)
+        bon_model = PeftModel.from_pretrained(_base, args.model, torch_dtype=dtype)
+        bon_model = bon_model.to(device)
+        bon_model.eval()
+        logger.info(f"Model pre-loaded on {device} (dtype={dtype}) — will reuse across {len(args.seeds)} seeds")
+
     # Run experiments for all seeds
     all_results = []
     for seed in args.seeds:
         try:
-            results = run_single_experiment(args, seed)
+            results = run_single_experiment(args, seed, bon_model=bon_model, bon_tokenizer=bon_tokenizer)
             all_results.append(results)
         except Exception as e:
             logger.error(f"Experiment with seed {seed} failed: {e}")

@@ -510,8 +510,8 @@ queue:
       problem: nguyen_5
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_5/"
@@ -528,8 +528,8 @@ queue:
       problem: feynman_I_14_3
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_14_3/"
@@ -546,8 +546,8 @@ queue:
       problem: strogatz_bacres1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_bacres1/"
@@ -568,8 +568,8 @@ queue:
       problem: nguyen_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_1/"
@@ -586,8 +586,8 @@ queue:
       problem: nguyen_2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_2/"
@@ -604,8 +604,8 @@ queue:
       problem: nguyen_3
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_3/"
@@ -622,8 +622,8 @@ queue:
       problem: nguyen_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_4/"
@@ -640,8 +640,8 @@ queue:
       problem: nguyen_6
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_6/"
@@ -658,8 +658,8 @@ queue:
       problem: nguyen_7
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_7/"
@@ -676,8 +676,8 @@ queue:
       problem: nguyen_8
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_8/"
@@ -694,8 +694,8 @@ queue:
       problem: nguyen_9
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_9/"
@@ -712,8 +712,8 @@ queue:
       problem: nguyen_10
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_10/"
@@ -730,8 +730,8 @@ queue:
       problem: nguyen_11
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_11/"
@@ -748,8 +748,8 @@ queue:
       problem: nguyen_12
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/nguyen_12/"
@@ -771,8 +771,8 @@ queue:
       problem: feynman_I_10_7
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_10_7/"
@@ -789,8 +789,8 @@ queue:
       problem: feynman_I_11_19
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_11_19/"
@@ -807,8 +807,8 @@ queue:
       problem: feynman_I_12_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_1/"
@@ -825,8 +825,8 @@ queue:
       problem: feynman_I_12_11
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_11/"
@@ -843,8 +843,8 @@ queue:
       problem: feynman_I_12_2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_2/"
@@ -861,8 +861,8 @@ queue:
       problem: feynman_I_12_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_4/"
@@ -879,8 +879,8 @@ queue:
       problem: feynman_I_12_5
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_5/"
@@ -897,8 +897,8 @@ queue:
       problem: feynman_I_13_12
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_13_12/"
@@ -915,8 +915,8 @@ queue:
       problem: feynman_I_13_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_13_4/"
@@ -933,8 +933,8 @@ queue:
       problem: feynman_I_14_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_14_4/"
@@ -951,8 +951,8 @@ queue:
       problem: feynman_I_15_10
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_10/"
@@ -969,8 +969,8 @@ queue:
       problem: feynman_I_15_3t
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_3t/"
@@ -987,8 +987,8 @@ queue:
       problem: feynman_I_15_3x
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_3x/"
@@ -1005,8 +1005,8 @@ queue:
       problem: feynman_I_16_6
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_16_6/"
@@ -1023,8 +1023,8 @@ queue:
       problem: feynman_I_18_12
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_12/"
@@ -1041,8 +1041,8 @@ queue:
       problem: feynman_I_18_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_14/"
@@ -1059,8 +1059,8 @@ queue:
       problem: feynman_I_18_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_4/"
@@ -1077,8 +1077,8 @@ queue:
       problem: feynman_I_24_6
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_24_6/"
@@ -1095,8 +1095,8 @@ queue:
       problem: feynman_I_25_13
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_25_13/"
@@ -1113,8 +1113,8 @@ queue:
       problem: feynman_I_27_6
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_27_6/"
@@ -1131,8 +1131,8 @@ queue:
       problem: feynman_I_29_16
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_29_16/"
@@ -1149,8 +1149,8 @@ queue:
       problem: feynman_I_29_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_29_4/"
@@ -1167,8 +1167,8 @@ queue:
       problem: feynman_I_30_3
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_30_3/"
@@ -1185,8 +1185,8 @@ queue:
       problem: feynman_I_32_17
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_32_17/"
@@ -1203,8 +1203,8 @@ queue:
       problem: feynman_I_32_5
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_32_5/"
@@ -1221,8 +1221,8 @@ queue:
       problem: feynman_I_34_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_1/"
@@ -1239,8 +1239,8 @@ queue:
       problem: feynman_I_34_10
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_10/"
@@ -1257,8 +1257,8 @@ queue:
       problem: feynman_I_34_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_14/"
@@ -1275,8 +1275,8 @@ queue:
       problem: feynman_I_34_27
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_27/"
@@ -1293,8 +1293,8 @@ queue:
       problem: feynman_I_34_8
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_8/"
@@ -1311,8 +1311,8 @@ queue:
       problem: feynman_I_37_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_37_4/"
@@ -1329,8 +1329,8 @@ queue:
       problem: feynman_I_38_12
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_38_12/"
@@ -1347,8 +1347,8 @@ queue:
       problem: feynman_I_39_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_1/"
@@ -1365,8 +1365,8 @@ queue:
       problem: feynman_I_39_11
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_11/"
@@ -1383,8 +1383,8 @@ queue:
       problem: feynman_I_39_22
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_22/"
@@ -1401,8 +1401,8 @@ queue:
       problem: feynman_I_40_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_40_1/"
@@ -1419,8 +1419,8 @@ queue:
       problem: feynman_I_41_16
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_41_16/"
@@ -1437,8 +1437,8 @@ queue:
       problem: feynman_I_43_16
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_16/"
@@ -1455,8 +1455,8 @@ queue:
       problem: feynman_I_43_31
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_31/"
@@ -1473,8 +1473,8 @@ queue:
       problem: feynman_I_43_43
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_43/"
@@ -1491,8 +1491,8 @@ queue:
       problem: feynman_I_44_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_44_4/"
@@ -1509,8 +1509,8 @@ queue:
       problem: feynman_I_47_23
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_47_23/"
@@ -1527,8 +1527,8 @@ queue:
       problem: feynman_I_48_2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_48_2/"
@@ -1545,8 +1545,8 @@ queue:
       problem: feynman_I_50_26
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_50_26/"
@@ -1563,8 +1563,8 @@ queue:
       problem: feynman_I_6_2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2/"
@@ -1581,8 +1581,8 @@ queue:
       problem: feynman_I_6_2a
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2a/"
@@ -1599,8 +1599,8 @@ queue:
       problem: feynman_I_6_2b
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2b/"
@@ -1617,8 +1617,8 @@ queue:
       problem: feynman_I_8_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_8_14/"
@@ -1635,8 +1635,8 @@ queue:
       problem: feynman_I_9_18
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_I_9_18/"
@@ -1653,8 +1653,8 @@ queue:
       problem: feynman_II_10_9
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_10_9/"
@@ -1671,8 +1671,8 @@ queue:
       problem: feynman_II_11_17
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_17/"
@@ -1689,8 +1689,8 @@ queue:
       problem: feynman_II_11_20
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_20/"
@@ -1707,8 +1707,8 @@ queue:
       problem: feynman_II_11_27
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_27/"
@@ -1725,8 +1725,8 @@ queue:
       problem: feynman_II_11_28
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_28/"
@@ -1743,8 +1743,8 @@ queue:
       problem: feynman_II_11_3
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_3/"
@@ -1761,8 +1761,8 @@ queue:
       problem: feynman_II_13_17
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_17/"
@@ -1779,8 +1779,8 @@ queue:
       problem: feynman_II_13_23
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_23/"
@@ -1797,8 +1797,8 @@ queue:
       problem: feynman_II_13_34
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_34/"
@@ -1815,8 +1815,8 @@ queue:
       problem: feynman_II_15_4
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_15_4/"
@@ -1833,8 +1833,8 @@ queue:
       problem: feynman_II_15_5
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_15_5/"
@@ -1851,8 +1851,8 @@ queue:
       problem: feynman_II_21_32
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_21_32/"
@@ -1869,8 +1869,8 @@ queue:
       problem: feynman_II_24_17
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_24_17/"
@@ -1887,8 +1887,8 @@ queue:
       problem: feynman_II_27_16
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_27_16/"
@@ -1905,8 +1905,8 @@ queue:
       problem: feynman_II_27_18
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_27_18/"
@@ -1923,8 +1923,8 @@ queue:
       problem: feynman_II_2_42
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_2_42/"
@@ -1941,8 +1941,8 @@ queue:
       problem: feynman_II_34_11
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_11/"
@@ -1959,8 +1959,8 @@ queue:
       problem: feynman_II_34_2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_2/"
@@ -1977,8 +1977,8 @@ queue:
       problem: feynman_II_34_29a
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_29a/"
@@ -1995,8 +1995,8 @@ queue:
       problem: feynman_II_34_29b
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_29b/"
@@ -2013,8 +2013,8 @@ queue:
       problem: feynman_II_34_2a
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_2a/"
@@ -2031,8 +2031,8 @@ queue:
       problem: feynman_II_35_18
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_35_18/"
@@ -2049,8 +2049,8 @@ queue:
       problem: feynman_II_36_38
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_36_38/"
@@ -2067,8 +2067,8 @@ queue:
       problem: feynman_II_37_1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_37_1/"
@@ -2085,8 +2085,8 @@ queue:
       problem: feynman_II_38_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_38_14/"
@@ -2103,8 +2103,8 @@ queue:
       problem: feynman_II_38_3
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_38_3/"
@@ -2121,8 +2121,8 @@ queue:
       problem: feynman_II_3_24
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_3_24/"
@@ -2139,8 +2139,8 @@ queue:
       problem: feynman_II_4_23
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_4_23/"
@@ -2157,8 +2157,8 @@ queue:
       problem: feynman_II_6_11
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_11/"
@@ -2175,8 +2175,8 @@ queue:
       problem: feynman_II_6_15a
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_15a/"
@@ -2193,8 +2193,8 @@ queue:
       problem: feynman_II_6_15b
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_15b/"
@@ -2211,8 +2211,8 @@ queue:
       problem: feynman_II_8_31
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_8_31/"
@@ -2229,8 +2229,8 @@ queue:
       problem: feynman_II_8_7
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_II_8_7/"
@@ -2247,8 +2247,8 @@ queue:
       problem: feynman_III_10_19
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_10_19/"
@@ -2265,8 +2265,8 @@ queue:
       problem: feynman_III_12_43
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_12_43/"
@@ -2283,8 +2283,8 @@ queue:
       problem: feynman_III_13_18
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_13_18/"
@@ -2301,8 +2301,8 @@ queue:
       problem: feynman_III_14_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_14_14/"
@@ -2319,8 +2319,8 @@ queue:
       problem: feynman_III_15_12
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_12/"
@@ -2337,8 +2337,8 @@ queue:
       problem: feynman_III_15_14
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_14/"
@@ -2355,8 +2355,8 @@ queue:
       problem: feynman_III_15_27
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_27/"
@@ -2373,8 +2373,8 @@ queue:
       problem: feynman_III_17_37
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_17_37/"
@@ -2391,8 +2391,8 @@ queue:
       problem: feynman_III_19_51
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_19_51/"
@@ -2409,8 +2409,8 @@ queue:
       problem: feynman_III_21_20
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_21_20/"
@@ -2427,8 +2427,8 @@ queue:
       problem: feynman_III_4_32
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_4_32/"
@@ -2445,8 +2445,8 @@ queue:
       problem: feynman_III_4_33
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_4_33/"
@@ -2463,8 +2463,8 @@ queue:
       problem: feynman_III_7_38
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_7_38/"
@@ -2481,8 +2481,8 @@ queue:
       problem: feynman_III_8_54
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_8_54/"
@@ -2499,8 +2499,8 @@ queue:
       problem: feynman_III_9_52
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/feynman_III_9_52/"
@@ -2521,8 +2521,8 @@ queue:
       problem: strogatz_bacres2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_bacres2/"
@@ -2539,8 +2539,8 @@ queue:
       problem: strogatz_barmag1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_barmag1/"
@@ -2557,8 +2557,8 @@ queue:
       problem: strogatz_barmag2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_barmag2/"
@@ -2575,8 +2575,8 @@ queue:
       problem: strogatz_glider1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_glider1/"
@@ -2593,8 +2593,8 @@ queue:
       problem: strogatz_glider2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_glider2/"
@@ -2611,8 +2611,8 @@ queue:
       problem: strogatz_lv1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_lv1/"
@@ -2629,8 +2629,8 @@ queue:
       problem: strogatz_lv2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_lv2/"
@@ -2647,8 +2647,8 @@ queue:
       problem: strogatz_predprey1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_predprey1/"
@@ -2665,8 +2665,8 @@ queue:
       problem: strogatz_predprey2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_predprey2/"
@@ -2683,8 +2683,8 @@ queue:
       problem: strogatz_shearflow1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_shearflow1/"
@@ -2701,8 +2701,8 @@ queue:
       problem: strogatz_shearflow2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_shearflow2/"
@@ -2719,8 +2719,8 @@ queue:
       problem: strogatz_vdp1
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_vdp1/"
@@ -2737,8 +2737,8 @@ queue:
       problem: strogatz_vdp2
       reward: sr_ic
       penalty: gradient
-      max_steps: 8
-      batch_size: 64
+      max_steps: 1
+      batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
       use_wandb: true
     output_dir: "results/phase_1b/strogatz_vdp2/"

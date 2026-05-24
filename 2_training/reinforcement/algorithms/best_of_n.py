@@ -73,6 +73,8 @@ class BestOfNBaseline:
         is_prefix: bool = False,
         valid_variables: Optional[Set[str]] = None,
         ground_truth: Optional[str] = None,
+        model=None,
+        tokenizer=None,
     ):
         self.config = config
         self.x = x
@@ -85,8 +87,14 @@ class BestOfNBaseline:
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Load model
-        self._load_model()
+        if model is not None and tokenizer is not None:
+            self.model = model
+            self.tokenizer = tokenizer
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+            logger.info("Using pre-loaded model (skipping reload)")
+        else:
+            self._load_model()
 
         # Build prompt
         self._build_prompt()
@@ -328,14 +336,20 @@ def run_best_of_n_baseline(
     reward_fn: BaseReward,
     penalty_handler: PenaltyHandler,
     n_samples: int = 1000,
+    batch_size: int = 64,
     is_prefix: bool = False,
     valid_variables: Optional[Set[str]] = None,
     ground_truth: Optional[str] = None,
     temperature: float = 0.7,
     use_wandb: bool = False,
+    model=None,
+    tokenizer=None,
 ) -> Dict:
     """
     Convenience function to run Best-of-N baseline.
+
+    Pass pre-loaded ``model`` and ``tokenizer`` to avoid reloading weights on
+    every call (critical when running multiple seeds for the same problem).
 
     Args:
         model_path: HuggingFace model path
@@ -344,12 +358,15 @@ def run_best_of_n_baseline(
         y: Target data
         reward_fn: Reward function
         penalty_handler: Penalty handler
-        n_samples: Number of samples to generate
+        n_samples: Total number of expressions to generate per call
+        batch_size: GPU batch size for generation (default 64; use 512 on A100)
         is_prefix: Whether to use prefix notation
         valid_variables: Set of valid variable names
         ground_truth: Ground truth expression
         temperature: Generation temperature
         use_wandb: Whether to log to wandb
+        model: Pre-loaded PeftModel (skips _load_model if provided)
+        tokenizer: Pre-loaded tokenizer (skips _load_model if provided)
 
     Returns:
         Results dictionary
@@ -358,6 +375,7 @@ def run_best_of_n_baseline(
         model_path=model_path,
         base_model=base_model,
         n_samples=n_samples,
+        batch_size=batch_size,
         temperature=temperature,
         use_wandb=use_wandb,
     )
@@ -371,6 +389,8 @@ def run_best_of_n_baseline(
         is_prefix=is_prefix,
         valid_variables=valid_variables,
         ground_truth=ground_truth,
+        model=model,
+        tokenizer=tokenizer,
     )
 
     return baseline.run()
