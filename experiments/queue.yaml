@@ -51,7 +51,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_base_infix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_infix_682k"
@@ -68,7 +68,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_base_infix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_infix_682k"
@@ -85,7 +85,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_base_infix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_infix_682k"
@@ -106,7 +106,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_base_prefix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_prefix_682k"
@@ -123,7 +123,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_base_prefix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_prefix_682k"
@@ -140,7 +140,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_base_prefix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_base_prefix_682k"
@@ -161,7 +161,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_medium_infix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_infix_682k"
@@ -178,7 +178,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_medium_infix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_infix_682k"
@@ -195,7 +195,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_medium_infix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_infix_682k"
@@ -216,7 +216,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_medium_prefix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_prefix_682k"
@@ -233,7 +233,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_medium_prefix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_prefix_682k"
@@ -250,7 +250,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_medium_prefix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_medium_prefix_682k"
@@ -272,7 +272,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_large_infix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_infix_682k"
@@ -290,7 +290,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_large_infix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_infix_682k"
@@ -308,7 +308,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_large_infix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_infix_682k"
@@ -330,7 +330,7 @@ queue:
   # ──────────────────────────────────────────────────────────────────────────
 
   - id: phase1_large_prefix_bon_nguyen1
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_prefix_682k"
@@ -348,7 +348,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_large_prefix_bon_nguyen5
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_prefix_682k"
@@ -366,7 +366,7 @@ queue:
     created: "2026-05-22"
 
   - id: phase1_large_prefix_bon_nguyen9
-    status: pending
+    status: skipped  # resultados em W&B artifact phase1-results
     args:
       algorithm: best_of_n
       model: "augustocsc/gpt2_large_prefix_682k"
