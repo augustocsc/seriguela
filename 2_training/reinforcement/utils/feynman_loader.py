@@ -58,7 +58,7 @@ def load_benchmark_data(problem: str, seed: int, test_fraction: float = 0.25,
     csv_path = data_dir / f"{problem}.csv"
     meta_path = data_dir / f"{problem}.meta.json"
 
-    if not csv_path.exists():
+    if not csv_path.exists() or _is_lfs_pointer(csv_path):
         _auto_download(problem, csv_path, meta_path)
 
     # --- Load CSV ---
@@ -108,6 +108,16 @@ def load_benchmark_data(problem: str, seed: int, test_fraction: float = 0.25,
         "var_map": var_map,
         "n_vars": n_vars,
     }
+
+
+def _is_lfs_pointer(path: Path) -> bool:
+    """Return True if the file is a git-lfs pointer (not real data)."""
+    try:
+        with open(path, "r", errors="ignore") as f:
+            first_line = f.readline()
+        return first_line.startswith("version https://git-lfs") or "oid sha256:" in first_line
+    except Exception:
+        return False
 
 
 def _auto_download(problem: str, csv_path: Path, meta_path: Path):
