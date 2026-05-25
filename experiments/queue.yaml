@@ -1,2769 +1,3971 @@
-# experiments/queue.yaml
-# Fila de experimentos para o daemon Colab (seriguela_runner.ipynb)
-#
-# Como funciona:
-#   1. Claude edita este arquivo e comita no git
-#   2. O daemon no Colab faz `git pull` periodicamente
-#   3. Cada experimento com status: pending é executado na ordem
-#   4. O daemon atualiza o status para running/done/failed e comita de volta
-#
-# Status válidos:
-#   pending  → aguardando execução
-#   running  → em execução (não editar)
-#   done     → concluído com sucesso
-#   failed   → falhou (ver campo error)
-#   skipped  → pulado manualmente (idempotente: já tem resultados)
-#
-# Para adicionar experimentos: inserir novos items no final de `queue`
-# Para cancelar: mudar status: pending → skipped
-
-meta:
-  version: "1.2"
-  project: seriguela
-  created: "2026-05-18"
-  updated: "2026-05-24"
-  description: "Fila principal de experimentos — editada por Claude, executada no Colab"
-  colab_runner: "colab/seriguela_runner.ipynb"
-
 defaults:
-  # Parâmetros padrão herdados por todos os experimentos (podem ser sobrescritos)
-  script: "2_training/reinforcement/run_experiment.py"
   max_hours: 1.5
-  retry_on_oom: true  # reduz batch_size pela metade e tenta de novo
-
+  retry_on_oom: true
+  script: 2_training/reinforcement/run_experiment.py
+meta:
+  colab_runner: colab/seriguela_runner.ipynb
+  created: '2026-05-18'
+  description: Fila principal de experimentos — editada por Claude, executada no Colab
+  project: seriguela
+  updated: '2026-05-24'
+  version: '1.2'
 queue:
-  # ══════════════════════════════════════════════════════════════════════════════
-  # FASE 1 — Piloto zero-shot best-of-N (seleção de modelo)
-  # Objetivo: identificar qual(is) dos 6 modelos valem RL na Fase 2
-  # Algoritmo: best_of_n puro (SEM treino RL — pure inference com fp16)
-  # Problema: nguyen_1 (fácil), nguyen_5 (trig médio), nguyen_9 (multi-var difícil)
-  # Seeds: 5 seeds por entrada (aggregate gerado automaticamente)
-  # Samples: 512 por seed = max_steps × batch_size
-  #   Base/Medium: max_steps=4 × batch_size=128 = 512 (fp16 cabe em T4 16GB)
-  #   Large:       max_steps=8 × batch_size=64  = 512 (fp16, margem de segurança)
-  # Reward: sr_ic (recompensa uniforme para fase 2)
-  # GPU: T4 free tier — não usa Colab Pro units!
-  # Estimativa total: ~3h T4 (fp16 reduz tempo pela metade vs fp32)
-  # ══════════════════════════════════════════════════════════════════════════════
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 BASE INFIX (124M) — batch_size=128 safe com fp16 em T4 16GB
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_base_infix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_infix/nguyen_1/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_base_infix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_infix/nguyen_5/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_base_infix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_infix/nguyen_9/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 BASE PREFIX (124M)
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_base_prefix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_prefix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_prefix/nguyen_1/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_base_prefix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_prefix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_prefix/nguyen_5/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_base_prefix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_prefix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/base_prefix/nguyen_9/"
-    estimated_minutes: 8
-    phase: 1
-    created: "2026-05-22"
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 MEDIUM INFIX (355M) — batch_size=128 safe com fp16 em T4 16GB
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_medium_infix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_infix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_infix/nguyen_1/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_medium_infix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_infix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_infix/nguyen_5/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_medium_infix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_infix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_infix/nguyen_9/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 MEDIUM PREFIX (355M)
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_medium_prefix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_prefix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_prefix/nguyen_1/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_medium_prefix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_prefix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_prefix/nguyen_5/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_medium_prefix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_medium_prefix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 4
-      batch_size: 128
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/medium_prefix/nguyen_9/"
-    estimated_minutes: 15
-    phase: 1
-    created: "2026-05-22"
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 LARGE INFIX (774M) — batch_size=64 com fp16 em T4 (margem segura)
-  # Nota: 774M fp16 ≈ 1.5GB pesos; batch=64×max_len=100 ≈ 4GB ativações → OK
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_large_infix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_infix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_infix/nguyen_1/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_large_infix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_infix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_infix/nguyen_5/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_large_infix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_infix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_infix/nguyen_9/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # GPT-2 LARGE PREFIX (774M)
-  # ──────────────────────────────────────────────────────────────────────────
-
-  - id: phase1_large_prefix_bon_nguyen1
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_prefix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_prefix/nguyen_1/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_large_prefix_bon_nguyen5
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_prefix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_prefix/nguyen_5/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  - id: phase1_large_prefix_bon_nguyen9
-    status: skipped  # resultados em W&B artifact phase1-results
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_large_prefix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456, 789, 1011]
-      no_wandb: true
-    output_dir: "results/phase_1/large_prefix/nguyen_9/"
-    estimated_minutes: 20
-    retry_on_oom: true
-    phase: 1
-    created: "2026-05-22"
-
-  # ══════════════════════════════════════════════════════════════════════════════
-  # ETAPA 0 — Validação do pipeline Feynman/Strogatz (go/no-go para Fase 1b)
-  # Objetivo: confirmar que var_remapper + constant_fitter funcionam em problemas
-  # de física real antes de gastar horas de A100 em 124 problemas completos.
-  # Modelo: base_infix (já selecionado pela Fase 1)
-  # Seeds: apenas 3 (smoke test — não é dado de pesquisa)
-  # Cobertura: 2 vars simples, 2 vars linear, 3 vars, 4 vars, 9 vars (OOD)
-  # ══════════════════════════════════════════════════════════════════════════════
-
-  - id: etapa0_feynman_2v_gaussian
-    name: "Etapa 0 — feynman_I_6_2a (2 vars, gaussian)"
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_6_2a
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456]
-    output_dir: "results/etapa0/feynman_I_6_2a/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "etapa0"
-    created: "2026-05-24"
-
-  - id: etapa0_feynman_2v_friction
-    name: "Etapa 0 — feynman_I_12_1 (2 vars, mu*Nn — linear)"
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456]
-    output_dir: "results/etapa0/feynman_I_12_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "etapa0"
-    created: "2026-05-24"
-
-  - id: etapa0_feynman_3v_energy
-    name: "Etapa 0 — feynman_I_14_3 (3 vars, m*g*z)"
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_14_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456]
-    output_dir: "results/etapa0/feynman_I_14_3/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "etapa0"
-    created: "2026-05-24"
-
-  - id: etapa0_feynman_4v_distance
-    name: "Etapa 0 — feynman_I_8_14 (4 vars, euclidean distance)"
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_8_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456]
-    output_dir: "results/etapa0/feynman_I_8_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "etapa0"
-    created: "2026-05-24"
-
-  - id: etapa0_feynman_9v_gravity
-    name: "Etapa 0 — feynman_I_9_18 (9 vars, gravitational force — OOD test)"
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_9_18
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 8
-      batch_size: 64
-      seeds: [42, 123, 456]
-    output_dir: "results/etapa0/feynman_I_9_18/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "etapa0"
-    created: "2026-05-24"
-
-
-  # ============================================================================
-  # FASE 1b - Baseline Rigoroso Best-of-N (124 problemas)
-  # Objetivo: criar denominador estatistico para comparacao com RL (Fase 2)
-  # Testa H_gen: generalizacao para n_vars > 5 (fora do escopo de treino SFT)
-  #
-  # Modelo:    augustocsc/gpt2_base_infix_682k (Base Infix, 124M)
-  # Algoritmo: best_of_n (zero-shot, SEM treino RL - pure inference)
-  # Samples:   512 por seed = max_steps=8 x batch_size=64 (A100 40GB)
-  # Seeds:     10 (42,123,456,789,1011,2022,3033,4044,5055,6066)
-  # Problemas: 12 Nguyen + 98 Feynman (excl. I_26_2/I_30_5/II_35_21 arcsin/tanh)
-  #           + 14 Strogatz = 124 total
-  # GPU:       A100 40GB - ~9h total, ~45 Colab Pro units
-  # Smoke test: primeiros 3 (nguyen_5, feynman_I_14_3, strogatz_bacres1)
-  # ============================================================================
-
-  # ----------------------------------------------------------------
-  # Smoke test: 1 Nguyen + 1 Feynman + 1 Strogatz (rodar primeiro)
-  # ----------------------------------------------------------------
-
-  - id: phase1b_nguyen_5  # [smoke test]
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_5/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_14_3  # [smoke test]
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_14_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_14_3/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_bacres1  # [smoke test]
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_bacres1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_bacres1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  # ----------------------------------------------------------------
-  # Nguyen restantes (11 problemas)
-  # ----------------------------------------------------------------
-
-  - id: phase1b_nguyen_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_1/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_2/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_3
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_3/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_4/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_6
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_6
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_6/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_7
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_7
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_7/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_8
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_8
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_8/"
-    estimated_minutes: 4
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_9
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_9/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_10
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_10
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_10/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_11
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_11
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_11/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_nguyen_12
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: nguyen_12
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/nguyen_12/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  # ----------------------------------------------------------------
-  # Feynman Categoria A: 97 problemas restantes
-  # vocab: +,-,*,/,**,sin,cos,log,sqrt,exp (sem arcsin/tanh)
-  # ----------------------------------------------------------------
-
-  - id: phase1b_feynman_I_10_7
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_10_7
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_10_7/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_11_19
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_11_19
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_11_19/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_12_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_12_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_12_11
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_11
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_12_11/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_12_2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_12_2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_12_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_12_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_12_5
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_12_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_12_5/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_13_12
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_13_12
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_13_12/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_13_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_13_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_13_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_14_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_14_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_14_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_15_10
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_15_10
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_15_10/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_15_3t
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_15_3t
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_15_3t/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_15_3x
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_15_3x
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_15_3x/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_16_6
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_16_6
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_16_6/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_18_12
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_18_12
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_18_12/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_18_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_18_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_18_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_18_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_18_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_18_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_24_6
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_24_6
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_24_6/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_25_13
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_25_13
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_25_13/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_27_6
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_27_6
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_27_6/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_29_16
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_29_16
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_29_16/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_29_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_29_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_29_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_30_3
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_30_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_30_3/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_32_17
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_32_17
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_32_17/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_32_5
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_32_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_32_5/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_34_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_34_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_34_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_34_10
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_34_10
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_34_10/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_34_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_34_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_34_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_34_27
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_34_27
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_34_27/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_34_8
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_34_8
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_34_8/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_37_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_37_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_37_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_38_12
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_38_12
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_38_12/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_39_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_39_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_39_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_39_11
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_39_11
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_39_11/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_39_22
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_39_22
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_39_22/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_40_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_40_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_40_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_41_16
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_41_16
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_41_16/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_43_16
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_43_16
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_43_16/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_43_31
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_43_31
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_43_31/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_43_43
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_43_43
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_43_43/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_44_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_44_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_44_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_47_23
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_47_23
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_47_23/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_48_2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_48_2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_48_2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_50_26
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_50_26
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_50_26/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_6_2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_6_2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_6_2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_6_2a
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_6_2a
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_6_2a/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_6_2b
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_6_2b
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_6_2b/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_8_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_8_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_8_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_I_9_18
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_I_9_18
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_I_9_18/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_10_9
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_10_9
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_10_9/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_11_17
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_11_17
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_11_17/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_11_20
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_11_20
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_11_20/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_11_27
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_11_27
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_11_27/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_11_28
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_11_28
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_11_28/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_11_3
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_11_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_11_3/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_13_17
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_13_17
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_13_17/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_13_23
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_13_23
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_13_23/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_13_34
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_13_34
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_13_34/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_15_4
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_15_4
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_15_4/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_15_5
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_15_5
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_15_5/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_21_32
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_21_32
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_21_32/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_24_17
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_24_17
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_24_17/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_27_16
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_27_16
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_27_16/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_27_18
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_27_18
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_27_18/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_2_42
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_2_42
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_2_42/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_34_11
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_34_11
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_34_11/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_34_2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_34_2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_34_2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_34_29a
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_34_29a
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_34_29a/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_34_29b
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_34_29b
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_34_29b/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_34_2a
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_34_2a
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_34_2a/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_35_18
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_35_18
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_35_18/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_36_38
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_36_38
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_36_38/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_37_1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_37_1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_37_1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_38_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_38_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_38_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_38_3
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_38_3
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_38_3/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_3_24
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_3_24
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_3_24/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_4_23
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_4_23
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_4_23/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_6_11
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_6_11
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_6_11/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_6_15a
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_6_15a
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_6_15a/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_6_15b
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_6_15b
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_6_15b/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_8_31
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_8_31
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_8_31/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_II_8_7
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_II_8_7
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_II_8_7/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_10_19
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_10_19
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_10_19/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_12_43
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_12_43
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_12_43/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_13_18
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_13_18
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_13_18/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_14_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_14_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_14_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_15_12
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_15_12
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_15_12/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_15_14
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_15_14
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_15_14/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_15_27
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_15_27
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_15_27/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_17_37
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_17_37
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_17_37/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_19_51
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_19_51
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_19_51/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_21_20
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_21_20
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_21_20/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_4_32
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_4_32
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_4_32/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_4_33
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_4_33
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_4_33/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_7_38
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_7_38
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_7_38/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_8_54
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_8_54
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_8_54/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_feynman_III_9_52
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: feynman_III_9_52
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/feynman_III_9_52/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  # ----------------------------------------------------------------
-  # Strogatz: 13 problemas restantes
-  # ----------------------------------------------------------------
-
-  - id: phase1b_strogatz_bacres2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_bacres2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_bacres2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_barmag1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_barmag1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_barmag1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_barmag2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_barmag2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_barmag2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_glider1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_glider1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_glider1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_glider2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_glider2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_glider2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_lv1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_lv1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_lv1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_lv2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_lv2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_lv2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_predprey1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_predprey1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_predprey1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_predprey2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_predprey2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_predprey2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_shearflow1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_shearflow1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_shearflow1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_shearflow2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_shearflow2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_shearflow2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_vdp1
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_vdp1
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_vdp1/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  - id: phase1b_strogatz_vdp2
-    status: pending
-    args:
-      algorithm: best_of_n
-      model: "augustocsc/gpt2_base_infix_682k"
-      problem: strogatz_vdp2
-      reward: sr_ic
-      penalty: gradient
-      max_steps: 1
-      batch_size: 512
-      seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      no_wandb: true
-    output_dir: "results/phase_1b/strogatz_vdp2/"
-    estimated_minutes: 5
-    retry_on_oom: true
-    phase: "1b"
-    created: "2026-05-24"
-
-  # ══════════════════════════════════════════════════════════════════════════════
-  # FASE 1.5 — Scout runs para calibrar MAX_STEPS da Fase 2
-  # Objetivo: determinar em quantos steps RL o modelo converge (evitar gastar
-  # GPU em steps além do plateau)
-  # SERÁ POPULADO após análise dos resultados da Fase 1
-  # ══════════════════════════════════════════════════════════════════════════════
-
-  # Claude adiciona as entradas da Fase 1.5 aqui após decidir o(s) melhor(es)
-  # modelo(s) com base nos resultados da Fase 1.
-
-  # ══════════════════════════════════════════════════════════════════════════════
-  # FASE 2 — Experimento RL principal
-  # 5 algoritmos × 4 problemas × 5 seeds = 100 runs (1 modelo)
-  # SERÁ POPULADO após Fase 1 + decisão de modelo + scout de plateau
-  # ══════════════════════════════════════════════════════════════════════════════
-
-  # Claude adiciona as entradas da Fase 2 aqui após:
-  #   1. Análise dos resultados da Fase 1 (model selection)
-  #   2. Scout runs da Fase 1.5 (calibrar MAX_STEPS)
-  #   3. Decisão escrita em docs/reports/THESIS_PLAN.md
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_infix_bon_nguyen1
+  output_dir: results/phase_1/base_infix/nguyen_1/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_infix_bon_nguyen5
+  output_dir: results/phase_1/base_infix/nguyen_5/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_infix_bon_nguyen9
+  output_dir: results/phase_1/base_infix/nguyen_9/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_prefix_bon_nguyen1
+  output_dir: results/phase_1/base_prefix/nguyen_1/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_prefix_bon_nguyen5
+  output_dir: results/phase_1/base_prefix/nguyen_5/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_base_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 8
+  id: phase1_base_prefix_bon_nguyen9
+  output_dir: results/phase_1/base_prefix/nguyen_9/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_infix_bon_nguyen1
+  output_dir: results/phase_1/medium_infix/nguyen_1/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_infix_bon_nguyen5
+  output_dir: results/phase_1/medium_infix/nguyen_5/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_infix_bon_nguyen9
+  output_dir: results/phase_1/medium_infix/nguyen_9/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_prefix_bon_nguyen1
+  output_dir: results/phase_1/medium_prefix/nguyen_1/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_prefix_bon_nguyen5
+  output_dir: results/phase_1/medium_prefix/nguyen_5/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 128
+    max_steps: 4
+    model: augustocsc/gpt2_medium_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 15
+  id: phase1_medium_prefix_bon_nguyen9
+  output_dir: results/phase_1/medium_prefix/nguyen_9/
+  phase: 1
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_infix_bon_nguyen1
+  output_dir: results/phase_1/large_infix/nguyen_1/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_infix_bon_nguyen5
+  output_dir: results/phase_1/large_infix/nguyen_5/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_infix_bon_nguyen9
+  output_dir: results/phase_1/large_infix/nguyen_9/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_prefix_bon_nguyen1
+  output_dir: results/phase_1/large_prefix/nguyen_1/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_prefix_bon_nguyen5
+  output_dir: results/phase_1/large_prefix/nguyen_5/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_large_prefix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+  created: '2026-05-22'
+  estimated_minutes: 20
+  id: phase1_large_prefix_bon_nguyen9
+  output_dir: results/phase_1/large_prefix/nguyen_9/
+  phase: 1
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_base_infix_682k
+    penalty: gradient
+    problem: feynman_I_6_2a
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: etapa0_feynman_2v_gaussian
+  name: Etapa 0 — feynman_I_6_2a (2 vars, gaussian)
+  output_dir: results/etapa0/feynman_I_6_2a/
+  phase: etapa0
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_base_infix_682k
+    penalty: gradient
+    problem: feynman_I_12_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: etapa0_feynman_2v_friction
+  name: Etapa 0 — feynman_I_12_1 (2 vars, mu*Nn — linear)
+  output_dir: results/etapa0/feynman_I_12_1/
+  phase: etapa0
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_base_infix_682k
+    penalty: gradient
+    problem: feynman_I_14_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: etapa0_feynman_3v_energy
+  name: Etapa 0 — feynman_I_14_3 (3 vars, m*g*z)
+  output_dir: results/etapa0/feynman_I_14_3/
+  phase: etapa0
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_base_infix_682k
+    penalty: gradient
+    problem: feynman_I_8_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: etapa0_feynman_4v_distance
+  name: Etapa 0 — feynman_I_8_14 (4 vars, euclidean distance)
+  output_dir: results/etapa0/feynman_I_8_14/
+  phase: etapa0
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 64
+    max_steps: 8
+    model: augustocsc/gpt2_base_infix_682k
+    penalty: gradient
+    problem: feynman_I_9_18
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: etapa0_feynman_9v_gravity
+  name: Etapa 0 — feynman_I_9_18 (9 vars, gravitational force — OOD test)
+  output_dir: results/etapa0/feynman_I_9_18/
+  phase: etapa0
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_5
+  output_dir: results/phase_1b/nguyen_5/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_14_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_14_3
+  output_dir: results/phase_1b/feynman_I_14_3/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_bacres1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_bacres1
+  output_dir: results/phase_1b/strogatz_bacres1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_1
+  output_dir: results/phase_1b/nguyen_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_2
+  output_dir: results/phase_1b/nguyen_2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_3
+  output_dir: results/phase_1b/nguyen_3/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_4
+  output_dir: results/phase_1b/nguyen_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_6
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_6
+  output_dir: results/phase_1b/nguyen_6/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_7
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_7
+  output_dir: results/phase_1b/nguyen_7/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_8
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 4
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_8
+  output_dir: results/phase_1b/nguyen_8/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_9
+  output_dir: results/phase_1b/nguyen_9/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_10
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_10
+  output_dir: results/phase_1b/nguyen_10/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_11
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_11
+  output_dir: results/phase_1b/nguyen_11/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: nguyen_12
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_nguyen_12
+  output_dir: results/phase_1b/nguyen_12/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_10_7
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_10_7
+  output_dir: results/phase_1b/feynman_I_10_7/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_11_19
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_11_19
+  output_dir: results/phase_1b/feynman_I_11_19/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_12_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_12_1
+  output_dir: results/phase_1b/feynman_I_12_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_12_11
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_12_11
+  output_dir: results/phase_1b/feynman_I_12_11/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_12_2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_12_2
+  output_dir: results/phase_1b/feynman_I_12_2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_12_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_12_4
+  output_dir: results/phase_1b/feynman_I_12_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_12_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_12_5
+  output_dir: results/phase_1b/feynman_I_12_5/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_13_12
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_13_12
+  output_dir: results/phase_1b/feynman_I_13_12/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_13_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_13_4
+  output_dir: results/phase_1b/feynman_I_13_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_14_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_14_4
+  output_dir: results/phase_1b/feynman_I_14_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_15_10
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_15_10
+  output_dir: results/phase_1b/feynman_I_15_10/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_15_3t
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_15_3t
+  output_dir: results/phase_1b/feynman_I_15_3t/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_15_3x
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_15_3x
+  output_dir: results/phase_1b/feynman_I_15_3x/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_16_6
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_16_6
+  output_dir: results/phase_1b/feynman_I_16_6/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_18_12
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_18_12
+  output_dir: results/phase_1b/feynman_I_18_12/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_18_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_18_14
+  output_dir: results/phase_1b/feynman_I_18_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_18_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_18_4
+  output_dir: results/phase_1b/feynman_I_18_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_24_6
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_24_6
+  output_dir: results/phase_1b/feynman_I_24_6/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_25_13
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_25_13
+  output_dir: results/phase_1b/feynman_I_25_13/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_27_6
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_27_6
+  output_dir: results/phase_1b/feynman_I_27_6/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_29_16
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_29_16
+  output_dir: results/phase_1b/feynman_I_29_16/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_29_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_29_4
+  output_dir: results/phase_1b/feynman_I_29_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_30_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_30_3
+  output_dir: results/phase_1b/feynman_I_30_3/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_32_17
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_32_17
+  output_dir: results/phase_1b/feynman_I_32_17/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_32_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_32_5
+  output_dir: results/phase_1b/feynman_I_32_5/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_34_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_34_1
+  output_dir: results/phase_1b/feynman_I_34_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_34_10
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  id: phase1b_feynman_I_34_10
+  output_dir: results/phase_1b/feynman_I_34_10/
+  phase: 1b
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_34_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_34_14
+  output_dir: results/phase_1b/feynman_I_34_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_34_27
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_34_27
+  output_dir: results/phase_1b/feynman_I_34_27/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_34_8
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_34_8
+  output_dir: results/phase_1b/feynman_I_34_8/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_37_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_37_4
+  output_dir: results/phase_1b/feynman_I_37_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_38_12
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_38_12
+  output_dir: results/phase_1b/feynman_I_38_12/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_39_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_39_1
+  output_dir: results/phase_1b/feynman_I_39_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_39_11
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_39_11
+  output_dir: results/phase_1b/feynman_I_39_11/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_39_22
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_39_22
+  output_dir: results/phase_1b/feynman_I_39_22/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_40_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_40_1
+  output_dir: results/phase_1b/feynman_I_40_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_41_16
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_41_16
+  output_dir: results/phase_1b/feynman_I_41_16/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_43_16
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_43_16
+  output_dir: results/phase_1b/feynman_I_43_16/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_43_31
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_43_31
+  output_dir: results/phase_1b/feynman_I_43_31/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_43_43
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_43_43
+  output_dir: results/phase_1b/feynman_I_43_43/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_44_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_44_4
+  output_dir: results/phase_1b/feynman_I_44_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_47_23
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_47_23
+  output_dir: results/phase_1b/feynman_I_47_23/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_48_2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_48_2
+  output_dir: results/phase_1b/feynman_I_48_2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_50_26
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_50_26
+  output_dir: results/phase_1b/feynman_I_50_26/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_6_2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_6_2
+  output_dir: results/phase_1b/feynman_I_6_2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_6_2a
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_6_2a
+  output_dir: results/phase_1b/feynman_I_6_2a/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_6_2b
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_6_2b
+  output_dir: results/phase_1b/feynman_I_6_2b/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_8_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_8_14
+  output_dir: results/phase_1b/feynman_I_8_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_I_9_18
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_I_9_18
+  output_dir: results/phase_1b/feynman_I_9_18/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_10_9
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_10_9
+  output_dir: results/phase_1b/feynman_II_10_9/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_11_17
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  id: phase1b_feynman_II_11_17
+  output_dir: results/phase_1b/feynman_II_11_17/
+  phase: 1b
+  retry_on_oom: true
+  status: skipped
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_11_20
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_11_20
+  output_dir: results/phase_1b/feynman_II_11_20/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_11_27
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_11_27
+  output_dir: results/phase_1b/feynman_II_11_27/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_11_28
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_11_28
+  output_dir: results/phase_1b/feynman_II_11_28/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_11_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_11_3
+  output_dir: results/phase_1b/feynman_II_11_3/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_13_17
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_13_17
+  output_dir: results/phase_1b/feynman_II_13_17/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_13_23
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_13_23
+  output_dir: results/phase_1b/feynman_II_13_23/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_13_34
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_13_34
+  output_dir: results/phase_1b/feynman_II_13_34/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_15_4
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_15_4
+  output_dir: results/phase_1b/feynman_II_15_4/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_15_5
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_15_5
+  output_dir: results/phase_1b/feynman_II_15_5/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_21_32
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_21_32
+  output_dir: results/phase_1b/feynman_II_21_32/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_24_17
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_24_17
+  output_dir: results/phase_1b/feynman_II_24_17/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_27_16
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_27_16
+  output_dir: results/phase_1b/feynman_II_27_16/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_27_18
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_27_18
+  output_dir: results/phase_1b/feynman_II_27_18/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_2_42
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_2_42
+  output_dir: results/phase_1b/feynman_II_2_42/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_34_11
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_34_11
+  output_dir: results/phase_1b/feynman_II_34_11/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_34_2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_34_2
+  output_dir: results/phase_1b/feynman_II_34_2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_34_29a
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_34_29a
+  output_dir: results/phase_1b/feynman_II_34_29a/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_34_29b
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_34_29b
+  output_dir: results/phase_1b/feynman_II_34_29b/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_34_2a
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_34_2a
+  output_dir: results/phase_1b/feynman_II_34_2a/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_35_18
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_35_18
+  output_dir: results/phase_1b/feynman_II_35_18/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_36_38
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_36_38
+  output_dir: results/phase_1b/feynman_II_36_38/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_37_1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_37_1
+  output_dir: results/phase_1b/feynman_II_37_1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_38_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_38_14
+  output_dir: results/phase_1b/feynman_II_38_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_38_3
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_38_3
+  output_dir: results/phase_1b/feynman_II_38_3/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_3_24
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_3_24
+  output_dir: results/phase_1b/feynman_II_3_24/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_4_23
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_4_23
+  output_dir: results/phase_1b/feynman_II_4_23/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_6_11
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_6_11
+  output_dir: results/phase_1b/feynman_II_6_11/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_6_15a
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_6_15a
+  output_dir: results/phase_1b/feynman_II_6_15a/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_6_15b
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_6_15b
+  output_dir: results/phase_1b/feynman_II_6_15b/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_8_31
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_8_31
+  output_dir: results/phase_1b/feynman_II_8_31/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_II_8_7
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_II_8_7
+  output_dir: results/phase_1b/feynman_II_8_7/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_10_19
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_10_19
+  output_dir: results/phase_1b/feynman_III_10_19/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_12_43
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_12_43
+  output_dir: results/phase_1b/feynman_III_12_43/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_13_18
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_13_18
+  output_dir: results/phase_1b/feynman_III_13_18/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_14_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_14_14
+  output_dir: results/phase_1b/feynman_III_14_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_15_12
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_15_12
+  output_dir: results/phase_1b/feynman_III_15_12/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_15_14
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_15_14
+  output_dir: results/phase_1b/feynman_III_15_14/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_15_27
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_15_27
+  output_dir: results/phase_1b/feynman_III_15_27/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_17_37
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_17_37
+  output_dir: results/phase_1b/feynman_III_17_37/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_19_51
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_19_51
+  output_dir: results/phase_1b/feynman_III_19_51/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_21_20
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_21_20
+  output_dir: results/phase_1b/feynman_III_21_20/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_4_32
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_4_32
+  output_dir: results/phase_1b/feynman_III_4_32/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_4_33
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_4_33
+  output_dir: results/phase_1b/feynman_III_4_33/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_7_38
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_7_38
+  output_dir: results/phase_1b/feynman_III_7_38/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_8_54
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_8_54
+  output_dir: results/phase_1b/feynman_III_8_54/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: feynman_III_9_52
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_feynman_III_9_52
+  output_dir: results/phase_1b/feynman_III_9_52/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_bacres2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_bacres2
+  output_dir: results/phase_1b/strogatz_bacres2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_barmag1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_barmag1
+  output_dir: results/phase_1b/strogatz_barmag1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_barmag2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_barmag2
+  output_dir: results/phase_1b/strogatz_barmag2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_glider1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_glider1
+  output_dir: results/phase_1b/strogatz_glider1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_glider2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_glider2
+  output_dir: results/phase_1b/strogatz_glider2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_lv1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_lv1
+  output_dir: results/phase_1b/strogatz_lv1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_lv2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_lv2
+  output_dir: results/phase_1b/strogatz_lv2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_predprey1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_predprey1
+  output_dir: results/phase_1b/strogatz_predprey1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_predprey2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_predprey2
+  output_dir: results/phase_1b/strogatz_predprey2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_shearflow1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_shearflow1
+  output_dir: results/phase_1b/strogatz_shearflow1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_shearflow2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_shearflow2
+  output_dir: results/phase_1b/strogatz_shearflow2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_vdp1
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_vdp1
+  output_dir: results/phase_1b/strogatz_vdp1/
+  phase: 1b
+  retry_on_oom: true
+  status: done
+- args:
+    algorithm: best_of_n
+    batch_size: 512
+    max_steps: 1
+    model: augustocsc/gpt2_base_infix_682k
+    no_wandb: true
+    penalty: gradient
+    problem: strogatz_vdp2
+    reward: sr_ic
+    seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1011
+    - 2022
+    - 3033
+    - 4044
+    - 5055
+    - 6066
+  created: '2026-05-24'
+  estimated_minutes: 5
+  finished_at: '2026-05-25T03:00:00+00:00'
+  id: phase1b_strogatz_vdp2
+  output_dir: results/phase_1b/strogatz_vdp2/
+  phase: 1b
+  retry_on_oom: true
+  status: done
