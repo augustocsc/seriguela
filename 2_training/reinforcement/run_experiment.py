@@ -707,6 +707,14 @@ def main():
             traceback.print_exc()
 
     # Aggregate results
+    if not all_results:
+        logger.error(
+            f"FATAL: nenhuma seed completou com sucesso de {len(args.seeds)} tentativas. "
+            "Verifique erros acima (WandB, CUDA, importação, etc.)."
+        )
+        import sys as _sys
+        _sys.exit(1)
+
     if all_results:
         best_r2_values = [r["best_r2"] for r in all_results if r.get("best_r2") is not None]
         test_r2_values = [r["test_r2"] for r in all_results if r.get("test_r2") is not None]

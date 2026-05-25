@@ -36,6 +36,7 @@ LOCK_FILE = REPO_ROOT / "experiments" / "_running.lock"
 HEARTBEAT_INTERVAL_SEC = 300  # 5 minutos
 BATCH_COMMIT_EVERY = 5  # commit a cada N experimentos done
 GIT_PULL_INTERVAL_SEC = 60  # git pull a cada 1 min
+NO_GIT = os.environ.get("NO_GIT", "0") == "1"  # set to skip all git ops (VM mode)
 
 
 # ─── Utilitários ──────────────────────────────────────────────────────────────
@@ -375,7 +376,7 @@ def run_queue_loop(max_hours: float = 11.0, dry_run: bool = False):
             current_time = time.time()
 
             # Git pull periódico para pegar novos jobs
-            if current_time - last_git_pull > GIT_PULL_INTERVAL_SEC:
+            if not NO_GIT and current_time - last_git_pull > GIT_PULL_INTERVAL_SEC:
                 git_pull()
                 last_git_pull = current_time
 
@@ -431,6 +432,17 @@ def run_queue_loop(max_hours: float = 11.0, dry_run: bool = False):
                 # Executa
                 success, error = run_experiment(exp, defaults)
 
+                # Verificação extra: mesmo exit code 0, checa se output foi gerado
+                # (evita marcar como done quando run_experiment.py absorve erros internamente)
+                if success and not is_already_done(exp):
+                    output_dir = exp.get("output_dir", "")
+                    success = False
+                    error = (
+                        f"Exit code 0 mas nenhum aggregate JSON encontrado em {output_dir}. "
+                        "run_experiment.py pode ter falhado silenciosamente (ex: WandB, importação)."
+                    )
+                    log(f"⚠️  {exp_id}: exit 0 mas sem output — marcando como failed")
+
                 # Atualiza status
                 if success:
                     update_experiment_status(queue_data, exp_id, "done", finished_at=now_iso())
@@ -445,12 +457,12 @@ def run_queue_loop(max_hours: float = 11.0, dry_run: bool = False):
                 save_queue(queue_data)
 
             # Commit batch a cada N experimentos
-            if done_since_last_commit >= BATCH_COMMIT_EVERY:
+            if not NO_GIT and done_since_last_commit >= BATCH_COMMIT_EVERY:
                 git_commit_batch(f"[queue] {done_since_last_commit} experiments done (total: {done_count})")
                 done_since_last_commit = 0
 
         # Commit final
-        if done_since_last_commit > 0:
+        if not NO_GIT and done_since_last_commit > 0:
             git_commit_batch(f"[queue] session end — {done_count} experiments done")
 
         elapsed = (time.time() - start_time) / 3600
@@ -461,7 +473,7 @@ def run_queue_loop(max_hours: float = 11.0, dry_run: bool = False):
 
     except KeyboardInterrupt:
         log("\nInterrompido pelo usuário")
-        if done_since_last_commit > 0:
+        if not NO_GIT and done_since_last_commit > 0:
             git_commit_batch(f"[queue] interrupted — {done_count} experiments done")
 
     finally:

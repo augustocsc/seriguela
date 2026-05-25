@@ -513,7 +513,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_5/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -531,7 +531,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_14_3/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -549,7 +549,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_bacres1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -571,7 +571,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_1/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -589,7 +589,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_2/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -607,7 +607,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_3/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -625,7 +625,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_4/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -643,7 +643,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_6/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -661,7 +661,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_7/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -679,7 +679,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_8/"
     estimated_minutes: 4
     retry_on_oom: true
@@ -697,7 +697,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_9/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -715,7 +715,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_10/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -733,7 +733,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_11/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -751,7 +751,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/nguyen_12/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -774,7 +774,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_10_7/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -792,7 +792,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_11_19/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -810,7 +810,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -828,7 +828,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_11/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -846,7 +846,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -864,7 +864,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -882,7 +882,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_12_5/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -900,7 +900,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_13_12/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -918,7 +918,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_13_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -936,7 +936,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_14_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -954,7 +954,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_10/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -972,7 +972,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_3t/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -990,7 +990,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_15_3x/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1008,7 +1008,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_16_6/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1026,7 +1026,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_12/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1044,7 +1044,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1062,7 +1062,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_18_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1080,7 +1080,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_24_6/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1098,7 +1098,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_25_13/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1116,7 +1116,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_27_6/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1134,7 +1134,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_29_16/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1152,7 +1152,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_29_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1170,7 +1170,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_30_3/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1188,7 +1188,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_32_17/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1206,7 +1206,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_32_5/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1224,7 +1224,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1242,7 +1242,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_10/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1260,7 +1260,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1278,7 +1278,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_27/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1296,7 +1296,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_34_8/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1314,7 +1314,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_37_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1332,7 +1332,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_38_12/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1350,7 +1350,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1368,7 +1368,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_11/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1386,7 +1386,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_39_22/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1404,7 +1404,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_40_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1422,7 +1422,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_41_16/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1440,7 +1440,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_16/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1458,7 +1458,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_31/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1476,7 +1476,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_43_43/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1494,7 +1494,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_44_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1512,7 +1512,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_47_23/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1530,7 +1530,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_48_2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1548,7 +1548,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_50_26/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1566,7 +1566,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1584,7 +1584,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2a/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1602,7 +1602,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_6_2b/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1620,7 +1620,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_8_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1638,7 +1638,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_I_9_18/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1656,7 +1656,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_10_9/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1674,7 +1674,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_17/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1692,7 +1692,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_20/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1710,7 +1710,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_27/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1728,7 +1728,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_28/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1746,7 +1746,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_11_3/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1764,7 +1764,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_17/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1782,7 +1782,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_23/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1800,7 +1800,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_13_34/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1818,7 +1818,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_15_4/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1836,7 +1836,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_15_5/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1854,7 +1854,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_21_32/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1872,7 +1872,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_24_17/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1890,7 +1890,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_27_16/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1908,7 +1908,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_27_18/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1926,7 +1926,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_2_42/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1944,7 +1944,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_11/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1962,7 +1962,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1980,7 +1980,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_29a/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -1998,7 +1998,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_29b/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2016,7 +2016,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_34_2a/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2034,7 +2034,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_35_18/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2052,7 +2052,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_36_38/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2070,7 +2070,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_37_1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2088,7 +2088,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_38_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2106,7 +2106,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_38_3/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2124,7 +2124,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_3_24/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2142,7 +2142,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_4_23/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2160,7 +2160,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_11/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2178,7 +2178,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_15a/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2196,7 +2196,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_6_15b/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2214,7 +2214,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_8_31/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2232,7 +2232,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_II_8_7/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2250,7 +2250,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_10_19/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2268,7 +2268,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_12_43/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2286,7 +2286,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_13_18/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2304,7 +2304,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_14_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2322,7 +2322,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_12/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2340,7 +2340,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_14/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2358,7 +2358,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_15_27/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2376,7 +2376,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_17_37/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2394,7 +2394,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_19_51/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2412,7 +2412,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_21_20/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2430,7 +2430,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_4_32/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2448,7 +2448,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_4_33/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2466,7 +2466,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_7_38/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2484,7 +2484,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_8_54/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2502,7 +2502,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/feynman_III_9_52/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2524,7 +2524,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_bacres2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2542,7 +2542,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_barmag1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2560,7 +2560,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_barmag2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2578,7 +2578,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_glider1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2596,7 +2596,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_glider2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2614,7 +2614,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_lv1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2632,7 +2632,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_lv2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2650,7 +2650,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_predprey1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2668,7 +2668,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_predprey2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2686,7 +2686,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_shearflow1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2704,7 +2704,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_shearflow2/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2722,7 +2722,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_vdp1/"
     estimated_minutes: 5
     retry_on_oom: true
@@ -2740,7 +2740,7 @@ queue:
       max_steps: 1
       batch_size: 512
       seeds: [42, 123, 456, 789, 1011, 2022, 3033, 4044, 5055, 6066]
-      use_wandb: true
+      no_wandb: true
     output_dir: "results/phase_1b/strogatz_vdp2/"
     estimated_minutes: 5
     retry_on_oom: true
