@@ -1,105 +1,48 @@
 """
-NOTEBOOK A — Phase 1c (experimentos 1/2: 61 problemas)
+NOTEBOOK A — Phase 1c (61 experimentos)
 
-Cole e execute numa célula do Colab. O script detecta automaticamente
-se é a primeira vez (torchao presente) ou a segunda (kernel limpo).
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CÉLULA 0 — setup (só uma vez):
-    !git clone https://github.com/augustocsc/seriguela.git /content/seriguela
+Setup (célula 0):
+    !GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/augustocsc/seriguela.git /content/seriguela
     !pip install transformers==4.51.3 peft==0.15.1 accelerate==1.6.0 datasets==3.5.0 trl==0.16.1 sympy==1.13.1 pyyaml -q
+    !pip uninstall torchao -y
+    # Reinicie o kernel: Runtime → Restart runtime
 
-CÉLULA 1 — fix (vai reiniciar o kernel):
-    exec(open("/content/seriguela/experiments/run_phase1c_A.py").read())
-
-CÉLULA 2 — daemon (execute após o kernel reiniciar):
-    exec(open("/content/seriguela/experiments/run_phase1c_A.py").read())
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rodar (célula 1):
+    !python /content/seriguela/experiments/run_phase1c_A.py
 """
 
-import subprocess, sys, os
+import sys, subprocess
 from pathlib import Path
+from collections import Counter
 
-REPO       = Path("/content/seriguela")
+REPO = Path("/content/seriguela")
+sys.path.insert(0, str(REPO))
+
+# Git identity para commits funcionarem
+subprocess.run(["git", "config", "--global", "user.email", "colab@experiment.local"], check=False)
+subprocess.run(["git", "config", "--global", "user.name", "Colab Runner"], check=False)
+
+import peft
+print(f"peft {peft.__version__} OK")
+
+import yaml
 QUEUE_FILE = REPO / "experiments" / "queue_1c_a.yaml"
 LOCK_FILE  = REPO / "experiments" / "_running_a.lock"
 
-# ── Detectar torchao ──────────────────────────────────────────────────────────
-def torchao_present() -> bool:
-    try:
-        import importlib.util
-        return importlib.util.find_spec("torchao") is not None
-    except Exception:
-        return False
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PASSO 1: torchao presente → remover e reiniciar kernel
-# ══════════════════════════════════════════════════════════════════════════════
-if torchao_present():
-    print("=" * 60)
-    print("NOTEBOOK A — PASSO 1/2: Removendo torchao + reiniciando kernel")
-    print("=" * 60)
-    r = subprocess.run(
-        [sys.executable, "-m", "pip", "uninstall", "torchao", "-y"],
-        capture_output=True, text=True
-    )
-    print("OK:", r.stdout.strip() or "torchao removido")
-    print("\nAguarde o kernel reiniciar e então execute esta célula novamente.")
-
-    try:
-        from google.colab.output import eval_js
-        eval_js("google.colab.kernel.invokeFunction('notebook.RestartKernel', [], {})")
-    except Exception:
-        import signal
-        os.kill(os.getpid(), signal.SIGKILL)
-    raise SystemExit(0)
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PASSO 2: kernel limpo → configurar e rodar daemon
-# ══════════════════════════════════════════════════════════════════════════════
-print("=" * 60)
-print("NOTEBOOK A — PASSO 2/2: Iniciando daemon (61 experimentos)")
-print("=" * 60)
-
-# Verificar peft
-try:
-    import peft
-    print(f"peft {peft.__version__} OK")
-except Exception as e:
-    print(f"ERRO peft: {e}")
-    raise
-
-# Configurar git identity (necessário para commits funcionarem)
-subprocess.run(["git", "config", "--global", "user.email", "colab@experiment.local"], cwd=str(REPO))
-subprocess.run(["git", "config", "--global", "user.name", "Colab Runner"], cwd=str(REPO))
-print("Git identity: OK")
-
-# Git pull
-r = subprocess.run(["git", "pull", "--ff-only"], cwd=str(REPO), capture_output=True, text=True)
-print("git pull:", r.stdout.strip() or r.stderr.strip() or "up to date")
-
-# Remover lock se existir
-if LOCK_FILE.exists():
-    LOCK_FILE.unlink()
-    print("Lock removido.")
-
-# Status da fila A
-import yaml
 with open(QUEUE_FILE) as f:
     q = yaml.safe_load(f)
-exps = q["queue"]
-from collections import Counter
-counts = Counter(e.get("status", "pending") for e in exps)
-pending = [e for e in exps if e.get("status", "pending") == "pending"]
-print(f"\nFila A: {dict(counts)}")
+
+counts = Counter(e.get("status", "pending") for e in q["queue"])
+pending = [e for e in q["queue"] if e.get("status", "pending") == "pending"]
+print(f"Fila A: {dict(counts)}")
 if not pending:
     print("Todos os experimentos da fila A já concluídos!")
-    raise SystemExit(0)
-print(f"Próximo: {pending[0]['id']}")
-print(f"Iniciando {len(pending)} experimentos...\n")
+    sys.exit(0)
+print(f"Próximo: {pending[0]['id']} — iniciando {len(pending)} experimentos...\n")
 
-# Rodar daemon com a fila A e lock A
-sys.path.insert(0, str(REPO))
+if LOCK_FILE.exists():
+    LOCK_FILE.unlink()
+
 import experiments.queue_processor as qp
 qp.QUEUE_FILE = QUEUE_FILE
 qp.LOCK_FILE  = LOCK_FILE
