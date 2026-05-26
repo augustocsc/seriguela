@@ -69,7 +69,7 @@ def git_pull():
 def git_commit_batch(message: str):
     """Commit das mudanças de queue.yaml + resultados gerados."""
     try:
-        subprocess.run(["git", "add", "experiments/queue.yaml", "experiments/heartbeat.json"],
+        subprocess.run(["git", "add", "experiments/"],
                        cwd=str(REPO_ROOT), check=False)
         # Adiciona resultados novos (apenas os que mudaram)
         subprocess.run(["git", "add", "results/"], cwd=str(REPO_ROOT), check=False)
