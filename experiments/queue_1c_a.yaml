@@ -29,7 +29,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_10_19/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -46,7 +46,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_12_43/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -63,7 +63,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_13_18/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -80,7 +80,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_14_14/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -97,7 +97,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_15_12/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -114,7 +114,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_15_14/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -131,7 +131,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_15_27/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -148,7 +148,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_17_37/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -165,7 +165,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_19_51/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -182,7 +182,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_21_20/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -199,7 +199,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_4_32/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -216,7 +216,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_4_33/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -233,7 +233,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_7_38/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -250,7 +250,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_8_54/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -267,7 +267,7 @@ queue:
   output_dir: results/phase_1c/feynman_III_9_52/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -284,7 +284,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_10_9/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -301,7 +301,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_11_20/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -318,7 +318,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_11_27/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -335,7 +335,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_11_28/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -352,7 +352,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_11_3/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -369,7 +369,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_13_17/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -386,7 +386,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_13_23/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -403,7 +403,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_13_34/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -420,7 +420,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_15_4/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -437,7 +437,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_15_5/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -454,7 +454,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_21_32/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -471,7 +471,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_24_17/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -488,7 +488,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_27_16/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -505,7 +505,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_27_18/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -522,7 +522,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_2_42/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -539,7 +539,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_34_11/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -556,7 +556,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_34_2/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -573,7 +573,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_34_29a/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -590,7 +590,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_34_29b/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -607,7 +607,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_34_2a/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -624,7 +624,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_35_18/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -641,7 +641,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_36_38/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -658,7 +658,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_37_1/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -675,7 +675,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_38_14/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -692,7 +692,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_38_3/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -709,7 +709,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_3_24/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -726,7 +726,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_4_23/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -743,7 +743,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_6_11/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -760,7 +760,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_6_15a/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -777,7 +777,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_6_15b/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -794,7 +794,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_8_31/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -811,7 +811,7 @@ queue:
   output_dir: results/phase_1c/feynman_II_8_7/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -828,7 +828,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_10_7/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -845,7 +845,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_11_19/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -862,7 +862,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_12_1/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -879,7 +879,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_12_11/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -896,7 +896,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_12_2/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -913,7 +913,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_12_4/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -930,7 +930,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_12_5/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -947,7 +947,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_13_12/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -964,7 +964,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_13_4/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -981,7 +981,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_14_3/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -998,7 +998,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_14_4/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -1015,7 +1015,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_15_10/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -1032,7 +1032,7 @@ queue:
   output_dir: results/phase_1c/feynman_I_15_3t/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
 - args:
     algorithm: best_of_n
     batch_size: 64
@@ -1049,4 +1049,4 @@ queue:
   output_dir: results/phase_1c/feynman_I_15_3x/
   phase: 1c
   retry_on_oom: true
-  status: pending
+  status: done
