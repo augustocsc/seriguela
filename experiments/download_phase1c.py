@@ -15,21 +15,36 @@ from datetime import datetime
 
 REPO      = Path("/content/seriguela")
 RESULTS   = REPO / "results" / "phase_1c"
-ZIP_PATH  = Path("/content/phase1c_results.zip")
-QUEUE_FILE = REPO / "experiments" / "queue.yaml"
 
-# ── 1. Status da fila ─────────────────────────────────────────────────────────
-with open(QUEUE_FILE) as f:
-    q = yaml.safe_load(f)
-
-phase1c = [e for e in q["queue"] if e.get("phase") == "1c"]
+# ── 1. Status das filas (A + B separadas, com fallback para queue.yaml antigo) ─
 from collections import Counter
-counts = Counter(e.get("status", "pending") for e in phase1c)
-total   = len(phase1c)
+
+def load_queue_status(queue_file):
+    if not queue_file.exists():
+        return []
+    with open(queue_file) as f:
+        return yaml.safe_load(f).get("queue", [])
+
+exps_a = load_queue_status(REPO / "experiments" / "queue_1c_a.yaml")
+exps_b = load_queue_status(REPO / "experiments" / "queue_1c_b.yaml")
+all_exps = exps_a + exps_b
+
+# Fallback: se as filas A/B não existirem, usa queue.yaml original
+if not all_exps:
+    exps_old = load_queue_status(REPO / "experiments" / "queue.yaml")
+    all_exps = [e for e in exps_old if e.get("phase") == "1c"]
+
+counts = Counter(e.get("status", "pending") for e in all_exps)
+total   = len(all_exps)
 done    = counts.get("done", 0)
 failed  = counts.get("failed", 0)
 pending = counts.get("pending", 0)
 
+if exps_a or exps_b:
+    ca = Counter(e.get("status", "pending") for e in exps_a)
+    cb = Counter(e.get("status", "pending") for e in exps_b)
+    print(f"Fila A: {dict(ca)}")
+    print(f"Fila B: {dict(cb)}")
 print(f"Phase 1c — {done}/{total} concluídos  |  {failed} falhas  |  {pending} pendentes")
 
 # ── 2. Coletar JSONs ──────────────────────────────────────────────────────────
