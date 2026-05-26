@@ -5,6 +5,10 @@ Cole e execute numa célula do Colab. O script detecta automaticamente
 se é a primeira vez (torchao presente) ou a segunda (kernel limpo).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CÉLULA 0 — setup (só uma vez):
+    !git clone https://github.com/augustocsc/seriguela.git /content/seriguela
+    !pip install transformers==4.51.3 peft==0.15.1 accelerate==1.6.0 datasets==3.5.0 trl==0.16.1 sympy==1.13.1 pyyaml -q
+
 CÉLULA 1 — fix (vai reiniciar o kernel):
     exec(open("/content/seriguela/experiments/run_phase1c_A.py").read())
 
