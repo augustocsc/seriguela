@@ -1,0 +1,4 @@
+# Config SSH deliberadamente vazio — usado com `ssh -F` pelo launch_pilot.py
+# para ignorar o ~/.ssh/config do usuário (um config corrompido — ex. BOM —
+# derruba ssh/scp inteiros). Arquivo real em vez de os.devnull porque o ssh
+# resolvido pode ser o MSYS (Git Bash), onde "nul" do Windows não existe.

@@ -16,7 +16,6 @@ Pod info cached locally in runpod/pod_info.json for follow-up commands.
 """
 import argparse
 import json
-import os
 import subprocess
 import sys
 import time
@@ -169,9 +168,12 @@ def wait_ssh_endpoint(key: str, pod_id: str, timeout_s: int = 600):
     sys.exit("ERRO: pod não expôs SSH em 10 min — verifique o console do RunPod")
 
 
-# -F os.devnull: ignora ~/.ssh/config do usuário (um config corrompido — ex.
-# BOM no início — derruba ssh/scp inteiros; visto em produção em 2026-06-10)
-SSH_OPTS = ["-F", os.devnull, "-o", "StrictHostKeyChecking=accept-new",
+# -F <vazio>: ignora ~/.ssh/config do usuário (um config corrompido — ex. BOM
+# no início — derruba ssh/scp inteiros; visto em produção em 2026-06-10).
+# Arquivo real em vez de os.devnull: no Windows, o ssh resolvido costuma ser o
+# MSYS do Git, onde "nul" não existe ("Can't open user config file nul").
+EMPTY_SSH_CONFIG = Path(__file__).resolve().parent / "ssh_config.empty"
+SSH_OPTS = ["-F", str(EMPTY_SSH_CONFIG), "-o", "StrictHostKeyChecking=accept-new",
             "-o", "ConnectTimeout=10", "-o", "BatchMode=yes"]
 
 
@@ -264,8 +266,7 @@ def main():
     print("Bootstrap OK (smoke test passou no pod).")
 
     print("== enviando harness ==", flush=True)
-    subprocess.run(["scp", "-F", os.devnull, "-o", "StrictHostKeyChecking=accept-new",
-                    "-i", str(SSH_KEY), "-P", str(port),
+    subprocess.run(["scp", *SSH_OPTS, "-i", str(SSH_KEY), "-P", str(port),
                     str(REPO / "experiments" / "run_pilot_timing.py"),
                     f"root@{ip}:/root/seriguela/experiments/run_pilot_timing.py"], check=True)
 
