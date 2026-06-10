@@ -144,3 +144,8 @@ results/**/*-*-001.zip
 experiments/heartbeat.json
 experiments/_running.lock
 
+# RunPod runtime artifacts (2026-06-10)
+runpod/pod_info.json
+pilot.log
+queue.log
+
