@@ -113,7 +113,10 @@ aws/credentials
 aws/temp/
 userdata_*.sh
 # Large data files (>100MB)
-1_data/processed/**/*.csv
+# 1_data/processed inteiro fora do git (2026-06-10): o dataset 682K vive no
+# HuggingFace (augustocsc/sintetico_natural_prefix_682k); o .arrow de 406MB
+# estoura o limite de 100MB do GitHub e já causou pushes rejeitados.
+1_data/processed/
 1_data/raw/**/*.csv
 *.tar.gz
 models_compressed.tar.gz
