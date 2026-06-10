@@ -305,7 +305,7 @@ The expression discovery task is framed as a reinforcement learning problem wher
     \item \textbf{Reward ($r$):} A scalar value quantifying the quality of the generated expression, balancing accuracy (fit to data) and complexity (expression length).
 \end{itemize}
 
-In practice, the discovery process begins by loading a tabular dataset and the fine-tuned model. A batch of expressions is generated from a prompt derived from the dataset's features. Each expression is parsed and evaluated. For syntactically valid expressions containing constants, a numerical optimization routine (L-BFGS-B) finds optimal constant values in the range $[-10, 10]$ that minimize the error against the dataset.
+In practice, the discovery process begins by loading a tabular dataset and the fine-tuned model. A batch of expressions is generated from a prompt derived from the dataset's features. Each expression is parsed and evaluated. The constant token \texttt{C} is instantiated with the fixed value $C=1$ in all training and evaluation runs. This is a deliberate protocol choice: it keeps the reward signal strictly uniform across all algorithmic arms (avoiding the reward confound identified in the preliminary experiments), eliminates the per-expression CPU cost of numerical optimization in the inner RL loop, and is consistent with the zero-shot baselines collected under the same convention. The framework retains an optional constant-fitting routine (L-BFGS-B, bounds $[-2, 2]$), which is reserved for a post-hoc ablation on the champion configuration to quantify the performance impact of this simplification.
 
 \subsection{Reinforcement Learning Algorithms}
 

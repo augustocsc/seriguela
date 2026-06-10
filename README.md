@@ -37,32 +37,20 @@ Organized by research phases for systematic experimentation:
 
 ```
 seriguela/
-├── 1_data/                 # FASE 1: Data Preparation
-│   ├── benchmarks/         # Nguyen benchmarks
-│   ├── processed/          # Processed datasets
-│   └── README.md
-├── 2_training/            # FASE 2: Training & Fine-tuning
-│   ├── supervised/        # Supervised training
-│   ├── reinforcement/     # RL algorithms (PPO, GRPO)
-│   └── README.md
-├── 3_evaluation/          # FASE 3: Evaluation
-│   ├── benchmarks/        # Benchmark evaluation
-│   ├── quality/           # Quality metrics
-│   └── README.md
-├── 4_analysis/            # FASE 4: Analysis & Visualization
-│   ├── complexity/        # Complexity analysis
-│   ├── statistical/       # Statistical tests
-│   ├── visualization/     # Plots and charts
-│   └── README.md
-├── docs/                  # Complete documentation
-│   ├── guides/            # Technical guides (CLAUDE.md, etc.)
-│   ├── reports/           # Scientific reports
-│   ├── model_cards/       # HuggingFace model cards
-│   └── archive/           # Historical documentation
-├── src/                   # Source code (package)
-├── classes/               # Core classes
-├── aws/                   # AWS configurations
-└── configs/               # Training configurations
+├── 1_data/benchmarks/     # nguyen/, strogatz/, feynman metadata (CSVs grandes
+│                          #   ficam fora do git — download on-demand do PMLB)
+├── 2_training/
+│   ├── supervised/        # SFT (concluído — modelos no HuggingFace)
+│   └── reinforcement/     # CORE: run_experiment.py, algorithms/, rewards/
+├── 3_evaluation/          # cli.py, metrics (symbolic_match), commands/
+├── 4_analysis/            # statistical/, complexity/, visualization/
+├── experiments/           # queue.yaml + daemon + smoke test + Fase 2 builder
+├── runpod/                # orquestrador de compute (ver runpod/README.md)
+├── results/               # dados válidos: pre_phase t5/t6, phase_1b, phase_1c
+├── classes/               # Expression (parse/validate)
+├── dissertation/          # LaTeX da dissertação
+├── docs/                  # reports/ (THESIS_PLAN), guides/, proposals/, archive/
+└── legacy/                # eras encerradas: colab/, aws/, phase_a/, rl_v1/
 ```
 
 **Each phase directory contains a README.md with detailed documentation.**
@@ -87,13 +75,14 @@ python
 >>> model = PeftModel.from_pretrained(base_model, "augustocsc/gpt2_large_infix_682k")
 >>> # Now generate expressions!
 
-# 3. Evaluate on benchmarks
-cd 3_evaluation/benchmarks
-python run_all_nguyen_benchmarks.py --model_repo augustocsc/gpt2_large_infix_682k
+# 3. Validate the pipeline (CPU, <60s, mandatory before any push)
+python experiments/test_smoke.py
 
-# 4. Analyze results
-cd ../../4_analysis/visualization
-python create_visualizations.py
+# 4. Run an RL experiment (GPU — see runpod/README.md for the cloud workflow)
+python 2_training/reinforcement/run_experiment.py \
+  --algorithm bon_ppo --problem nguyen_5 --reward sr_ic --penalty gradient \
+  --temperature cosine_annealing --batch_size 1024 --max_steps 200 \
+  --seeds 42 123 456 789 1011 --no_wandb
 ```
 
 ---
@@ -102,6 +91,8 @@ python create_visualizations.py
 
 - **Developer Guide**: [CLAUDE.md](CLAUDE.md) - Commands, architecture, workflows
 - **Thesis Plan**: [docs/reports/THESIS_PLAN.md](docs/reports/THESIS_PLAN.md) - Current status, hypotheses, experimental design
+- **Repo Consolidation (2026-06-10)**: [docs/reports/REPO_CONSOLIDATION_2026-06-10.md](docs/reports/REPO_CONSOLIDATION_2026-06-10.md) - Deep analysis, cleanup decisions, next steps
+- **RunPod Workflow**: [runpod/README.md](runpod/README.md) - Official compute path (pilot → Phase 2)
 - **Phase A Post-Mortem**: [docs/reports/phase_a_post_mortem.md](docs/reports/phase_a_post_mortem.md) - Analysis of Phase A limitations
 - **Training Guide**: [docs/guides/TRAINING_CONFIG_REGISTRY.md](docs/guides/TRAINING_CONFIG_REGISTRY.md) - Exact configurations for reproducibility
 - **Archive**: [docs/archive/](docs/archive/) - Historical reports from earlier phases
@@ -121,4 +112,4 @@ python create_visualizations.py
 
 ---
 
-**Status**: Research in progress | **Last Updated**: 2026-05-18
+**Status**: Research in progress (Phase 1 done; Phase 2 RL next, on RunPod) | **Last Updated**: 2026-06-10

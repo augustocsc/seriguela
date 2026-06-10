@@ -178,7 +178,13 @@ def t_qp_build_command():
     with open(queue_yaml) as f:
         data = yaml.safe_load(f)
 
-    first_exp = next(e for e in data["queue"] if e.get("status") == "pending")
+    # Prefer a pending entry; fall back to any entry so the test still guards
+    # the nargs=+ contract when the queue is fully processed (no pending left).
+    first_exp = next(
+        (e for e in data["queue"] if e.get("status") == "pending"),
+        data["queue"][0] if data.get("queue") else None,
+    )
+    assert first_exp is not None, "queue.yaml has an empty queue"
     seeds = first_exp["args"]["seeds"]
 
     # Simulate build_command
