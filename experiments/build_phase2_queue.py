@@ -59,6 +59,10 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
                 "penalty": "gradient",
                 "temperature": "cosine_annealing",
                 "prompt_type": "standard",
+                # patience default (5) mata runs RL no warmup (R²=0.0 inicial
+                # por ~dezenas de steps — visto no piloto v1). Runs da Fase 2
+                # vão até max_steps; o corte é o plateau medido no piloto.
+                "patience": 100000,
                 "no_wandb": True,
             }
             if algo in ("bon_ppo", "bon_grpo"):
