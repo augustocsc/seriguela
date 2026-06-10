@@ -16,6 +16,7 @@ Pod info cached locally in runpod/pod_info.json for follow-up commands.
 """
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -168,8 +169,10 @@ def wait_ssh_endpoint(key: str, pod_id: str, timeout_s: int = 600):
     sys.exit("ERRO: pod não expôs SSH em 10 min — verifique o console do RunPod")
 
 
-SSH_OPTS = ["-o", "StrictHostKeyChecking=accept-new", "-o", "ConnectTimeout=10",
-            "-o", "BatchMode=yes"]
+# -F os.devnull: ignora ~/.ssh/config do usuário (um config corrompido — ex.
+# BOM no início — derruba ssh/scp inteiros; visto em produção em 2026-06-10)
+SSH_OPTS = ["-F", os.devnull, "-o", "StrictHostKeyChecking=accept-new",
+            "-o", "ConnectTimeout=10", "-o", "BatchMode=yes"]
 
 
 def ssh(ip: str, port: int, cmd: str, timeout: int | None = None) -> subprocess.CompletedProcess:
@@ -211,6 +214,11 @@ def main():
         return
 
     pod = find_existing(key)
+    if args.status and not pod:
+        # --status nunca deve criar pod (bug corrigido em 2026-06-10: o fluxo
+        # antigo caía no deploy e subia um pod novo só para perguntar o status)
+        print("Nenhum pod ativo com nome", POD_NAME)
+        return
     if pod:
         print(f"Pod existente reutilizado: {pod['id']} (${pod.get('costPerHr')}/h)")
         pod_id = pod["id"]
@@ -256,8 +264,9 @@ def main():
     print("Bootstrap OK (smoke test passou no pod).")
 
     print("== enviando harness ==", flush=True)
-    subprocess.run(["scp", "-o", "StrictHostKeyChecking=accept-new", "-i", str(SSH_KEY),
-                    "-P", str(port), str(REPO / "experiments" / "run_pilot_timing.py"),
+    subprocess.run(["scp", "-F", os.devnull, "-o", "StrictHostKeyChecking=accept-new",
+                    "-i", str(SSH_KEY), "-P", str(port),
+                    str(REPO / "experiments" / "run_pilot_timing.py"),
                     f"root@{ip}:/root/seriguela/experiments/run_pilot_timing.py"], check=True)
 
     flag = "--quick" if args.quick else ""
