@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0a51ffed944f2bbe72e3f85191d889b62db6fcf680d2ca54f0f39e319254e51d
-size 1393
+{
+  "name": "feynman_I_12_1",
+  "n_samples": 100000,
+  "n_vars": 2,
+  "variables": [
+    "mu",
+    "Nn"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_12_1/feynman_I_12_1.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_12_1",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nF = mu*Nn\n\nmu in [1.0,5.0]\nNn in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "F, Force, m^1 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "mu",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "Nn",
+        "type": "continuous",
+        "description": "Force, m^1 * s^(-2) * kg^1"
+      }
+    ]
+  }
+}

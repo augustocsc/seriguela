@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1db876efb631e700e7a0a72c4ed985015e3b024e686ebcd3977eca564b8243ed
-size 1577
+{
+  "name": "feynman_III_8_54",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "E_n",
+    "t",
+    "h"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_III_8_54/feynman_III_8_54.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_III_8_54",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nprob = sin(E_n*t/(h/(2*pi)))**2\n\nE_n in [1.0,2.0]\nt in [1.0,2.0]\nh in [1.0,4.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "prob, Dimensionless"
+    },
+    "features": [
+      {
+        "name": "E_n",
+        "type": "continuous",
+        "description": "Energy, m^2 * s^(-2) * kg^1"
+      },
+      {
+        "name": "t",
+        "type": "continuous",
+        "description": "\u03a4ime, s^1"
+      },
+      {
+        "name": "h",
+        "type": "continuous",
+        "description": "Angular momentum, m^2 * s^(-1) * kg^1"
+      }
+    ]
+  }
+}

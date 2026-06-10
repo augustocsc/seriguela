@@ -1,3 +1,57 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a72eb1e2c2c3872171d56a02691b47ef2d91b97b5158e140e39fc624a5b8c1b3
-size 1926
+{
+  "name": "feynman_II_35_18",
+  "n_samples": 100000,
+  "n_vars": 5,
+  "variables": [
+    "n_0",
+    "kb",
+    "T",
+    "mom",
+    "B"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_35_18/feynman_II_35_18.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_35_18",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nn = n_0/(exp(mom*B/(kb*T))+exp(-mom*B/(kb*T)))\n\nn_0 in [1.0,3.0]\nkb in [1.0,3.0]\nT in [1.0,3.0]\nmom in [1.0,3.0]\nB in [1.0,3.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "n, Dimensionless"
+    },
+    "features": [
+      {
+        "name": "n_0",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "kb",
+        "type": "continuous",
+        "description": "Boltzmann constant, m^2 * s^(-2) * kg^1 * T^(-1)"
+      },
+      {
+        "name": "T",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "mom",
+        "type": "continuous",
+        "description": "Magnetic moment, m^4 * s^(-3) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "B",
+        "type": "continuous",
+        "description": "Magnetic field, m^(-2) * s^1 * V^1"
+      }
+    ]
+  }
+}

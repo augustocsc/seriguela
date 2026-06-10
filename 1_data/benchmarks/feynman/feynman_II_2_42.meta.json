@@ -1,3 +1,57 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ce4b852eca591d46c60c16d4ebec932e25010dac56e749437c8fede9119c275c
-size 1863
+{
+  "name": "feynman_II_2_42",
+  "n_samples": 100000,
+  "n_vars": 5,
+  "variables": [
+    "kappa",
+    "T1",
+    "T2",
+    "A",
+    "d"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_2_42/feynman_II_2_42.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_2_42",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nPwr = kappa*(T2-T1)*A/d\n\nkappa in [1.0,5.0]\nT1 in [1.0,5.0]\nT2 in [1.0,5.0]\nA in [1.0,5.0]\nd in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "Pwr, Power, m^2 * s^(-3) * kg^1"
+    },
+    "features": [
+      {
+        "name": "kappa",
+        "type": "continuous",
+        "description": "Thermal conductivity, m^1 * s^(-3) * kg^1 * T^(-1)"
+      },
+      {
+        "name": "T1",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "T2",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "A",
+        "type": "continuous",
+        "description": "Area, m^2"
+      },
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

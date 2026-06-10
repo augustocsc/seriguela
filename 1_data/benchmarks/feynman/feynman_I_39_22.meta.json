@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:56bb1b625c60d7552037cb4d17645765fbe428e15ba72a8d3a0e8c89a4bc123d
-size 1704
+{
+  "name": "feynman_I_39_22",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "n",
+    "T",
+    "V",
+    "kb"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_39_22/feynman_I_39_22.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_39_22",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\npr = n*kb*T/V\n\nn in [1.0,5.0]\nT in [1.0,5.0]\nV in [1.0,5.0]\nkb in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "pr, Pressure, m^(-1) * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "n",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "T",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "V",
+        "type": "continuous",
+        "description": "volume, m^3"
+      },
+      {
+        "name": "kb",
+        "type": "continuous",
+        "description": "Boltzmann constant, m^2 * s^(-2) * kg^1 * T^(-1)"
+      }
+    ]
+  }
+}

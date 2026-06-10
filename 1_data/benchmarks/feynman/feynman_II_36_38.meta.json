@@ -1,3 +1,75 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dda988abbb5a4ec8e76b34d5c0dbcc9766c0f6926fe315dccfc205cbeb839e39
-size 2444
+{
+  "name": "feynman_II_36_38",
+  "n_samples": 100000,
+  "n_vars": 8,
+  "variables": [
+    "mom",
+    "H",
+    "kb",
+    "T",
+    "alpha",
+    "epsilon",
+    "c",
+    "M"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_36_38/feynman_II_36_38.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_36_38",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nf = mom*H/(kb*T)+(mom*alpha)/(epsilon*c**2*kb*T)*M\n\nmom in [1.0,3.0]\nH in [1.0,3.0]\nkb in [1.0,3.0]\nT in [1.0,3.0]\nalpha in [1.0,3.0]\nepsilon in [1.0,3.0]\nc in [1.0,3.0]\nM in [1.0,3.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "f, Dimensionless"
+    },
+    "features": [
+      {
+        "name": "mom",
+        "type": "continuous",
+        "description": "Magnetic moment, m^4 * s^(-3) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "H",
+        "type": "continuous",
+        "description": "Magnetic field, m^(-2) * s^1 * V^1"
+      },
+      {
+        "name": "kb",
+        "type": "continuous",
+        "description": "Boltzmann constant, m^2 * s^(-2) * kg^1 * T^(-1)"
+      },
+      {
+        "name": "T",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "alpha",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "epsilon",
+        "type": "continuous",
+        "description": "Electric permitivity, m^1 * s^(-2) * kg^1 * V^(-2)"
+      },
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "M",
+        "type": "continuous",
+        "description": "Magnetisation, m^1 * s^(-3) * kg^1 * V^(-1)"
+      }
+    ]
+  }
+}

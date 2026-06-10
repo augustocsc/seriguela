@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a3d112fabea5408ab63afa44e2c31ca93ab2b3c8526f0aa91577cb326841b354
-size 1564
+{
+  "name": "feynman_I_39_11",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "gamma",
+    "pr",
+    "V"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_39_11/feynman_I_39_11.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_39_11",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nE_n = 1/(gamma-1)*pr*V\n\ngamma in [2.0,5.0]\npr in [1.0,5.0]\nV in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "E_n, Energy, m^2 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "gamma",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "pr",
+        "type": "continuous",
+        "description": "Pressure, m^(-1) * s^(-2) * kg^1"
+      },
+      {
+        "name": "V",
+        "type": "continuous",
+        "description": "volume, m^3"
+      }
+    ]
+  }
+}

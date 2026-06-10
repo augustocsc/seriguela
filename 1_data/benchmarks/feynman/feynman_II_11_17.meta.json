@@ -1,3 +1,43 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:56a9df2d60b58f422a1514d398ee5ed072b438a4b44d335dcdfd12f3e9a4c07b
-size 630
+{
+  "name": "feynman_II_11_17",
+  "equation": "n_0*(1+p_d*Ef*cos(theta)/(kb*T))",
+  "n_vars": 6,
+  "n_samples": 1000,
+  "variables": [
+    "n_0",
+    "p_d",
+    "Ef",
+    "theta",
+    "kb",
+    "T"
+  ],
+  "ranges": {
+    "n_0": [
+      1.0,
+      5.0
+    ],
+    "p_d": [
+      1.0,
+      5.0
+    ],
+    "Ef": [
+      1.0,
+      5.0
+    ],
+    "theta": [
+      0.0,
+      3.141592653589793
+    ],
+    "kb": [
+      1.0,
+      5.0
+    ],
+    "T": [
+      1.0,
+      5.0
+    ]
+  },
+  "description": "Boltzmann distribution (polarization)",
+  "type": "ground-truth",
+  "category": "feynman"
+}

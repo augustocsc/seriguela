@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8ab05be89e6a1fdbc6a3cf11458e8f2956306b80c36090b6a8d22835a0b29dfe
-size 1434
+{
+  "name": "feynman_I_34_27",
+  "n_samples": 100000,
+  "n_vars": 2,
+  "variables": [
+    "omega",
+    "h"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_34_27/feynman_I_34_27.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_34_27",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nE_n = (h/(2*pi))*omega\n\nomega in [1.0,5.0]\nh in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "E_n, Energy, m^2 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "omega",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      },
+      {
+        "name": "h",
+        "type": "continuous",
+        "description": "Angular momentum, m^2 * s^(-1) * kg^1"
+      }
+    ]
+  }
+}

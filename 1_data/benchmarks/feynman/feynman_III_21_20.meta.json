@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:983cf454f6ea92b469bfa0bf023d41f86a0b35533d0597a624a5ec0e10df6bd4
-size 1802
+{
+  "name": "feynman_III_21_20",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "rho_c_0",
+    "q",
+    "A_vec",
+    "m"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_III_21_20/feynman_III_21_20.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_III_21_20",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nj = -rho_c_0*q*A_vec/m\n\nrho_c_0 in [1.0,5.0]\nq in [1.0,5.0]\nA_vec in [1.0,5.0]\nm in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "j, Current density, s^(-3) * kg^1 * V^(-1)"
+    },
+    "features": [
+      {
+        "name": "rho_c_0",
+        "type": "continuous",
+        "description": "Volume charge density, m^(-1) * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "A_vec",
+        "type": "continuous",
+        "description": "Vector potential, m^(-1) * s^1 * V^1"
+      },
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      }
+    ]
+  }
+}

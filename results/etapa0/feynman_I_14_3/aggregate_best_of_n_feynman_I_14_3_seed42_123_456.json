@@ -1,3 +1,85 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d31854c06ebd923d273d53f49a2483bf72cd412d0a5bd454ff77be75a47cf485
-size 2457
+{
+  "seeds": [
+    42,
+    123,
+    456
+  ],
+  "problem": "feynman_I_14_3",
+  "algorithm": "best_of_n",
+  "model": "augustocsc/gpt2_base_infix_682k",
+  "mean_train_r2": 0.7702936955314396,
+  "std_train_r2": 0.18628589381798885,
+  "max_train_r2": 1.0,
+  "min_train_r2": 0.5437270185165927,
+  "mean_test_r2": 0.7756592158811365,
+  "std_test_r2": 0.18013264335808493,
+  "max_test_r2": 1.0,
+  "min_test_r2": 0.558965796500178,
+  "median_test_r2": 0.7680118511432317,
+  "solution_rate": 0.3333333333333333,
+  "n_solved": 1,
+  "mean_best_r2": 0.7702936955314396,
+  "std_best_r2": 0.18628589381798885,
+  "individual_results": [
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 476,
+      "valid_rate": 0.9296875,
+      "best_r2": 0.767154068077726,
+      "best_expression": "x_1*(x_2 + x_2 + x_3)",
+      "ground_truth": "x_1*x_2*x_3",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -4.39961463887831e+101,
+      "std_r2": 8.752405681866933e+102,
+      "median_r2": -1.9531353697144052,
+      "test_r2": 0.7680118511432317,
+      "test_mse": 87.00633777159923,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 42,
+      "problem": "feynman_I_14_3"
+    },
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 494,
+      "valid_rate": 0.96484375,
+      "best_r2": 1.0,
+      "best_expression": "x_1*x_3*exp(log(x_2))",
+      "ground_truth": "x_1*x_2*x_3",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -5.12256843590167e+140,
+      "std_r2": 1.137394774851044e+142,
+      "median_r2": -1.9449795959567524,
+      "test_r2": 1.0,
+      "test_mse": 7.487599696865295e-29,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 123,
+      "problem": "feynman_I_14_3"
+    },
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 486,
+      "valid_rate": 0.94921875,
+      "best_r2": 0.5437270185165927,
+      "best_expression": "x_1*(x_1 + x_2 + x_3 + C)",
+      "ground_truth": "x_1*x_2*x_3",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -1.8376518592408784e+206,
+      "std_r2": Infinity,
+      "median_r2": -1.9644111042173873,
+      "test_r2": 0.558965796500178,
+      "test_mse": 168.45857395820926,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 456,
+      "problem": "feynman_I_14_3"
+    }
+  ]
+}

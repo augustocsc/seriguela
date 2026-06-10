@@ -1,3 +1,57 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1f47814c04c548ec6d7a240f7b45752d0b220867810518758b253a49c30fbc48
-size 1957
+{
+  "name": "feynman_II_35_21",
+  "n_samples": 100000,
+  "n_vars": 5,
+  "variables": [
+    "n_rho",
+    "mom",
+    "B",
+    "kb",
+    "T"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_35_21/feynman_II_35_21.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_35_21",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nM = n_rho*mom*tanh(mom*B/(kb*T))\n\nn_rho in [1.0,5.0]\nmom in [1.0,5.0]\nB in [1.0,5.0]\nkb in [1.0,5.0]\nT in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "M, Magnetisation, m^1 * s^(-3) * kg^1 * V^(-1)"
+    },
+    "features": [
+      {
+        "name": "n_rho",
+        "type": "continuous",
+        "description": "Inverse volume, m^(-3)"
+      },
+      {
+        "name": "mom",
+        "type": "continuous",
+        "description": "Magnetic moment, m^4 * s^(-3) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "B",
+        "type": "continuous",
+        "description": "Magnetic field, m^(-2) * s^1 * V^1"
+      },
+      {
+        "name": "kb",
+        "type": "continuous",
+        "description": "Boltzmann constant, m^2 * s^(-2) * kg^1 * T^(-1)"
+      },
+      {
+        "name": "T",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      }
+    ]
+  }
+}

@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3b8c3fae8291598fd9d42e31ab8284be7037fd6a287163d4b29c7bbe7415e833
-size 1571
+{
+  "name": "feynman_II_34_2",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "q",
+    "v",
+    "r"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_34_2/feynman_II_34_2.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_34_2",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nmom = q*v*r/2\n\nq in [1.0,5.0]\nv in [1.0,5.0]\nr in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "mom, Magnetic moment, m^4 * s^(-3) * kg^1 * V^(-1)"
+    },
+    "features": [
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "v",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "r",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

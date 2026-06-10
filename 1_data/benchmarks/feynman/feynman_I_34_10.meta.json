@@ -1,3 +1,28 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fe75381e7c96f042cf1997711155912ab83f46c62f1f9d03ab5e6986d9795159
-size 410
+{
+  "name": "feynman_I_34_10",
+  "equation": "omega_0/(1-v/c)",
+  "n_vars": 3,
+  "n_samples": 1000,
+  "variables": [
+    "omega_0",
+    "v",
+    "c"
+  ],
+  "ranges": {
+    "omega_0": [
+      3.0,
+      10.0
+    ],
+    "v": [
+      1.0,
+      2.0
+    ],
+    "c": [
+      3.0,
+      10.0
+    ]
+  },
+  "description": "Doppler effect",
+  "type": "ground-truth",
+  "category": "feynman"
+}

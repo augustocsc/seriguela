@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8a1182af2adcf68da1465a0ce3dd5091a0053db8da0dc0572640d1d52680824c
-size 1672
+{
+  "name": "feynman_II_38_3",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "Y",
+    "A",
+    "d",
+    "x"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_38_3/feynman_II_38_3.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_38_3",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nF = Y*A*x/d\n\nY in [1.0,5.0]\nA in [1.0,5.0]\nd in [1.0,5.0]\nx in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "F, Force, m^1 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "Y",
+        "type": "continuous",
+        "description": "Young modulus, m^(-1) * s^(-2) * kg^1"
+      },
+      {
+        "name": "A",
+        "type": "continuous",
+        "description": "Area, m^2"
+      },
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "x",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

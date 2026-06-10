@@ -1,3 +1,159 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a19fb9327618e29ddb4a3e784b0c64e1d4492b6a69acb1ca9216f481c1dae335
-size 3494
+{
+  "total_runs": 9747,
+  "by_algorithm": {
+    "best_of_n": {
+      "count": 2728,
+      "mean_r2": 0,
+      "max_r2": 0.0,
+      "gte_099": 0,
+      "gte_095": 0
+    },
+    "bon_grpo": {
+      "count": 2007,
+      "mean_r2": 0.5686,
+      "max_r2": 1.0,
+      "gte_099": 168,
+      "gte_095": 342
+    },
+    "bon_ppo": {
+      "count": 1611,
+      "mean_r2": 0.6036,
+      "max_r2": 1.0,
+      "gte_099": 147,
+      "gte_095": 333
+    },
+    "pure_grpo": {
+      "count": 1728,
+      "mean_r2": 0.5961,
+      "max_r2": 1.0,
+      "gte_099": 181,
+      "gte_095": 363
+    },
+    "pure_ppo": {
+      "count": 1673,
+      "mean_r2": 0.6061,
+      "max_r2": 1.0,
+      "gte_099": 150,
+      "gte_095": 333
+    }
+  },
+  "by_problem": {
+    "nguyen_1": {
+      "count": 2857,
+      "mean_r2": 0.9211,
+      "max_r2": 1.0,
+      "gte_099": 633,
+      "gte_095": 1358
+    },
+    "nguyen_5": {
+      "count": 3623,
+      "mean_r2": 0.2925,
+      "max_r2": 1.0,
+      "gte_099": 5,
+      "gte_095": 5
+    },
+    "nguyen_9": {
+      "count": 3267,
+      "mean_r2": 0.2864,
+      "max_r2": 1.0,
+      "gte_099": 8,
+      "gte_095": 8
+    }
+  },
+  "by_notation": {},
+  "by_temperature": {},
+  "by_prompt": {},
+  "by_noise": {},
+  "top_configs": [
+    {
+      "algorithm": "bon_grpo",
+      "problem": "nguyen_1",
+      "temperature": "cosine_annealing",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_grpo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.7",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_grpo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.9",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_grpo",
+      "problem": "nguyen_1",
+      "temperature": "linear_annealing",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_ppo",
+      "problem": "nguyen_1",
+      "temperature": "cosine_annealing",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_ppo",
+      "problem": "nguyen_1",
+      "temperature": "linear_annealing",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_ppo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.9",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "bon_ppo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.7",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "pure_grpo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.7",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    },
+    {
+      "algorithm": "pure_grpo",
+      "problem": "nguyen_1",
+      "temperature": "fixed_0.9",
+      "prompt": "oracle",
+      "noise": 0.0,
+      "config": "base_infix_n1",
+      "best_r2": 1.0
+    }
+  ]
+}

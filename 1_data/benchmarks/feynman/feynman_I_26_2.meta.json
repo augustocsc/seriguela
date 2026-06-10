@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a5431b55c42b6847c90edf7f001c149d5e77ca3ee71691086164b1d99e23c65a
-size 1402
+{
+  "name": "feynman_I_26_2",
+  "n_samples": 100000,
+  "n_vars": 2,
+  "variables": [
+    "n",
+    "theta2"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_26_2/feynman_I_26_2.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_26_2",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\ntheta1 = arcsin(n*sin(theta2))\n\nn in [0.0,1.0]\ntheta2 in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "theta1, Dimensionless"
+    },
+    "features": [
+      {
+        "name": "n",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "theta2",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5f0a868ee5b11914f36ffdb7a9550463ae1ff0fc5d1c7d8bc78d2676163f9117
-size 1550
+{
+  "name": "feynman_I_16_6",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "c",
+    "v",
+    "u"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_16_6/feynman_I_16_6.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_16_6",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nv1 = (u+v)/(1+u*v/c**2)\n\nc in [1.0,5.0]\nv in [1.0,5.0]\nu in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "v1, Velocity, m^1 * s^(-1)"
+    },
+    "features": [
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "v",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "u",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      }
+    ]
+  }
+}

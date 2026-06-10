@@ -1,3 +1,63 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0e1e9725191d8c7c37c4469f47ad0c812c28312f5f0c67868aa0bc59e467517d
-size 1985
+{
+  "name": "feynman_I_40_1",
+  "n_samples": 100000,
+  "n_vars": 6,
+  "variables": [
+    "n_0",
+    "m",
+    "x",
+    "T",
+    "g",
+    "kb"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_40_1/feynman_I_40_1.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_40_1",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nn = n_0*exp(-m*g*x/(kb*T))\n\nn_0 in [1.0,5.0]\nm in [1.0,5.0]\nx in [1.0,5.0]\nT in [1.0,5.0]\ng in [1.0,5.0]\nkb in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "n, Dimensionless"
+    },
+    "features": [
+      {
+        "name": "n_0",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "x",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "T",
+        "type": "continuous",
+        "description": "Temperature, T^1"
+      },
+      {
+        "name": "g",
+        "type": "continuous",
+        "description": "Acceleration, m^1 * s^(-2)"
+      },
+      {
+        "name": "kb",
+        "type": "continuous",
+        "description": "Boltzmann constant, m^2 * s^(-2) * kg^1 * T^(-1)"
+      }
+    ]
+  }
+}

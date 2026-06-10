@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b8137aa0526c82110f444300e920f604e81e1369d5d28039d32b432db0af6ef0
-size 1521
+{
+  "name": "feynman_I_14_3",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "m",
+    "g",
+    "z"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_14_3/feynman_I_14_3.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_14_3",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nU = m*g*z\n\nm in [1.0,5.0]\ng in [1.0,5.0]\nz in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "U, Energy, m^2 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "g",
+        "type": "continuous",
+        "description": "Acceleration, m^1 * s^(-2)"
+      },
+      {
+        "name": "z",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

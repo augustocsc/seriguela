@@ -1,3 +1,85 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:646236cfb0aeafd7c966026b6ff57131bf5c70638f64b76c1e9b83994b6a1131
-size 2654
+{
+  "seeds": [
+    42,
+    123,
+    456
+  ],
+  "problem": "feynman_I_9_18",
+  "algorithm": "best_of_n",
+  "model": "augustocsc/gpt2_base_infix_682k",
+  "mean_train_r2": 0.1476429393666752,
+  "std_train_r2": 0.05565352766724713,
+  "max_train_r2": 0.22062248418512564,
+  "min_train_r2": 0.0856294085883853,
+  "mean_test_r2": 0.13988757477222627,
+  "std_test_r2": 0.0604115244464873,
+  "max_test_r2": 0.220670077202216,
+  "min_test_r2": 0.07541377998757648,
+  "median_test_r2": 0.12357886712688637,
+  "solution_rate": 0.0,
+  "n_solved": 0,
+  "mean_best_r2": 0.1476429393666752,
+  "std_best_r2": 0.05565352766724713,
+  "individual_results": [
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 494,
+      "valid_rate": 0.96484375,
+      "best_r2": 0.22062248418512564,
+      "best_expression": "x_1**C/(x_8 + exp(x_1))",
+      "ground_truth": "x_3*x_1*x_2/((x_5-x_4)**2+(x_7-x_6)**2+(x_9-x_8)**2)",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -1.0730233932608305e+50,
+      "std_r2": 2.3824985767573892e+51,
+      "median_r2": -109.98377885318874,
+      "test_r2": 0.220670077202216,
+      "test_mse": 0.011949271077290826,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 42,
+      "problem": "feynman_I_9_18"
+    },
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 501,
+      "valid_rate": 0.978515625,
+      "best_r2": 0.13667692532651465,
+      "best_expression": "x_1/(x_8 + C*sqrt(x_5))",
+      "ground_truth": "x_3*x_1*x_2/((x_5-x_4)**2+(x_7-x_6)**2+(x_9-x_8)**2)",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -6.536053876745833e+46,
+      "std_r2": 1.4615060773004715e+48,
+      "median_r2": -93.86462006831962,
+      "test_r2": 0.12357886712688637,
+      "test_mse": 0.013093431967216042,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 123,
+      "problem": "feynman_I_9_18"
+    },
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 512,
+      "n_valid": 499,
+      "valid_rate": 0.974609375,
+      "best_r2": 0.0856294085883853,
+      "best_expression": "x_1/(x_6 + C)/sqrt(x_5)",
+      "ground_truth": "x_3*x_1*x_2/((x_5-x_4)**2+(x_7-x_6)**2+(x_9-x_8)**2)",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -3.9879471555488674e+89,
+      "std_r2": 8.899468418222657e+90,
+      "median_r2": -236.11564310967887,
+      "test_r2": 0.07541377998757648,
+      "test_mse": 0.014174320964233243,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 456,
+      "problem": "feynman_I_9_18"
+    }
+  ]
+}

@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1dd8b230fc9afac2bcb45b935d2c32cc54b391d747b7edfcee984b7cbe43ce99
-size 1737
+{
+  "name": "feynman_I_43_16",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "mu_drift",
+    "q",
+    "Volt",
+    "d"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_43_16/feynman_I_43_16.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_43_16",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nv = mu_drift*q*Volt/d\n\nmu_drift in [1.0,5.0]\nq in [1.0,5.0]\nVolt in [1.0,5.0]\nd in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "v, Velocity, m^1 * s^(-1)"
+    },
+    "features": [
+      {
+        "name": "mu_drift",
+        "type": "continuous",
+        "description": "Drift velocity constant, s^(-1) * kg^1"
+      },
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "Volt",
+        "type": "continuous",
+        "description": "Voltage, V^1"
+      },
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

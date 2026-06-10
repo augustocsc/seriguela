@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2e51e2f9443999334d1d5a8de4bd002170e8c75d17d9c31dcddcfe6be4edd3bc
-size 1597
+{
+  "name": "feynman_I_37_4",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "I1",
+    "I2",
+    "delta"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_37_4/feynman_I_37_4.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_37_4",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nInt = I1+I2+2*sqrt(I1*I2)*cos(delta)\n\nI1 in [1.0,5.0]\nI2 in [1.0,5.0]\ndelta in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "Int, Light intensity, s^(-3) * kg^1"
+    },
+    "features": [
+      {
+        "name": "I1",
+        "type": "continuous",
+        "description": "Light intensity, s^(-3) * kg^1"
+      },
+      {
+        "name": "I2",
+        "type": "continuous",
+        "description": "Light intensity, s^(-3) * kg^1"
+      },
+      {
+        "name": "delta",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

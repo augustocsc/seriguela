@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:23a89f71b2546ac75fa5d9c1e44708da0c24a1f7156601d12028aa488eed10ec
-size 1660
+{
+  "name": "feynman_II_10_9",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "sigma_den",
+    "epsilon",
+    "chi"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_10_9/feynman_II_10_9.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_10_9",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nEf = sigma_den/epsilon*1/(1+chi)\n\nsigma_den in [1.0,5.0]\nepsilon in [1.0,5.0]\nchi in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "Ef, Electric field, m^(-1) * V^1"
+    },
+    "features": [
+      {
+        "name": "sigma_den",
+        "type": "continuous",
+        "description": "Surface Charge density, s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "epsilon",
+        "type": "continuous",
+        "description": "Electric permitivity, m^1 * s^(-2) * kg^1 * V^(-2)"
+      },
+      {
+        "name": "chi",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

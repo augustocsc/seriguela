@@ -1,3 +1,41 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:84c98a379f2875ba3048037ae522f18c7c51004efc6920771af0963d3cc77a1e
-size 1957
+{
+  "name": "strogatz_glider1",
+  "n_samples": 400,
+  "n_vars": 2,
+  "variables": [
+    "target",
+    "x"
+  ],
+  "target": "y",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/strogatz_glider1/strogatz_glider1.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "strogatz_glider1",
+    "description": "This is one state of a 2-state dynamic model for a glider. \n\nx' = -0.05 * x**2 - sin(y)\n\nIt is adapted from Steven Strogatz's book \"Chaos and Nonlinear Dynamics\".  \nEach strogatz ODE system can exhibit chaotic and/or nonlinear behavior. \nFor the purposes of modeling, these systems are simulated using initial conditions within stable basins of attraction. \nThe systems are simulated using simulink and matlab. \n",
+    "source": "https://github.com/lacava/ode-strogatz",
+    "publication": "It has been used as a benchmark dataset in the following publications: \nLa Cava, W., Danai, K., Spector, L., (2016). \"Inference of Compact Nonlinear Dynamic Models by Epigenetic Local Search.\" Engineering Applications of Artificial Intelligence. doi:10.1016/j.engappai.2016.07.004\nSchmidt, M.D. (2011) Machine Science: Automated Modeling of Deterministic and Stochastic Dynamical Systems. PhD Thesis.  \nThe original problems are from: \nStrogatz, S. (2014) Nonlinear dynamics and chaos: with applications to physics, biology, chemistry, and engineering. Westview press. \n",
+    "task": "regression",
+    "keywords": [
+      "differential equations",
+      "physics",
+      "symbolic regression"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "rate of change of x",
+      "code": null
+    },
+    "features": [
+      {
+        "name": "x",
+        "type": "continuous",
+        "description": "state x"
+      },
+      {
+        "name": "y",
+        "type": "continuous",
+        "description": "state y"
+      }
+    ]
+  }
+}

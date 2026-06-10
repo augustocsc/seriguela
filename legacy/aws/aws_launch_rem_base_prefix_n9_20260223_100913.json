@@ -1,3 +1,6 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:df5c4477030a0c0b0b832b59d2d3f4acd585e11811cca1987dd0425849a7d21b
-size 148
+{
+  "instance_id": "i-09aadd345995e5611",
+  "public_ip": "3.90.178.189",
+  "experiment": "rem_base_prefix_n9",
+  "instance_type": "g5.xlarge"
+}

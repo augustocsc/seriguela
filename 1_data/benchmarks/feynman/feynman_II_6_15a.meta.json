@@ -1,3 +1,63 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9e503109b7e051c4fb51e9bb25ba1e238c73af196c16f0a3c88c9e95b97f8b3f
-size 2068
+{
+  "name": "feynman_II_6_15a",
+  "n_samples": 100000,
+  "n_vars": 6,
+  "variables": [
+    "epsilon",
+    "p_d",
+    "r",
+    "x",
+    "y",
+    "z"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_6_15a/feynman_II_6_15a.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_6_15a",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nEf = p_d/(4*pi*epsilon)*3*z/r**5*sqrt(x**2+y**2)\n\nepsilon in [1.0,3.0]\np_d in [1.0,3.0]\nr in [1.0,3.0]\nx in [1.0,3.0]\ny in [1.0,3.0]\nz in [1.0,3.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "Ef, Electric field, m^(-1) * V^1"
+    },
+    "features": [
+      {
+        "name": "epsilon",
+        "type": "continuous",
+        "description": "Electric permitivity, m^1 * s^(-2) * kg^1 * V^(-2)"
+      },
+      {
+        "name": "p_d",
+        "type": "continuous",
+        "description": "Electric dipole moment, m^3 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "r",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "x",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "y",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "z",
+        "type": "continuous",
+        "description": "Length, m^1"
+      }
+    ]
+  }
+}

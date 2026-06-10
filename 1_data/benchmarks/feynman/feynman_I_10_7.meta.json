@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ee239e247c0af27447e25d061baff5399487af402ff75f28cabc4d3934c301c7
-size 1534
+{
+  "name": "feynman_I_10_7",
+  "n_samples": 100000,
+  "n_vars": 3,
+  "variables": [
+    "m_0",
+    "v",
+    "c"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_10_7/feynman_I_10_7.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_10_7",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nm = m_0/sqrt(1-v**2/c**2)\n\nm_0 in [1.0,5.0]\nv in [1.0,2.0]\nc in [3.0,10.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "m, Mass, kg^1"
+    },
+    "features": [
+      {
+        "name": "m_0",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "v",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      }
+    ]
+  }
+}

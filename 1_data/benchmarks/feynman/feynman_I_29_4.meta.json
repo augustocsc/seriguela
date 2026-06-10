@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e4d3c58cef3775248c4369ffcb2dce0074b5d577c5abc98709b9e8433f9c7d55
-size 1396
+{
+  "name": "feynman_I_29_4",
+  "n_samples": 100000,
+  "n_vars": 2,
+  "variables": [
+    "omega",
+    "c"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_29_4/feynman_I_29_4.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_29_4",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nk = omega/c\n\nomega in [1.0,10.0]\nc in [1.0,10.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "k, Wave number, m^(-1)"
+    },
+    "features": [
+      {
+        "name": "omega",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      },
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      }
+    ]
+  }
+}

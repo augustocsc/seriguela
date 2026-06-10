@@ -1,3 +1,57 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:85ea8f7c788b7502b38f0caa8e8010aea64b0a8f5eb537424ae0a7421f6f5771
-size 1878
+{
+  "name": "feynman_II_11_3",
+  "n_samples": 100000,
+  "n_vars": 5,
+  "variables": [
+    "q",
+    "Ef",
+    "m",
+    "omega_0",
+    "omega"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_II_11_3/feynman_II_11_3.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_II_11_3",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nx = q*Ef/(m*(omega_0**2-omega**2))\n\nq in [1.0,3.0]\nEf in [1.0,3.0]\nm in [1.0,3.0]\nomega_0 in [3.0,5.0]\nomega in [1.0,2.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "x, Length, m^1"
+    },
+    "features": [
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "Ef",
+        "type": "continuous",
+        "description": "Electric field, m^(-1) * V^1"
+      },
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "omega_0",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      },
+      {
+        "name": "omega",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      }
+    ]
+  }
+}

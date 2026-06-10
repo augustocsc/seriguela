@@ -1,3 +1,7 @@
-*.csv filter=lfs diff=lfs merge=lfs -text
-*.arrow filter=lfs diff=lfs merge=lfs -text
-*.json filter=lfs diff=lfs merge=lfs -text
+# LFS desativado para arquivos novos (2026-06-10).
+# Motivo: o blanket *.json/*.csv em LFS colocava até os JSONs de resultado
+# (pequenos, texto) no LFS, quebrando clones sem git-lfs (pods/Colab viam
+# pointer files — ver commits df5273c e 1bfac35). Os datasets grandes saíram
+# do repo: o 682K vive no HuggingFace e os benchmarks Feynman/Strogatz são
+# baixados sob demanda do PMLB (utils/feynman_loader.py).
+# Objetos LFS antigos continuam resolvíveis no histórico.

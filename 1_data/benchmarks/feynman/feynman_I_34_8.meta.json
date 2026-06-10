@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ff26e4e8d7eb9a4b41ef9486844b188840e87130fe580416201b3ec9ec433b05
-size 1720
+{
+  "name": "feynman_I_34_8",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "q",
+    "v",
+    "B",
+    "p"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_I_34_8/feynman_I_34_8.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_I_34_8",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nomega = q*v*B/p\n\nq in [1.0,5.0]\nv in [1.0,5.0]\nB in [1.0,5.0]\np in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "omega, Frequency, s^(-1)"
+    },
+    "features": [
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "v",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "B",
+        "type": "continuous",
+        "description": "Magnetic field, m^(-2) * s^1 * V^1"
+      },
+      {
+        "name": "p",
+        "type": "continuous",
+        "description": "Momentum, m^1 * s^(-1) * kg^1"
+      }
+    ]
+  }
+}
