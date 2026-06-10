@@ -94,6 +94,10 @@ def main():
     ap.add_argument("--batch-size", type=int, default=1024)
     ap.add_argument("--write", action="store_true",
                     help="append to experiments/queue.yaml (default: dry-run preview)")
+    ap.add_argument("--split", type=int, default=0, metavar="N",
+                    help="além do queue.yaml, escreve N filas paralelas "
+                         "queue_phase2_{a,b,...}.yaml (round-robin) para rodar "
+                         "N daemons via experiments/run_queue_file.py")
     args = ap.parse_args()
 
     bon_steps = args.bon_steps if args.bon_steps is not None else args.max_steps
@@ -121,6 +125,18 @@ def main():
     QUEUE_FILE.write_text(
         yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")
     print(f"\nWrote {len(new)} entries to {QUEUE_FILE}")
+
+    if args.split and new:
+        # Round-robin equilibra algoritmos/problemas entre as filas; BoN (mais
+        # longo por seed-run) se distribui igualmente.
+        import string
+        for i in range(args.split):
+            part = new[i::args.split]
+            pf = QUEUE_FILE.with_name(f"queue_phase2_{string.ascii_lowercase[i]}.yaml")
+            pf.write_text(yaml.safe_dump(
+                {"defaults": data.get("defaults", {}), "meta": data.get("meta", {}),
+                 "queue": part}, sort_keys=False, allow_unicode=True), encoding="utf-8")
+            print(f"  split {pf.name}: {len(part)} entradas")
     print("Validate with: python experiments/test_smoke.py")
 
 
