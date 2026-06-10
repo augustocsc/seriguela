@@ -103,6 +103,18 @@ análise de complexidade das expressões vencedoras permanece na Fase 3, como
 métrica descritiva (não embutida no reward). O dead-zone do sr_ic entra na
 discussão da dissertação como achado de design de reward.
 
+**EMENDA 2026-06-10b — hyperparâmetros do update PPO por braço.** O scout
+revelou que, nos defaults (lr 1e-5, 4 épocas PPO, max_kl 0.1), o update do PPO
+colapsa a política em <10 steps (validade 59%→0%, KL≈0.22 em uma época) —
+tanto em pure_ppo quanto em bon_ppo (o elite buffer não previne, pois o defeito
+é do update). pure_grpo é estável nos defaults (advantages por ranking são
+robustos à escala do reward; validade se recupera a 98%). Com lr 1e-6,
+ppo_epochs 2 e max_kl 0.02, o pure_ppo resolve nguyen_5 exatamente (R²=1.0 no
+step 57, superando best_of_n=0.385). A Fase 2 usa esse conjunto nos braços
+PPO e os defaults nos braços GRPO; a assimetria é reportada na dissertação
+como resultado de estabilidade (PPO requer tuning fino do update neste regime;
+GRPO não).
+
 **Parâmetros fixos** (do experiment_plan_v2.md, com correção de temperature):
 - penalty: `gradient`, prompt: `standard`, temperature: `cosine_annealing`
 - batch_size: 1024, max_new_tokens: 50

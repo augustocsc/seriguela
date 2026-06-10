@@ -67,6 +67,15 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
             }
             if algo in ("bon_ppo", "bon_grpo"):
                 args["buffer_ratio"] = 0.2
+            if algo in ("pure_ppo", "bon_ppo"):
+                # Tuning por braço validado no curve scout de 2026-06-10:
+                # com os defaults (lr 1e-5, 4 épocas, max_kl 0.1) o update PPO
+                # colapsava a política em <10 steps (validade 59%->0%); com
+                # este conjunto o pure_ppo resolve nguyen_5 (R²=1.0 no step 57).
+                # GRPO fica nos defaults — é robusto por construção (ranks).
+                args["learning_rate"] = 1e-6
+                args["ppo_epochs"] = 2
+                args["max_kl"] = 0.02
             mshort = short_model(model)
             entries.append({
                 "id": f"phase2_{mshort}_{algo}_{problem}",
