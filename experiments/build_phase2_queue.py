@@ -84,8 +84,10 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
                 "created": today,
                 "args": args,
                 "output_dir": f"results/phase_2/{mshort}/{problem}/{algo}/",
-                # rough per-entry estimate; refresh after the pilot
-                "estimated_minutes": 25 if algo == "best_of_n" else 5 * max_steps // 10,
+                # medições do piloto 2026-06-10 (3090, batch 1024): BoN 7.4s/step
+                # e RL ~3.3-4.6s/step -> entradas BoN (5 seeds) precisam de ~2.5h
+                "max_hours": 3.0 if algo == "best_of_n" else 2.0,
+                "estimated_minutes": 125 if algo == "best_of_n" else 80,
             })
     return entries
 
