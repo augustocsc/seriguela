@@ -5,7 +5,7 @@ Design (controlled, no reward confound):
   - 5 algorithms : best_of_n, pure_ppo, pure_grpo, bon_ppo, bon_grpo
   - 4 problems   : nguyen_3, nguyen_5, nguyen_7, nguyen_9
   - 5 seeds      : 42 123 456 789 1011  (bundled per entry via --seeds nargs=+)
-  - reward sr_ic / penalty gradient / temperature cosine_annealing / prompt standard
+  - reward r2_clipped / penalty gradient / temperature cosine_annealing / prompt standard
   - C=1 evaluation (project default — uniform with phases 1b/1c, see
     docs/reports/THESIS_PLAN.md and the constant-fitting decision)
 
@@ -55,7 +55,7 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
                 "seeds": SEEDS,
                 "max_steps": steps,
                 "batch_size": batch_size,
-                "reward": "sr_ic",
+                "reward": "r2_clipped",
                 "penalty": "gradient",
                 "temperature": "cosine_annealing",
                 "prompt_type": "standard",

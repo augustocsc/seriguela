@@ -82,11 +82,26 @@ Falhas críticas: baseline crashado, 89% single-seed, grid desequilibrado, rewar
 |------|---------|
 | Modelo | Melhor(es) da Fase 1 (previsto: Base-Infix) |
 | Algoritmo | best_of_n (**corrigido**), pure_ppo, pure_grpo, bon_ppo, bon_grpo |
-| Reward | **Uniforme: `sr_ic`** para todos os algoritmos |
+| Reward | **Uniforme: `r2_clipped`** para todos os algoritmos (emenda 2026-06-10, ver abaixo) |
 | Problema | nguyen_3, nguyen_5, nguyen_7, nguyen_9 (exclui nguyen_1 — sem sinal) |
 | Seeds | 42, 123, 456, 789, 1011 (5 seeds para significância estatística) |
 | MAX_STEPS | ~200 (determinado por scout runs de plateau na Fase 1.5) |
 | **Total runs** | 5 × 4 × 5 = **100 runs** (1 modelo) |
+
+**EMENDA 2026-06-10 — reward uniforme passa de `sr_ic` para `r2_clipped`.**
+O piloto de timing (Fase 1.5, RunPod) revelou que `sr_ic` com C=1 não fornece
+sinal de aprendizado: a normalização `max(0, (−log(MSE+ε) − 0.1·C)/25)` zera
+exatamente a recompensa de qualquer expressão cuja penalidade de complexidade
+supere o termo de ajuste — na prática, ~todo o espaço amostrado. Um run
+pure_ppo de 500 steps (512K amostras) ficou com best R²=0,0 do início ao fim e
+colapsou para constantes degeneradas, enquanto best_of_n com o MESMO modelo
+atinge R²≈0,39 em 50 steps. Isso também reinterpreta os dados t5/t6: os braços
+BoN (que usavam sr_ic) performavam ≈ baseline porque o gradiente era nulo — o
+buffer fazia o trabalho. `r2_clipped` é denso em [0,1] e foi validado nos
+braços pure do t5/t6 (pure_ppo 0,516 em nguyen_5, mesmo protocolo C=1). A
+análise de complexidade das expressões vencedoras permanece na Fase 3, como
+métrica descritiva (não embutida no reward). O dead-zone do sr_ic entra na
+discussão da dissertação como achado de design de reward.
 
 **Parâmetros fixos** (do experiment_plan_v2.md, com correção de temperature):
 - penalty: `gradient`, prompt: `standard`, temperature: `cosine_annealing`
