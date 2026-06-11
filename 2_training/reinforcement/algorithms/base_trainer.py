@@ -771,6 +771,21 @@ class BaseRLTrainer(ABC):
                 stats = self.train_step()
                 self.history.append(stats)
 
+                # Higiene de memória (2026-06-11): o cache global do sympy cresce
+                # sem limite ao avaliar ~1024 expressões/step; em problemas que
+                # geram expressões longas (ex. nguyen_3) o RSS estoura o cgroup
+                # do pod (~38GB) e o kernel mata o processo com SIGKILL (-9) —
+                # observado 2x em bon_grpo. Limpar a cada 25 steps capa o RSS
+                # sem alterar resultados (cache é só memoização).
+                if self.current_step % 25 == 0:
+                    import gc
+                    try:
+                        from sympy.core.cache import clear_cache
+                        clear_cache()
+                    except Exception:
+                        pass
+                    gc.collect()
+
                 # Log periodically
                 if self.current_step % self.config.log_every == 0:
                     logger.info(
