@@ -102,6 +102,30 @@ class BaseReward(ABC):
         """
         complexity = self._compute_complexity(expression, is_prefix)
 
+        # Guarda anti-bomba (2026-06-12): potências com BASE NUMÉRICA e
+        # expoente grande fazem o sympy materializar inteiros EXATOS gigantes
+        # numa única alocação (ex.: 9**9**9 tem ~3.7e8 dígitos) — SIGKILL pelo
+        # cgroup do pod (38GB), reproduzível em bon_grpo/nguyen_3. Expressão
+        # que excede a memória da máquina é computacionalmente inavaliável:
+        # inválida — o mesmo veredito que o hardware já aplicava, sem matar o
+        # processo. Potências de variáveis (x**N) avaliam em float e são
+        # inofensivas; só base numérica explode.
+        import math as _math
+        import re as _re
+        for _b, _e in _re.findall(
+                r"(?<![\w_.])(\d+(?:\.\d+)?)\s*\*\*\s*\(?\s*(\d+(?:\.\d+)?)", expression):
+            _bf, _ef = float(_b), float(_e)
+            if _bf > 1.0 and _ef * _math.log10(_bf) > 1e6:  # >1M dígitos
+                return None, ErrorType.PARSING, complexity
+        for _b, _e1, _e2 in _re.findall(
+                r"(?<![\w_.])(\d+(?:\.\d+)?)\s*\)?\s*\*\*\s*\(?\s*(\d+(?:\.\d+)?)\s*\)?\s*\*\*\s*\(?\s*(\d+(?:\.\d+)?)",
+                expression):  # torre n**n**n (assoc. à direita): estima dígitos com caps
+            _bf, _e1f, _e2f = float(_b), float(_e1), float(_e2)
+            if _bf > 1.0 and _e1f > 1.0:
+                _exp_log = _e2f * _math.log10(_e1f)        # log10 do expoente efetivo
+                if _exp_log > 12 or (10 ** min(_exp_log, 12)) * _math.log10(_bf) > 1e6:
+                    return None, ErrorType.PARSING, complexity
+
         # Try to parse
         try:
             expr = Expression(expression, is_prefix=is_prefix)
