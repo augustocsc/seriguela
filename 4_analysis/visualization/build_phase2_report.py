@@ -308,7 +308,13 @@ f"Exploração medida por expressões únicas descobertas/seed: braços PPO 35�
 
 <h2>7. Limitações e o que falta</h2>
 <ul>
-<li>{100-total} seed-runs em execução (sobretudo nguyen_9, 2 variáveis — o segundo problema discriminador) — tabela e testes se atualizam ao fechar;</li>
+<li><b>Célula BoN-GRPO×nguyen_3 não-executável (n=0):</b> nas 5 seeds (7 tentativas,
+2026-06-11/12), o update do BoN-GRPO com as sequências longas que nguyen_3 induz
+excede o limite de memória do container (38GB; SIGKILL reproduzível). Quatro
+mitigações testadas sem sucesso (limpeza de cache sympy, guarda anti-bigint,
+ulimit, isolamento por seed). Reportado como achado de footprint de memória do
+braço; a célula é tratada como dado faltante estrutural na ANOVA;</li>
+<li>{f"{100-total} seed-runs em execução — tabela e testes se atualizam ao fechar;" if total < 95 else "experimento encerrado (célula inviável descontada);"}</li>
 <li>um modelo (Base-Infix 124M) e 4 problemas — generalização vem da Fase 4 (122 problemas SRBench, campeão, 3 seeds);</li>
 <li>tuning PPO por braço introduz assimetria (defendida em §6; GRPO nos defaults é a comparação conservadora);</li>
 <li>C=1 (sem ajuste de constantes) — ablação com L-BFGS-B prevista só para o campeão;</li>
