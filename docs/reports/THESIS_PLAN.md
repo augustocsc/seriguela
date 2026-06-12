@@ -145,12 +145,24 @@ GRPO não).
 - Inferência pura, N=256, 2 seeds — sem RL
 - Produz "tabela mãe" de 113 linhas
 
-**Estágio 4.2 — RL em Categoria A (~$30-65 L4):**
-- Algoritmo campeão da Fase 3 em ~40-60 problemas × 3 seeds
-- Protocolo SRBench: 75/25 split, 10K samples, 1h wall-clock
+**Estágio 4.2 — RL em TODOS os 122 problemas (emenda 2026-06-12, decisão do autor):**
+- Algoritmo campeão da Fase 3 em **todos os 122 problemas** × 3 seeds (não apenas
+  Categoria A): nos problemas com operadores fora do vocabulário (Categoria B),
+  o resultado mede a capacidade de APROXIMAÇÃO do modelo — pontos adicionais
+  para a figura H_gen e visão completa do benchmark
+- A cobertura de vocabulário é reportada por problema (coluna na tabela-mãe);
+  descoberta exata só é possível na Categoria A, e o texto deixa isso explícito
+- Protocolo SRBench: 75/25 split, métrica R² no teste, ruído 0
+- Custo estimado: ~US$20–30 na 3090 (refinar com os tempos medidos da Fase 2)
 
-**Estágio 4.3 — Baselines locais (CPU, gratuito):**
-- gplearn e PySR em Categoria A via presets SRBench
+**Estágio 4.3 — SUBSTITUÍDO (emenda 2026-06-12): comparação com números publicados.**
+Em vez de rodar gplearn/PySR localmente, a comparação usa os resultados
+publicados do SRBench (La Cava et al., NeurIPS 2021 + leaderboard), válida
+porque casamos o protocolo por construção. Checklist de alinhamento a
+documentar no capítulo de métodos: (i) mesmos datasets PMLB ground-truth;
+(ii) split 75/25; (iii) R² no conjunto de teste; (iv) comparação na faixa
+target_noise=0; (v) taxa de solução com o critério do SRBench (R²>0.999);
+(vi) diferenças de orçamento computacional reportadas como limitação.
 
 **Deliverables da Fase 4:**
 1. Tabela mãe 113 linhas (Apêndice)
