@@ -48,15 +48,25 @@ class BaseReward(ABC):
     - name: Property returning the reward function name
     """
 
-    def __init__(self, valid_variables: Optional[Set[str]] = None):
+    def __init__(self, valid_variables: Optional[Set[str]] = None,
+                 max_complexity: int = 100):
         """
         Initialize reward function.
 
         Args:
             valid_variables: Set of valid variable names (e.g., {"x_1", "x_2"}).
                            If None, any x_N variable is considered valid.
+            max_complexity: Limite de tokens da expressão. Acima disso a
+                           expressão é tratada como inválida ANTES de qualquer
+                           sympify — teto de memória (2026-06-14): em alvos
+                           polinomiais/log o modelo explora expressões enormes
+                           (grau alto) que, avaliadas aos milhares por step +
+                           buffer, estouram a RAM do GRPO com buffer. Os alvos
+                           reais têm ~5–15 tokens; 100 é folgado e ainda assim
+                           limita o footprint a qualquer máquina (Colab incluso).
         """
         self.valid_variables = valid_variables
+        self.max_complexity = max_complexity
 
     @abstractmethod
     def compute(
@@ -101,6 +111,16 @@ class BaseReward(ABC):
             If parsing fails, Expression will be None
         """
         complexity = self._compute_complexity(expression, is_prefix)
+
+        # Teto de complexidade (2026-06-14): expressões acima de max_complexity
+        # tokens são rejeitadas ANTES do sympify. Sem isso, em alvos polinomiais
+        # (nguyen_3) ou log (nguyen_7) o modelo explora expressões de grau muito
+        # alto que custam memória ao serem simplificadas — avaliadas aos milhares
+        # por step + os elites do buffer, estouram a RAM (causa raiz do OOM do
+        # bon_grpo). É um teto, não um veredito de qualidade: nenhum alvo do
+        # benchmark passa de ~15 tokens, então não descarta solução real.
+        if self.max_complexity and complexity > self.max_complexity:
+            return None, ErrorType.PARSING, complexity
 
         # Guarda anti-bomba (2026-06-12): potências com BASE NUMÉRICA e
         # expoente grande fazem o sympy materializar inteiros EXATOS gigantes
