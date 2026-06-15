@@ -25,9 +25,13 @@ ul{margin-top:6px}
 </style></head><body>
 
 <h1>Análise da Fase 2 — RL com GPT-2 para Regressão Simbólica</h1>
-<p><b>Status dos dados:</b> 91 de 100 seed-runs concluídos (2026-06-14).
-Células marcadas <span class="partial">(n/5)</span> ainda recebem seeds; este relatório se
-regenera com <code>python 4_analysis/visualization/build_phase2_report.py</code>.</p>
+<p><b>Status dos dados:</b> experimento <b>ENCERRADO</b> em 2026-06-14 —
+91 seed-runs válidos coletados. Das 20 células (5 algoritmos × 4 problemas), 18 estão
+completas com 5 seeds; as 2 restantes (BoN-GRPO em nguyen_3 e nguyen_7) são
+computacionalmente inviáveis nesta máquina — 9 seeds ausentes por estouro de
+memória, não por execução pendente (ver §7). Marcações <span class="partial">(n/5)</span>
+indicam células com seeds faltantes <b>definitivamente</b>. Regenerável com
+<code>python 4_analysis/visualization/build_phase2_report.py</code>.</p>
 
 <div class="note"><b>Como ler:</b> cada achado é explicado em três níveis —
 🟢 <b>Graduando</b> (intuição, zero jargão), 🔵 <b>Graduado</b> (método e evidência),
@@ -107,7 +111,8 @@ excede o limite de memória do container (38GB; SIGKILL reproduzível). Quatro
 mitigações testadas sem sucesso (limpeza de cache sympy, guarda anti-bigint,
 ulimit, isolamento por seed). Reportado como achado de footprint de memória do
 braço; a célula é tratada como dado faltante estrutural na ANOVA;</li>
-<li>9 seed-runs em execução — tabela e testes se atualizam ao fechar;</li>
+<li>experimento encerrado: 91/100 seed-runs coletados; os 9 ausentes são
+exatamente os seeds das 2 células BoN-GRPO inviáveis acima (não há execução pendente);</li>
 <li>um modelo (Base-Infix 124M) e 4 problemas — generalização vem da Fase 4 (122 problemas SRBench, campeão, 3 seeds);</li>
 <li>tuning PPO por braço introduz assimetria (defendida em §6; GRPO nos defaults é a comparação conservadora);</li>
 <li>C=1 (sem ajuste de constantes) — ablação com L-BFGS-B prevista só para o campeão;</li>

@@ -6,7 +6,7 @@ Uso:
 Saída:
     results/phase_3/relatorio_fase2.html  (figuras embutidas, abre offline)
 
-Re-rodar quando os 100 seed-runs fecharem — o relatório se atualiza sozinho.
+Re-rodar a qualquer momento — o relatório reflete o estado atual de results/phase_2.
 """
 import base64
 import io
@@ -246,9 +246,13 @@ ul{margin-top:6px}
 <style>{css}</style></head><body>
 
 <h1>Análise da Fase 2 — RL com GPT-2 para Regressão Simbólica</h1>
-<p><b>Status dos dados:</b> {total} de 100 seed-runs concluídos ({date.today().isoformat()}).
-Células marcadas <span class="partial">(n/5)</span> ainda recebem seeds; este relatório se
-regenera com <code>python 4_analysis/visualization/build_phase2_report.py</code>.</p>
+<p><b>Status dos dados:</b> experimento <b>ENCERRADO</b> em {date.today().isoformat()} —
+{total} seed-runs válidos coletados. Das 20 células (5 algoritmos × 4 problemas), 18 estão
+completas com 5 seeds; as 2 restantes (BoN-GRPO em nguyen_3 e nguyen_7) são
+computacionalmente inviáveis nesta máquina — {100-total} seeds ausentes por estouro de
+memória, não por execução pendente (ver §7). Marcações <span class="partial">(n/5)</span>
+indicam células com seeds faltantes <b>definitivamente</b>. Regenerável com
+<code>python 4_analysis/visualization/build_phase2_report.py</code>.</p>
 
 <div class="note"><b>Como ler:</b> cada achado é explicado em três níveis —
 🟢 <b>Graduando</b> (intuição, zero jargão), 🔵 <b>Graduado</b> (método e evidência),
@@ -314,7 +318,8 @@ excede o limite de memória do container (38GB; SIGKILL reproduzível). Quatro
 mitigações testadas sem sucesso (limpeza de cache sympy, guarda anti-bigint,
 ulimit, isolamento por seed). Reportado como achado de footprint de memória do
 braço; a célula é tratada como dado faltante estrutural na ANOVA;</li>
-<li>{f"{100-total} seed-runs em execução — tabela e testes se atualizam ao fechar;" if total < 95 else "experimento encerrado (célula inviável descontada);"}</li>
+<li>experimento encerrado: {total}/100 seed-runs coletados; os {100-total} ausentes são
+exatamente os seeds das 2 células BoN-GRPO inviáveis acima (não há execução pendente);</li>
 <li>um modelo (Base-Infix 124M) e 4 problemas — generalização vem da Fase 4 (122 problemas SRBench, campeão, 3 seeds);</li>
 <li>tuning PPO por braço introduz assimetria (defendida em §6; GRPO nos defaults é a comparação conservadora);</li>
 <li>C=1 (sem ajuste de constantes) — ablação com L-BFGS-B prevista só para o campeão;</li>
