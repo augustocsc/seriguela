@@ -146,6 +146,23 @@ class BaseReward(ABC):
                 if _exp_log > 12 or (10 ** min(_exp_log, 12)) * _math.log10(_bf) > 1e6:
                     return None, ErrorType.PARSING, complexity
 
+        # Guarda anti-HANG (2026-06-16): potência de QUALQUER base (inclusive
+        # variável) com expoente numérico grande — ex.: x_1**(9**9) = x_1**387420489 —
+        # NÃO estoura memória (base é variável, avalia em float), mas faz o numpy
+        # entrar em quadrados sucessivos (um.multiply(x,x,out=x)) e TRAVAR por horas.
+        # Observado em bon_grpo/nguyen_3 no step 49 (GPU 0%, log congelado). Corrige
+        # a suposição errada do guard anterior ("x**N é inofensivo"). Alvos reais têm
+        # expoentes ≤ ~6; teto de 100 é folgado. Dois casos:
+        _MAX_EXP = 100
+        for _e in _re.findall(r"\*\*\s*\(?\s*-?(\d+(?:\.\d+)?)", expression):
+            if float(_e) > _MAX_EXP:                       # expoente literal grande
+                return None, ErrorType.PARSING, complexity
+        # expoente que é ele próprio uma potência — dois casos, sem atravessar
+        # operadores (o alvo x**5 + x**4 NÃO pode casar):
+        if _re.search(r"\*\*\s*\([^)]*\*\*", expression) or \
+           _re.search(r"\*\*\s*\d+(?:\.\d+)?\s*\*\*", expression):  # x**(9**9) / x**2**3
+            return None, ErrorType.PARSING, complexity
+
         # Try to parse
         try:
             expr = Expression(expression, is_prefix=is_prefix)
