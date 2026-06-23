@@ -5,7 +5,7 @@ Design (controlled, no reward confound):
   - 5 algorithms : best_of_n, pure_ppo, pure_grpo, bon_ppo, bon_grpo
   - 4 problems   : nguyen_3, nguyen_5, nguyen_7, nguyen_9
   - 5 seeds      : 42 123 456 789 1011  (bundled per entry via --seeds nargs=+)
-  - reward sr_ic / penalty gradient / temperature cosine_annealing / prompt standard
+  - reward r2_clipped / penalty gradient / temperature cosine_annealing / prompt standard
   - C=1 evaluation (project default — uniform with phases 1b/1c, see
     docs/reports/THESIS_PLAN.md and the constant-fitting decision)
 
@@ -55,14 +55,27 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
                 "seeds": SEEDS,
                 "max_steps": steps,
                 "batch_size": batch_size,
-                "reward": "sr_ic",
+                "reward": "r2_clipped",
                 "penalty": "gradient",
                 "temperature": "cosine_annealing",
                 "prompt_type": "standard",
+                # patience default (5) mata runs RL no warmup (R²=0.0 inicial
+                # por ~dezenas de steps — visto no piloto v1). Runs da Fase 2
+                # vão até max_steps; o corte é o plateau medido no piloto.
+                "patience": 100000,
                 "no_wandb": True,
             }
             if algo in ("bon_ppo", "bon_grpo"):
                 args["buffer_ratio"] = 0.2
+            if algo in ("pure_ppo", "bon_ppo"):
+                # Tuning por braço validado no curve scout de 2026-06-10:
+                # com os defaults (lr 1e-5, 4 épocas, max_kl 0.1) o update PPO
+                # colapsava a política em <10 steps (validade 59%->0%); com
+                # este conjunto o pure_ppo resolve nguyen_5 (R²=1.0 no step 57).
+                # GRPO fica nos defaults — é robusto por construção (ranks).
+                args["learning_rate"] = 1e-6
+                args["ppo_epochs"] = 2
+                args["max_kl"] = 0.02
             mshort = short_model(model)
             entries.append({
                 "id": f"phase2_{mshort}_{algo}_{problem}",
@@ -71,8 +84,10 @@ def build_entries(model: str, max_steps: int, bon_steps: int, batch_size: int) -
                 "created": today,
                 "args": args,
                 "output_dir": f"results/phase_2/{mshort}/{problem}/{algo}/",
-                # rough per-entry estimate; refresh after the pilot
-                "estimated_minutes": 25 if algo == "best_of_n" else 5 * max_steps // 10,
+                # medições do piloto 2026-06-10 (3090, batch 1024): BoN 7.4s/step
+                # e RL ~3.3-4.6s/step -> entradas BoN (5 seeds) precisam de ~2.5h
+                "max_hours": 3.0 if algo == "best_of_n" else 2.0,
+                "estimated_minutes": 125 if algo == "best_of_n" else 80,
             })
     return entries
 
@@ -90,6 +105,10 @@ def main():
     ap.add_argument("--batch-size", type=int, default=1024)
     ap.add_argument("--write", action="store_true",
                     help="append to experiments/queue.yaml (default: dry-run preview)")
+    ap.add_argument("--split", type=int, default=0, metavar="N",
+                    help="além do queue.yaml, escreve N filas paralelas "
+                         "queue_phase2_{a,b,...}.yaml (round-robin) para rodar "
+                         "N daemons via experiments/run_queue_file.py")
     args = ap.parse_args()
 
     bon_steps = args.bon_steps if args.bon_steps is not None else args.max_steps
@@ -117,6 +136,18 @@ def main():
     QUEUE_FILE.write_text(
         yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")
     print(f"\nWrote {len(new)} entries to {QUEUE_FILE}")
+
+    if args.split and new:
+        # Round-robin equilibra algoritmos/problemas entre as filas; BoN (mais
+        # longo por seed-run) se distribui igualmente.
+        import string
+        for i in range(args.split):
+            part = new[i::args.split]
+            pf = QUEUE_FILE.with_name(f"queue_phase2_{string.ascii_lowercase[i]}.yaml")
+            pf.write_text(yaml.safe_dump(
+                {"defaults": data.get("defaults", {}), "meta": data.get("meta", {}),
+                 "queue": part}, sort_keys=False, allow_unicode=True), encoding="utf-8")
+            print(f"  split {pf.name}: {len(part)} entradas")
     print("Validate with: python experiments/test_smoke.py")
 
 

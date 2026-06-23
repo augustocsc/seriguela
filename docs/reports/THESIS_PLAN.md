@@ -82,11 +82,38 @@ Falhas críticas: baseline crashado, 89% single-seed, grid desequilibrado, rewar
 |------|---------|
 | Modelo | Melhor(es) da Fase 1 (previsto: Base-Infix) |
 | Algoritmo | best_of_n (**corrigido**), pure_ppo, pure_grpo, bon_ppo, bon_grpo |
-| Reward | **Uniforme: `sr_ic`** para todos os algoritmos |
+| Reward | **Uniforme: `r2_clipped`** para todos os algoritmos (emenda 2026-06-10, ver abaixo) |
 | Problema | nguyen_3, nguyen_5, nguyen_7, nguyen_9 (exclui nguyen_1 — sem sinal) |
 | Seeds | 42, 123, 456, 789, 1011 (5 seeds para significância estatística) |
 | MAX_STEPS | ~200 (determinado por scout runs de plateau na Fase 1.5) |
 | **Total runs** | 5 × 4 × 5 = **100 runs** (1 modelo) |
+
+**EMENDA 2026-06-10 — reward uniforme passa de `sr_ic` para `r2_clipped`.**
+O piloto de timing (Fase 1.5, RunPod) revelou que `sr_ic` com C=1 não fornece
+sinal de aprendizado: a normalização `max(0, (−log(MSE+ε) − 0.1·C)/25)` zera
+exatamente a recompensa de qualquer expressão cuja penalidade de complexidade
+supere o termo de ajuste — na prática, ~todo o espaço amostrado. Um run
+pure_ppo de 500 steps (512K amostras) ficou com best R²=0,0 do início ao fim e
+colapsou para constantes degeneradas, enquanto best_of_n com o MESMO modelo
+atinge R²≈0,39 em 50 steps. Isso também reinterpreta os dados t5/t6: os braços
+BoN (que usavam sr_ic) performavam ≈ baseline porque o gradiente era nulo — o
+buffer fazia o trabalho. `r2_clipped` é denso em [0,1] e foi validado nos
+braços pure do t5/t6 (pure_ppo 0,516 em nguyen_5, mesmo protocolo C=1). A
+análise de complexidade das expressões vencedoras permanece na Fase 3, como
+métrica descritiva (não embutida no reward). O dead-zone do sr_ic entra na
+discussão da dissertação como achado de design de reward.
+
+**EMENDA 2026-06-10b — hyperparâmetros do update PPO por braço.** O scout
+revelou que, nos defaults (lr 1e-5, 4 épocas PPO, max_kl 0.1), o update do PPO
+colapsa a política em <10 steps (validade 59%→0%, KL≈0.22 em uma época) —
+tanto em pure_ppo quanto em bon_ppo (o elite buffer não previne, pois o defeito
+é do update). pure_grpo é estável nos defaults (advantages por ranking são
+robustos à escala do reward; validade se recupera a 98%). Com lr 1e-6,
+ppo_epochs 2 e max_kl 0.02, o pure_ppo resolve nguyen_5 exatamente (R²=1.0 no
+step 57, superando best_of_n=0.385). A Fase 2 usa esse conjunto nos braços
+PPO e os defaults nos braços GRPO; a assimetria é reportada na dissertação
+como resultado de estabilidade (PPO requer tuning fino do update neste regime;
+GRPO não).
 
 **Parâmetros fixos** (do experiment_plan_v2.md, com correção de temperature):
 - penalty: `gradient`, prompt: `standard`, temperature: `cosine_annealing`
@@ -118,12 +145,24 @@ Falhas críticas: baseline crashado, 89% single-seed, grid desequilibrado, rewar
 - Inferência pura, N=256, 2 seeds — sem RL
 - Produz "tabela mãe" de 113 linhas
 
-**Estágio 4.2 — RL em Categoria A (~$30-65 L4):**
-- Algoritmo campeão da Fase 3 em ~40-60 problemas × 3 seeds
-- Protocolo SRBench: 75/25 split, 10K samples, 1h wall-clock
+**Estágio 4.2 — RL em TODOS os 122 problemas (emenda 2026-06-12, decisão do autor):**
+- Algoritmo campeão da Fase 3 em **todos os 122 problemas** × 3 seeds (não apenas
+  Categoria A): nos problemas com operadores fora do vocabulário (Categoria B),
+  o resultado mede a capacidade de APROXIMAÇÃO do modelo — pontos adicionais
+  para a figura H_gen e visão completa do benchmark
+- A cobertura de vocabulário é reportada por problema (coluna na tabela-mãe);
+  descoberta exata só é possível na Categoria A, e o texto deixa isso explícito
+- Protocolo SRBench: 75/25 split, métrica R² no teste, ruído 0
+- Custo estimado: ~US$20–30 na 3090 (refinar com os tempos medidos da Fase 2)
 
-**Estágio 4.3 — Baselines locais (CPU, gratuito):**
-- gplearn e PySR em Categoria A via presets SRBench
+**Estágio 4.3 — SUBSTITUÍDO (emenda 2026-06-12): comparação com números publicados.**
+Em vez de rodar gplearn/PySR localmente, a comparação usa os resultados
+publicados do SRBench (La Cava et al., NeurIPS 2021 + leaderboard), válida
+porque casamos o protocolo por construção. Checklist de alinhamento a
+documentar no capítulo de métodos: (i) mesmos datasets PMLB ground-truth;
+(ii) split 75/25; (iii) R² no conjunto de teste; (iv) comparação na faixa
+target_noise=0; (v) taxa de solução com o critério do SRBench (R²>0.999);
+(vi) diferenças de orçamento computacional reportadas como limitação.
 
 **Deliverables da Fase 4:**
 1. Tabela mãe 113 linhas (Apêndice)
