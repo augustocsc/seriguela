@@ -698,6 +698,22 @@ def main():
     # Run experiments for all seeds
     all_results = []
     for seed in args.seeds:
+        # Seed-skip (2026-06-11): se esta seed já tem results_latest.json no
+        # output_dir, reaproveita em vez de re-rodar. Torna retries de fila
+        # convergentes — uma entrada de 5 seeds morta por timeout na seed 4
+        # completa só a que falta na passada seguinte. results_latest só é
+        # escrito ao FIM de uma seed bem-sucedida, então presença = completa.
+        if not args.no_resume:
+            prior = sorted(Path(args.output_dir).glob(f"**/seed_{seed}/results_latest.json"))
+            if prior:
+                try:
+                    with open(prior[-1], encoding="utf-8") as f:
+                        cached = json.load(f)
+                    logger.info(f"Seed {seed}: resultado existente reaproveitado ({prior[-1]})")
+                    all_results.append(cached)
+                    continue
+                except Exception as e:  # arquivo corrompido -> re-roda
+                    logger.warning(f"Seed {seed}: cache ilegível ({e}); re-rodando")
         try:
             results = run_single_experiment(args, seed, bon_model=bon_model, bon_tokenizer=bon_tokenizer)
             all_results.append(results)
