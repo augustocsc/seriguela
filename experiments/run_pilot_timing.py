@@ -37,6 +37,10 @@ COMMON = [
     "--temperature", "cosine_annealing",
     "--prompt_type", "standard",
     "--batch_size", "1024",
+    # patience alto = early stopping efetivamente OFF. O default (5) matou o
+    # piloto v1 em 6-9 steps reais: RL parte de R²=0.0 e demora dezenas de
+    # steps para melhorar — e o scout de plateau PRECISA da curva inteira.
+    "--patience", "100000",
     "--no_wandb",
     "--no_resume",
 ]
@@ -59,23 +63,34 @@ def make_cmd(name: str, algorithm: str, problem: str, steps: int, seed: int, ext
 
 
 def finalize(rec: dict, out: Path):
-    """Enrich a finished run record with metrics parsed from its outputs."""
+    """Enrich a finished run record with metrics parsed from its outputs.
+
+    steps_done vem do aggregate (individual_results[].total_steps) — fonte
+    exata. O regex em stdout é só fallback, com lookbehind para não casar
+    "max_steps: 500" do dump de config (bug do piloto v1: s/step ficou 50x
+    menor porque o denominador era o max_steps pedido, não o executado).
+    """
     agg = out / f"aggregate_{rec['algorithm']}_{rec['problem']}_seed{rec['seed']}.json"
     if agg.exists():
         try:
             d = json.load(open(agg, encoding="utf-8"))
             rec["mean_best_r2"] = d.get("mean_best_r2")
             rec["mean_test_r2"] = d.get("mean_test_r2")
+            ind = d.get("individual_results") or []
+            steps = [r.get("total_steps") for r in ind if r.get("total_steps")]
+            if steps:
+                rec["steps_executed"] = max(steps)
         except Exception as e:  # noqa: BLE001
             rec["aggregate_parse_error"] = str(e)
-    try:
-        txt = (out / "stdout.log").read_text(encoding="utf-8", errors="ignore")
-        step_nums = [int(m) for m in re.findall(r"[Ss]tep[\s:=/]+(\d+)", txt)]
-        if step_nums:
-            rec["last_logged_step"] = max(step_nums)
-    except Exception:  # noqa: BLE001
-        pass
-    steps_done = rec.get("last_logged_step") or rec["max_steps_requested"]
+    if "steps_executed" not in rec:
+        try:
+            txt = (out / "stdout.log").read_text(encoding="utf-8", errors="ignore")
+            step_nums = [int(m) for m in re.findall(r"(?<![_\w])[Ss]tep[\s:=/]+(\d+)", txt)]
+            if step_nums:
+                rec["steps_executed"] = max(step_nums)
+        except Exception:  # noqa: BLE001
+            pass
+    steps_done = rec.get("steps_executed") or rec["max_steps_requested"]
     rec["sec_per_step"] = round(rec["wall_seconds"] / max(steps_done, 1), 2)
 
 
@@ -169,7 +184,7 @@ def write_report(records: list, price: float, started: str):
     for r in records:
         lines.append(
             f"| {r['phase']} | {r['name']} | {r['algorithm']} | {r['problem']} | {r['concurrency']} "
-            f"| {r.get('last_logged_step', r['max_steps_requested'])} | {r['wall_seconds']/60:.1f} "
+            f"| {r.get('steps_executed', r['max_steps_requested'])} | {r['wall_seconds']/60:.1f} "
             f"| {r['sec_per_step']} | {r['exit_code']} | {r.get('mean_best_r2', '—')} |")
     lines += ["", "## Projections", "```json", json.dumps(proj, indent=2), "```", ""]
     (OUT_DIR / "timing_report.md").write_text("\n".join(lines), encoding="utf-8")
