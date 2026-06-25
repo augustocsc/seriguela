@@ -1,0 +1,43 @@
+{
+  "seeds": [
+    42
+  ],
+  "problem": "nguyen_5",
+  "algorithm": "best_of_n",
+  "model": "augustocsc/gpt2_base_infix_682k",
+  "mean_train_r2": 0.385130723675968,
+  "std_train_r2": 0.0,
+  "max_train_r2": 0.385130723675968,
+  "min_train_r2": 0.385130723675968,
+  "mean_test_r2": 0.3162877454667976,
+  "std_test_r2": 0.0,
+  "max_test_r2": 0.3162877454667976,
+  "min_test_r2": 0.3162877454667976,
+  "median_test_r2": 0.3162877454667976,
+  "solution_rate": 0.0,
+  "n_solved": 0,
+  "mean_best_r2": 0.385130723675968,
+  "std_best_r2": 0.0,
+  "individual_results": [
+    {
+      "algorithm": "best_of_n",
+      "n_samples": 51200,
+      "n_valid": 45007,
+      "valid_rate": 0.87904296875,
+      "best_r2": 0.385130723675968,
+      "best_expression": "sin(x_1*(cos(x_1))**C) - C",
+      "ground_truth": "sin(x**2) * cos(x) - 1",
+      "model": "augustocsc/gpt2_base_infix_682k",
+      "temperature": 0.7,
+      "mean_r2": -5.3704404718891595e+162,
+      "std_r2": Infinity,
+      "median_r2": -107.66596817686764,
+      "test_r2": 0.3162877454667976,
+      "test_mse": 0.01756768342589575,
+      "test_valid": true,
+      "test_error": null,
+      "seed": 42,
+      "problem": "nguyen_5"
+    }
+  ]
+}

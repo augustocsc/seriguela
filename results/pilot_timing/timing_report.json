@@ -1,0 +1,43 @@
+{
+  "started_utc": "2026-06-23T22:38:32.424175+00:00",
+  "updated_utc": "2026-06-24T00:51:12.516421+00:00",
+  "gpu_price_usd_h": 0.22,
+  "runs": [
+    {
+      "phase": "S",
+      "name": "solo_pure_ppo_nguyen5",
+      "algorithm": "pure_ppo",
+      "problem": "nguyen_5",
+      "seed": 42,
+      "max_steps_requested": 500,
+      "concurrency": 1,
+      "wall_seconds": 7960.1,
+      "exit_code": 0,
+      "mean_best_r2": 0.35321265330264884,
+      "mean_test_r2": 0.39367687969679577,
+      "steps_executed": 500,
+      "sec_per_step": 15.92
+    }
+  ],
+  "projections": {
+    "efficiency": {
+      "concurrency_1": {
+        "mean_sec_per_step": 15.92,
+        "slowdown_vs_solo": 1.0,
+        "seedruns_200steps_per_hour": 1.13,
+        "usd_per_seedrun": 0.195
+      }
+    },
+    "usd_per_hour": 0.22,
+    "assumptions": {
+      "phase2": "100 seed-runs x 200 steps",
+      "phase42_optB": "150 seed-runs x 150 steps",
+      "overhead_factor": 1.15
+    },
+    "best_config": "concurrency_1",
+    "phase2_hours": 101.8,
+    "phase2_usd": 22.39,
+    "phase42_optB_hours": 114.4,
+    "phase42_optB_usd": 25.17
+  }
+}
