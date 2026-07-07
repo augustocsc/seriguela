@@ -1,0 +1,59 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+In this chapter, we introduce the problem investigated in this work, its motivation, the objectives and contributions, the research questions that guide the study, and the organization of the text.
+
+\section{Problem Description}
+
+Humans create mathematical models to understand complex systems and to predict their behavior. This is what Johannes Kepler did when, analyzing tables of astronomical observations, he discovered that planetary orbits are elliptical rather than circular. The laws of planetary motion he published in 1609 and 1619 became a milestone of celestial mechanics --- and they began, essentially, as a search for a compact formula that fit the data.
+
+Turning observations into mathematical expressions remains a central tool of the scientific method. Symbolic Regression (SR) automates this search: given a dataset, it looks for the expression that best explains the relationship between input variables and a target quantity. Because the output is a formula rather than an opaque predictor, SR supports scientific modeling directly --- recovering physical or chemical laws, revealing structure in engineering processes, or providing interpretable surrogates for other machine learning models.
+
+Classical regression families each fall short of this goal in a different way. Linear regression yields simple, readable models but cannot capture nonlinear behavior. Decision trees handle nonlinearity and remain inspectable, but their axis-aligned splits impose abrupt jumps between value ranges, and in higher dimensions the resulting trees become too large to interpret. Neural networks achieve excellent accuracy, yet the model they produce is notoriously hard to read and expensive to evaluate. SR aims at the point these methods miss: a model that is both accurate and immediately understandable. The price is computational --- the search space of expressions grows combinatorially with the number of operators, operands, and dimensions, and the problem is NP-hard.
+
+For decades this search was dominated by Genetic Programming (GP), which evolves populations of expression trees through selection, crossover, and mutation. More recently, neural approaches reframed SR as a sequence-generation problem, and the success of the Transformer architecture brought pre-trained language models into the field: a model that has learned the ``grammar'' of mathematical expressions from millions of examples can propose plausible candidates for a new dataset, instead of starting the search from scratch each time.
+
+Adapting a Large Language Model (LLM) to this task, however, raises challenges of its own. LLMs are trained to produce plausible text, not computable formulas; when prompted naively, they answer with prose, malformed syntax, or expressions that do not use the requested variables. Even after the model learns to produce valid expressions, there is no guarantee that the expressions fit a \emph{particular} dataset --- the model knows the language of mathematics but not the answer to the problem at hand. Finally, a good expression must balance fit against simplicity: an overly complex formula overfits the data, generalizes poorly, and loses the interpretability that motivated SR in the first place.
+
+This work addresses these challenges with a pipeline named \textbf{Seriguela}\footnote{Seriguela is a Brazilian fruit; the name is a playful nod to the pipeline's ingredients: \textbf{S}ymbolic \textbf{R}egression, \textbf{L}anguage models, and reinforcement learning \textbf{A}lgorithms.}. The pipeline first teaches a small, publicly available language model (GPT-2) the language of mathematics through supervised fine-tuning on 682 thousand synthetic expressions; it then uses deep reinforcement learning (RL) to steer the fine-tuned model toward expressions that fit a given dataset. Within this pipeline, we conduct a controlled comparison of five search strategies: pure sampling (Best-of-N), two policy-gradient algorithms widely used to fine-tune language models --- Proximal Policy Optimization (PPO) and Group Relative Policy Optimization (GRPO) --- and two hybrid variants (BoN-PPO and BoN-GRPO) that augment the RL loop with an \emph{elite buffer}, a memory that retains and re-injects the best expressions found during training.
+
+The central empirical finding is that successful symbolic discovery decomposes into two complementary factors: \textbf{exploration} --- how widely the algorithm samples the space of expressions, which turns out to be a property of the policy update --- and \textbf{retention} --- whether rare, high-quality discoveries are preserved rather than washed away by subsequent updates, which is precisely what the elite buffer provides. Only the combination of both factors solves the hardest benchmark problems consistently. We then take the winning configuration to a 122-problem evaluation aligned with the SRBench community protocol, including a stratified analysis of how performance degrades as the number of input variables exceeds the scope of the training data.
+
+\section{Objectives and Contributions}
+
+The main objective of this work is to develop and evaluate a pipeline for symbolic regression that combines a supervised fine-tuned language model with deep reinforcement learning, and to determine --- under controlled experimental conditions --- which ingredients of the RL recipe actually matter. Specifically, we aim to:
+
+\begin{itemize}
+    \item Build and release a large synthetic corpus of valid mathematical expressions, together with six fine-tuned expression-generator models (three GPT-2 scales $\times$ two notations).
+    \item Compare RL algorithms (PPO, GRPO) and their elite-buffer variants against a sampling baseline given an \emph{identical} sampling budget, uniform reward, and multiple seeds per configuration.
+    \item Characterize the training dynamics of each algorithm --- exploration width, expression validity, and stability --- rather than only their final accuracy.
+    \item Evaluate the champion configuration on a consolidated 122-problem benchmark (Nguyen, Feynman, and Strogatz) under the SRBench protocol, enabling comparison with published results.
+    \item Test whether the model generalizes to problems with more input variables than any expression seen during fine-tuning.
+\end{itemize}
+
+From these objectives, the work delivers the following contributions:
+
+\begin{enumerate}
+    \item \textbf{A reproducible pipeline and public artifacts.} The dataset (758K expressions), the six fine-tuned models, and all experiment code and per-seed results are publicly available.
+    \item \textbf{A controlled PPO-versus-GRPO comparison for SR.} To our knowledge, this is the first systematic comparison of these two policy-update families, with and without an elite buffer, for LLM-based symbolic regression under a uniform reward protocol.
+    \item \textbf{The exploration--retention decomposition.} A falsifiable explanation of \emph{why} the winning configuration wins, supported by process-level measurements (unique expressions discovered, validity dynamics) and formal statistics.
+    \item \textbf{Methodological findings for RL-based SR.} We document three silent failure modes --- a reward dead zone, PPO policy collapse, and evaluator memory blow-up --- and show that step-level process metrics are necessary to detect them.
+    \item \textbf{A dimensional-generalization analysis.} A stratified evaluation showing graceful degradation of performance beyond the training scope ($n_{vars} > 5$).
+\end{enumerate}
+
+\section{Research Questions}
+\label{sec:research_questions}
+
+The experimental design is organized around five research questions:
+
+\begin{itemize}
+    \item \textbf{RQ1 (RL vs.\ sampling):} Given the same sampling budget, does reinforcement learning discover better expressions than Best-of-N sampling from the same fine-tuned model?
+    \item \textbf{RQ2 (elite buffer):} Does augmenting the RL loop with an elite buffer improve discovery, and does the benefit depend on the underlying update algorithm?
+    \item \textbf{RQ3 (PPO vs.\ GRPO):} How do PPO and GRPO differ in exploration behavior, training stability, and final performance for expression generation?
+    \item \textbf{RQ4 (dimensional generalization):} Does a model fine-tuned on expressions with at most five variables retain useful performance on problems with more variables?
+    \item \textbf{RQ5 (state of the art):} How does the champion configuration compare with published SRBench results, given its much smaller model and compute budget?
+\end{itemize}
+
+\section{Organization of the Text}
+
+Chapter~\ref{ch:background} reviews the theoretical background --- symbolic regression, language models, and deep reinforcement learning --- and surveys related work. Chapter~\ref{ch:methods} details the Seriguela pipeline: dataset engineering, supervised fine-tuning, the RL formulation with its five algorithmic arms, the benchmarks, and the phased experimental design. Chapter~\ref{ch:results} presents the results of each experimental phase, from model selection to the SRBench challenge, including the statistical analysis and the methodological findings. Chapter~\ref{ch:conclusion} answers the research questions, discusses limitations, and outlines future work. Appendix~A lists the complete per-problem results.
