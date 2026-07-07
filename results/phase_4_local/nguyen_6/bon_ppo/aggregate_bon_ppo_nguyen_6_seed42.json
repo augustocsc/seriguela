@@ -9,12 +9,12 @@
   "std_train_r2": 0.0,
   "max_train_r2": 0.9460312800896287,
   "min_train_r2": 0.9460312800896287,
-  "mean_test_r2": 0.9478232832840995,
-  "std_test_r2": 0.0,
-  "max_test_r2": 0.9478232832840995,
-  "min_test_r2": 0.9478232832840995,
-  "median_test_r2": 0.9478232832840995,
-  "solution_rate": 0.0,
+  "mean_test_r2": null,
+  "std_test_r2": null,
+  "max_test_r2": null,
+  "min_test_r2": null,
+  "median_test_r2": null,
+  "solution_rate": null,
   "n_solved": 0,
   "mean_best_r2": 0.9460312800896287,
   "std_best_r2": 0.0,
@@ -77729,15 +77729,7 @@
       },
       "reward_fn": "r2_clipped",
       "penalty_strategy": "gradient",
-      "temp_scheduler": "cosine_1.0_0.5",
-      "test_r2": 0.9478232832840995,
-      "test_mse": 0.01947833006696242,
-      "test_valid": true,
-      "test_error": null,
-      "generalization_gap": -0.0017920031944708148,
-      "seed": 42,
-      "problem": "nguyen_6",
-      "model": "augustocsc/gpt2_base_infix_682k"
+      "temp_scheduler": "cosine_1.0_0.5"
     }
   ]
 }

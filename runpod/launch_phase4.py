@@ -38,8 +38,12 @@ def _info():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--splits", type=int, default=3,
-                    help="nº de daemons concorrentes (filas queue_phase4_a..).")
+    ap.add_argument("--splits", type=int, default=6,
+                    help="nº de daemons concorrentes (filas queue_phase4_a..). "
+                         "6 medido como ótimo (2026-06-26): feynman é CPU-bound "
+                         "(eval simbólico single-thread), pod tem 64 vCPUs e a "
+                         "GPU usa só ~6.4GB/run -> 6 cabem em 48GB e exploram a "
+                         "CPU/GPU ociosa (~2x vs 3). Teto VRAM ~7.")
     ap.add_argument("--max-hours", type=float, default=24.0)
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--collect", action="store_true")
