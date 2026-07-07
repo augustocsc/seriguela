@@ -31,7 +31,7 @@ BENCH = REPO_ROOT / "1_data" / "benchmarks"
 QUEUE_FILE = REPO_ROOT / "experiments" / "queue_phase4.yaml"
 
 MODEL = "augustocsc/gpt2_base_infix_682k"
-SEEDS = [42, 123, 456]
+SEEDS = [42, 123, 456]  # default; sobreposto por --seeds (escalonamento de custo)
 
 
 def discover_problems() -> list:
@@ -42,7 +42,7 @@ def discover_problems() -> list:
     return strogatz + feynman
 
 
-def build_entries(problems: list, max_steps: int, batch_size: int) -> list:
+def build_entries(problems: list, max_steps: int, batch_size: int, seeds: list) -> list:
     today = datetime.date.today().isoformat()
     entries = []
     for problem in problems:
@@ -50,7 +50,7 @@ def build_entries(problems: list, max_steps: int, batch_size: int) -> list:
             "algorithm": "bon_ppo",
             "model": MODEL,
             "problem": problem,
-            "seeds": SEEDS,
+            "seeds": seeds,
             "max_steps": max_steps,
             "batch_size": batch_size,
             "reward": "r2_clipped",
@@ -95,19 +95,22 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--max-steps", type=int, default=200)
     ap.add_argument("--batch-size", type=int, default=1024)
+    ap.add_argument("--seeds", type=int, nargs="+", default=SEEDS,
+                    help="seeds por entrada (escalonamento: 1 seed primeiro, "
+                         "adicionar depois só onde importa)")
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--split", type=int, default=0, metavar="N",
                     help="escreve N filas paralelas para N daemons concorrentes")
     args = ap.parse_args()
 
     problems = discover_problems()
-    entries = build_entries(problems, args.max_steps, args.batch_size)
+    entries = build_entries(problems, args.max_steps, args.batch_size, args.seeds)
     strogatz = [p for p in problems if p.startswith("strogatz")]
     feynman = [p for p in problems if p.startswith("feynman")]
 
     print(f"Fase 4.2 — campeão (Base Infix, bon_ppo) em {len(problems)} problemas "
-          f"({len(strogatz)} strogatz + {len(feynman)} feynman) x {len(SEEDS)} seeds "
-          f"= {len(problems)*len(SEEDS)} seed-runs")
+          f"({len(strogatz)} strogatz + {len(feynman)} feynman) x {len(args.seeds)} seeds "
+          f"({args.seeds}) = {len(problems)*len(args.seeds)} seed-runs")
     print(f"nguyen FORA (3/5/7/9 da Fase 2; resto na 3050 local)")
     for e in entries[:3]:
         print(f"  + {e['id']}")
@@ -117,7 +120,11 @@ def main():
         print("\nDry-run. Re-run com --write [--split N].")
         return
 
-    meta = {"defaults": {"max_hours": 4.0, "retry_on_oom": True},
+    meta = {"defaults": {"max_hours": 4.0, "retry_on_oom": True,
+                         # queue_processor.build_command exige 'script' (em
+                         # defaults ou na entrada) — sem ele toda entrada falha
+                         # com "não tem 'script' definido".
+                         "script": "2_training/reinforcement/run_experiment.py"},
             "meta": {"phase": 4, "champion": "base_infix/bon_ppo",
                      "created": datetime.date.today().isoformat()}}
     QUEUE_FILE.write_text(yaml.safe_dump(

@@ -1,6 +1,7 @@
 defaults:
   max_hours: 4.0
   retry_on_oom: true
+  script: 2_training/reinforcement/run_experiment.py
 meta:
   phase: 4
   champion: base_infix/bon_ppo
@@ -16,8 +17,6 @@ queue:
     problem: strogatz_barmag1
     seeds: &id001
     - 42
-    - 123
-    - 456
     max_steps: 200
     batch_size: 1024
     reward: r2_clipped
