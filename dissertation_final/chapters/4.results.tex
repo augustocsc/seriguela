@@ -208,8 +208,7 @@ Phase 3's decision rule asked for the arm with the best combination of discovery
 \section{Phase 4 --- The 122-Problem SRBench Challenge}
 \label{sec:phase4_results}
 
-The champion configuration then faced the full consolidated benchmark: 96 Feynman physics equations, 14 Strogatz dynamical systems, and the 12 Nguyen problems, under the SRBench-aligned protocol of Section~\ref{sec:eval_protocol}, with \fic{three seeds per problem}. % FICTITIOUS: protocol run with seed 42 only at the time of writing; numbers below are real (seed 42)
-The complete per-problem results form the ``mother table'' of Appendix~A.
+The champion configuration then faced the full consolidated benchmark --- the Feynman physics equations (99 evaluated, including five vocabulary-uncovered additions to the base set), the 14 Strogatz dynamical systems, and the 12 Nguyen problems --- under the SRBench-aligned protocol of Section~\ref{sec:eval_protocol}, with a single seed per problem (42). Two Feynman runs were still executing at the time of writing and are marked as provisional in the appendix. The complete per-problem results form the ``mother table'' of Appendix~A.
 
 \subsection{Aggregate Results and Comparison with Published Methods}
 
@@ -217,15 +216,15 @@ Table~\ref{tab:phase4_aggregate} summarizes the aggregate outcome per benchmark 
 
 \begin{table}[htbp]
     \centering
-    \caption[Phase 4 aggregate results]{Phase 4 aggregate results of the champion configuration by benchmark family (SRBench protocol: 75/25 split, test $R^2$, noise 0, solution $=$ test $R^2 > 0.999$).}
+    \caption[Phase 4 aggregate results]{Phase 4 aggregate results of the champion configuration by benchmark family (SRBench protocol: 75/25 split, noise 0, solution $=$ $R^2 \geq 0.999$). $R^2$ is measured on the held-out test split where it was persisted, and on the training split otherwise (73 of 125 runs predate test-split persistence in the result files).}
     \label{tab:phase4_aggregate}
     \begin{tabular}{lccc}
     \toprule
-    \textbf{Family} & \textbf{Solution rate} & \textbf{$R^2 > 0.99$ rate} & \textbf{Median test $R^2$} \\
+    \textbf{Family} & \textbf{Solution rate} & \textbf{$R^2 > 0.99$ rate} & \textbf{Median $R^2$} \\
     \midrule
-    Feynman (96) & 15.6\% & 26.7\% & 0.830 \\
-    Strogatz (14) & 7.1\% & 7.1\% & 0.860 \\
-    Nguyen (12) & \fic{25.0\%} & \fic{33.3\%} & \fic{0.982} \\ % FICTITIOUS: includes pending Nguyen-1 assumed solved; real rows in Appendix A
+    Feynman (99) & 16.2\% & 27.3\% & 0.808 \\
+    Strogatz (14) & 7.1\% & 7.1\% & 0.857 \\
+    Nguyen (12) & 25.0\% & 58.3\% & 0.997 \\
     \bottomrule
     \end{tabular}
 \end{table}
@@ -237,7 +236,7 @@ Table~\ref{tab:phase4_aggregate} summarizes the aggregate outcome per benchmark 
     \label{fig:srbench}
 \end{figure}
 
-On the Feynman set the champion solves 15.6\% of the problems --- between gplearn (16.4\%) and SBP-GP (12.7\%), and within reach of Operon (16.6\%) --- while its median test $R^2$ of 0.830 places it near DSR (0.954) territory and well above BSR. On Strogatz it ties ITEA at 7.1\%. These are not leaderboard-topping numbers, and the comparison requires honesty in both directions. Against the champion count three handicaps: constants are frozen at $C=1$ while every published method fits constants freely; the model has 124M parameters and a fixed 200-step budget per problem, orders of magnitude below the search effort of methods like AIFeynman; and a subset of the Feynman problems requires operators outside the SFT vocabulary (Section~\ref{sec:srbench_data}), where exact discovery is impossible by construction. In its favor counts one structural advantage: a pre-trained prior over expression space, reused across every problem. That a small, constant-blind language model lands in the middle of a leaderboard of specialized systems --- above several dedicated GP methods on exact discovery --- is the substantive answer to \textbf{RQ5}.
+On the Feynman set the champion solves 16.2\% of the problems --- essentially matching gplearn (16.4\%) and within half a point of Operon (16.6\%), above SBP-GP (12.7\%) and EPLEX (12.4\%) --- with a median $R^2$ of 0.808, above BSR (0.769) though below the strongest regressors. On Strogatz it ties ITEA at 7.1\%. These are not leaderboard-topping numbers, and the comparison requires honesty in both directions. Against the champion count three handicaps: constants are frozen at $C=1$ while every published method fits constants freely; the model has 124M parameters and a fixed 200-step budget per problem, orders of magnitude below the search effort of methods like AIFeynman; and a subset of the Feynman problems requires operators outside the SFT vocabulary (Section~\ref{sec:srbench_data}), where exact discovery is impossible by construction. In its favor counts one structural advantage: a pre-trained prior over expression space, reused across every problem. That a small, constant-blind language model lands in the middle of a leaderboard of specialized systems --- above several dedicated GP methods on exact discovery --- is the substantive answer to \textbf{RQ5}.
 
 \subsection{Dimensional Generalization ($H_{gen}$)}
 \label{sec:hgen_results}
@@ -249,7 +248,7 @@ On the Feynman set the champion solves 15.6\% of the problems --- between gplear
     \label{fig:hgen}
 \end{figure}
 
-The SFT corpus contains no expression with more than five variables, yet five of the evaluated problems have six to nine. Does the model fall off a cliff at its training boundary? Figure~\ref{fig:hgen} answers: no. Median best $R^2$ declines smoothly with dimensionality --- 0.997 (1 variable), 0.948 (2), 0.896 (3), 0.752 (4), 0.623 (5) --- and beyond the training scope the model still produces useful approximations (0.794 on the eight-variable problem; 0.509 on the nine-variable one; the six-variable group is hardest at 0.255). Aggregating, the median within training scope is 0.863 versus 0.454 beyond it: a substantial drop, but far from collapse --- the model composes more variables than it ever saw composed. The sub-word tokenization of variable names (Section~\ref{sec:sft_setup}), which makes \texttt{x\_7} expressible even if rarely seen, plausibly underwrites this graceful degradation. No exact solution was found beyond five variables, so the generalization is approximative rather than symbolic --- a nuance the answer to \textbf{RQ4} must carry.
+The SFT corpus contains no expression with more than five variables, yet seven of the evaluated problems have six to nine. Does the model fall off a cliff at its training boundary? Figure~\ref{fig:hgen} answers: no. Median best $R^2$ declines smoothly with dimensionality --- 0.998 (1 variable), 0.954 (2), 0.878 (3), 0.689 (4), 0.623 (5) --- and beyond the training scope the model still produces useful approximations (0.794 on the eight-variable problem; 0.509 on the nine-variable one; the six-variable group is hardest, at a median of 0.334). Aggregating, the median within training scope is 0.863 versus 0.454 beyond it: a substantial drop, but far from collapse --- the model composes more variables than it ever saw composed. The sub-word tokenization of variable names (Section~\ref{sec:sft_setup}), which makes \texttt{x\_7} expressible even if rarely seen, plausibly underwrites this graceful degradation. No exact solution was found beyond five variables, so the generalization is approximative rather than symbolic --- a nuance the answer to \textbf{RQ4} must carry.
 
 \subsection{Accuracy, Complexity, and Showcase Discoveries}
 
@@ -266,6 +265,7 @@ Figure~\ref{fig:pareto} extends the no-bloat observation to the full benchmark: 
     \item \textbf{Nguyen-11} ($x^y$): found as \texttt{exp(x\_2*log(x\_1))} --- the model produced a non-trivial algebraic identity, $x^y = e^{y \ln x}$, rather than the literal power form.
     \item \textbf{Strogatz shear-flow} ($\cot(y)\cos(x)$): found exactly as \texttt{cos(x\_1)/tan(x\_2)}, recovering a cotangent absent from the operator vocabulary by composing $\cos/\tan$.
     \item \textbf{Feynman III.17.37} ($\beta(1 + \alpha\cos\theta)$): found exactly as \texttt{x\_1*(x\_2*cos(x\_3) + C)} with $C=1$.
+    \item \textbf{Feynman I.29.4} ($k = \omega/c$): found as \texttt{x\_1/(sqrt(x\_2**C))}, exploiting $\sqrt{x^C} = x$ at $C=1$ --- correct, through an idiosyncratic route.
     \item \textbf{Feynman III.21.20} ($-\rho q A / m$): found with $R^2 = 1.0$ as \texttt{x\_1*(x\_2 - x\_3 - x\_2)*x\_2/x\_4}, which simplifies to $-x_1 x_2 x_3 / x_4$ --- correct, but reached through a redundant detour ($x_2 - x_3 - x_2 = -x_3$) that a symbolic simplification pass cleans up.
 \end{itemize}
 
@@ -288,17 +288,17 @@ The uniform protocol froze constants at $C=1$ to keep the reward comparable acro
     \label{tab:constant_ablation}
     \begin{tabular}{lcc}
     \toprule
-    \textbf{Metric (Feynman, 96)} & \textbf{$C=1$ (protocol)} & \textbf{$C$ fitted} \\
+    \textbf{Metric (Feynman, 99)} & \textbf{$C=1$ (protocol)} & \textbf{$C$ fitted} \\
     \midrule
-    Solution rate & 15.6\% & \fic{18.8\%} \\ % FICTITIOUS
-    $R^2 > 0.99$ rate & 26.7\% & \fic{34.4\%} \\ % FICTITIOUS
-    Median test $R^2$ & 0.830 & \fic{0.871} \\ % FICTITIOUS
+    Solution rate & 16.2\% & \fic{19.2\%} \\ % FICTITIOUS
+    $R^2 > 0.99$ rate & 27.3\% & \fic{33.3\%} \\ % FICTITIOUS
+    Median $R^2$ & 0.808 & \fic{0.849} \\ % FICTITIOUS
     Mean evaluation cost per expression & $1\times$ & \fic{$6.3\times$} \\ % FICTITIOUS
     \bottomrule
     \end{tabular}
 \end{table}
 
-Fitting constants recovers \fic{a moderate slice of performance --- roughly three percentage points of solution rate and $+0.04$ of median test $R^2$ --- at a $\approx6\times$ evaluation cost}, confirming both that $C=1$ leaves measurable accuracy on the table and that the protocol's core comparisons, which hold the handicap constant across arms, remain internally valid. The champion's leaderboard position of Figure~\ref{fig:srbench} should therefore be read as a \emph{lower bound} on the approach's potential.
+Fitting constants recovers \fic{a moderate slice of performance --- roughly three percentage points of solution rate and $+0.04$ of median $R^2$ --- at a $\approx6\times$ evaluation cost}, confirming both that $C=1$ leaves measurable accuracy on the table and that the protocol's core comparisons, which hold the handicap constant across arms, remain internally valid. The champion's leaderboard position of Figure~\ref{fig:srbench} should therefore be read as a \emph{lower bound} on the approach's potential.
 
 \section{Summary of Findings}
 
@@ -308,5 +308,5 @@ The results of the four phases compose a single narrative:
     \item \textbf{Smaller is enough} (Phase 1): GPT-2 Base matches and slightly outperforms GPT-2 Large as a zero-shot expression sampler across 122 problems, and carries the pipeline at 40\% of the cost.
     \item \textbf{Process metrics are a validity requirement} (pilots): three silent failure modes --- reward dead zone, PPO policy collapse, evaluator memory blow-up --- were caught only by step-level instrumentation, at a total pilot cost of $\sim$US\$2.
     \item \textbf{Discovery = exploration $\times$ retention} (Phase 2): PPO's update induces an order of magnitude more exploration than GRPO's; the elite buffer supplies retention; only their combination (BoN-PPO) reliably solves the needle-in-a-haystack problem (4/5 exact, ANOVA $p=0.002$, $|d|>2$), while the buffer does nothing for the under-exploring GRPO --- exactly as the mechanism predicts.
-    \item \textbf{A 124M-parameter model is competitive on SRBench} (Phase 4): 15.6\% exact solutions on Feynman under a constant-frozen protocol places the champion among established GP systems; performance degrades gracefully, not catastrophically, beyond the dimensional scope of its training data.
+    \item \textbf{A 124M-parameter model is competitive on SRBench} (Phase 4): 16.2\% exact solutions on Feynman under a constant-frozen protocol places the champion among established GP systems, essentially matching gplearn; performance degrades gracefully, not catastrophically, beyond the dimensional scope of its training data.
 \end{enumerate}

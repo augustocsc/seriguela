@@ -1,4 +1,4 @@
-# HANDOFF — Revisão completa da dissertação (2026-07-07)
+# HANDOFF — Revisão completa da dissertação (2026-07-07; fechamento com dados finais em 2026-07-14)
 
 Este documento descreve **tudo o que foi feito** na pasta `dissertation_final/`,
 **onde estão os dados fictícios** que você precisa substituir, e o que conferir
@@ -53,21 +53,54 @@ Todo número inventado está envolto no comando `\fic{...}` e tem um comentário
 %\newcommand{\fic}[1]{\textcolor{red}{#1}}   % <- descomente esta
 ```
 
-Lista completa (7 pontos):
+Lista completa após o fechamento de 2026-07-14 (**3 pontos fictícios restantes** — os
+outros da lista original foram substituídos por dados reais):
 
 | # | Onde | O que é fictício | O que fazer |
 |---|------|------------------|-------------|
-| 1 | `3.materials_and_methods.tex`, §Phase 4 | "3 seeds per problem (42, 123, 456)" — **só a seed 42 rodou** até agora | Quando as seeds 123/456 terminarem, os números só podem melhorar (best-of-seeds). Se não rodar, troque para "a single seed (42)" e ajuste o texto do 4.results |
-| 2 | `4.results.tex`, §Phase 4 (1º parágrafo) | Mesma afirmação de 3 seeds | Idem |
-| 3 | `4.results.tex`, Tabela `tab:phase4_aggregate`, linha **Nguyen** | 25.0% / 33.3% / 0.982 — inventados (dependem de nguyen_1 pendente e de test_r2 faltantes) | Recompute da mother table quando nguyen_1 rodar. As linhas Feynman (15.6/26.7/0.830) e Strogatz (7.1/7.1/0.860) são REAIS (de `results/srbench_comparison.md`, seed 42) |
-| 4 | `4.results.tex`, §4.5.4 "Ablation: the Cost of C=1" **INTEIRA** + Tabela `tab:constant_ablation` | A ablação L-BFGS-B **nunca foi rodada**. Todos os valores da coluna "C fitted" (18.8%, 34.4%, 0.871, 6.3×) são chutes plausíveis | Rodar a ablação no campeão (o framework já tem a rotina L-BFGS-B, bounds [-2,2]) e substituir. Se não rodar, DELETE a subseção e a referência a ela no cap. 5 |
-| 5 | `5.conclusion.tex` (2 pontos: resposta à RQ5 e §Limitations) | Frases que citam o resultado da ablação fictícia ("roughly three points…", "quantifies the cost…") | Ajustar junto com o item 4 |
-| 6 | `appendix_mother_table.tex` | **12 linhas marcadas com †**: nguyen_1 + 11 Feynman pendentes (I_12_4, I_18_4, I_29_4, I_32_17, I_34_10, I_39_1, I_40_1, I_43_31, I_47_23, I_8_14, II_11_17). R²/test/solved inventados; expressões omitidas ("---") | Quando os runs terminarem, rode `python figures_src/make_appendix.py` — ele lê o `results/mother_table.csv` atualizado e regenera o .tex (as linhas fictícias somem sozinhas se o CSV tiver os dados) |
-| 7 | `ic-tese-v3.tex` | Data da defesa (15/09/2026) e Agradecimentos genéricos | Personalizar |
+| 1 | `4.results.tex`, §4.5.4 "Ablation: the Cost of C=1" **INTEIRA** + Tabela `tab:constant_ablation` | A ablação L-BFGS-B **nunca foi rodada**. Todos os valores da coluna "C fitted" (19.2%, 33.3%, 0.849, 6.3×) são chutes plausíveis. A coluna "C=1" é real (16.2/27.3/0.808) | Rodar a ablação no campeão (o framework já tem a rotina L-BFGS-B, bounds [-2,2]; é só re-avaliar as expressões já descobertas — não precisa re-treinar). Se não rodar, DELETE a subseção e as 2 frases que a citam no cap. 5 (RQ5 "lower bound…" e §Limitations "quantifies the cost…") |
+| 2 | `appendix_mother_table.tex` | **2 linhas marcadas com †**: feynman_II_11_17 (0.7412/0.7248) e feynman_I_34_10 (0.8062/0.7981) — runs ainda pendentes; valores inventados | Quando terminarem, rode `python 4_analysis/build_mother_table.py` e depois `python figures_src/make_appendix.py` — as linhas fictícias somem sozinhas. Recompute também os agregados (ver §2.5 abaixo) se algum deles resolver o problema |
+| 3 | `ic-tese-v3.tex` | Data da defesa (15/09/2026) e Agradecimentos genéricos | Personalizar |
 
-**Números NÃO fictícios que parecem bons demais para conferir mesmo assim:**
-- Feynman solution 15.6% etc. vêm de `results/srbench_comparison.md` (seed 42, R²>0.999 como proxy de solução). Foram computados por você antes — recomendo revalidar o script que gerou esse arquivo quando fechar as 3 seeds.
-- A figura H_gen e o Pareto usam **best R² de treino** (não teste) — está dito nas legendas, mas se preferir o teste, é 1 linha no `make_figures.py`.
+## 2.5. ⚠️ VERIFICAR — dados reais que merecem conferência antes da defesa
+
+Estes NÃO são fictícios, mas são pontos onde um examinador (ou você) pode tropeçar:
+
+1. **🔴 nguyen_1 — resultado suspeito (prioridade máxima).** A tabela-mãe reporta
+   R²=1.0 com a expressão `x_1*(x_1 + x_1**C) + x_1`, que com C=1 é **2x²+x —
+   não é o alvo x³+x²+x**. R²=1.0 para 2x²+x é quase impossível no domínio
+   usual do Nguyen-1. Possíveis causas: dataset local errado, bug no cálculo
+   do R², ou truncamento da expressão no agregado. **Conferir o run em
+   `results/phase_4_local/nguyen_1/`.** Se o resultado for inválido: nguyen
+   solved cai de 3→2, a linha Nguyen da tabela agregada (cap. 4) muda de
+   25.0%→16.7% em solution rate, e a linha do apêndice muda. O texto NÃO
+   destaca nguyen_1 em lugar nenhum (de propósito), então o impacto é só
+   nesses dois números.
+2. **Critério de solução = proxy.** Solution rate usa R²≥0.999 como proxy do
+   symbolic match via SymPy do SRBench (limitação já declarada no cap. 5).
+   O caso nguyen_1 acima é exatamente o tipo de over-count que o proxy
+   permite. Se der tempo: rodar um check simbólico (sympy.simplify) nas 19
+   expressões "solved" da mother table.
+3. **Test-R² com fallback para train.** 73 dos 125 runs não salvaram test_r2
+   (runs antigos). A tabela agregada do cap. 4 declara isso na caption e usa
+   test quando existe, train quando não. Os números casam com
+   `results/srbench_comparison.md` (16.2/27.3/0.808), que usa o mesmo
+   critério. Se quiser tudo em test-R²: re-avaliar as expressões da mother
+   table nos splits (barato — só avaliação).
+4. **Feynman n=99, não 96.** A fase 4 acabou cobrindo 99 problemas Feynman
+   (96 do benchmark consolidado + 5 extras fora de vocabulário, 2 ainda
+   pendentes). O cap. 3 declara o benchmark de 122 e o cap. 4 explica os
+   extras no 1º parágrafo da §4.5. Conferir se essa contagem bate com a sua
+   definição oficial do benchmark.
+5. **Fase 4 = 1 seed (42).** Agora está DECLARADO honestamente nos caps. 3, 4
+   e 5 (não é mais fictício). Se você rodar as seeds 123/456 depois, os
+   números só podem melhorar (best-of-seeds) — atualize mother table →
+   apêndice → agregados → figuras.
+6. **H_gen e Pareto usam best R² de TREINO** (dito nas legendas); a tabela
+   agregada usa test-com-fallback. São visões diferentes de propósito.
+7. **Hardware do SFT** (cap. 3): 2×EPYC 7513 + A100 80GB veio do seu texto
+   antigo — confirmar.
+8. **Título em português** — minha sugestão, revise.
 
 ---
 
@@ -163,26 +196,30 @@ PPO — há literatura de 2025 sobre instabilidade de RLHF que casaria bem.
 
 ## 6. O que ainda falta RODAR (experimentos)
 
-Em ordem de importância para o texto:
+Atualizado em 2026-07-14 (os 10 problemas que faltavam da seed 42 rodaram e já
+estão no texto):
 
-1. **Seeds 123 e 456 da Fase 4** (122 problemas × 2 seeds) — remove o fictício
-   nº 1–2. A fila já existe (`experiments/queue_phase4*.yaml`).
-2. **Os 12 problemas pendentes da seed 42** (nguyen_1 + 11 feynman — lista no
-   §2 acima) — remove os fictícios nº 3 e 6.
-3. **Ablação L-BFGS-B no campeão** (Feynman, pós-hoc: refit das constantes das
-   expressões já descobertas — nem precisa re-treinar) — remove o nº 4–5.
-   É barata: só avaliação, sem RL.
-4. (Opcional) test_r2 dos problemas nguyen que estão "—" na mother table.
+1. **Ablação L-BFGS-B no campeão** — o ÚNICO fictício substantivo restante
+   (fictício nº 1 do §2). Pós-hoc: refit das constantes das expressões já
+   descobertas — não precisa re-treinar. Barata: só avaliação.
+2. **feynman_II_11_17 e feynman_I_34_10** (fictício nº 2) — os 2 runs pendentes.
+3. **Verificação do nguyen_1** (item 🔴 do §2.5) — não é rodar, é auditar o
+   run existente.
+4. (Opcional) Seeds 123/456 da Fase 4 — melhoraria os números e removeria a
+   limitação single-seed; o texto atual já é honesto sem elas.
+5. (Opcional) test_r2 dos 73 runs antigos que não salvaram o split.
 
-Depois de cada um: atualizar `results/mother_table.csv` +
-`results/srbench_comparison.md`, rodar `make_appendix.py` e `make_figures.py`,
-e revisar os `\fic{}` correspondentes.
+Depois de cada um: `python 4_analysis/build_mother_table.py` →
+`python 4_analysis/srbench_comparison.py` → `make_appendix.py` +
+`make_figures.py` → conferir números citados no texto (grep por "16.2", "27.3",
+"0.808", "25.0", "58.3", "0.997", "0.857" nos .tex) → recompilar.
 
 ---
 
 ## 7. Checklist final antes de submeter
 
-- [ ] Substituir/confirmar os 7 pontos fictícios do §2
+- [ ] Substituir/confirmar os 3 pontos fictícios do §2 (ablação é o único substantivo)
+- [ ] Passar pelos 8 itens de verificação do §2.5 — **nguyen_1 primeiro** 🔴
 - [ ] Compilar no Overleaf (pdfLaTeX + BibTeX) e caçar warnings de overfull
       hbox na tabela do apêndice (expressões longas — se estourar margem,
       reduza para `\tiny` ou quebre a coluna)

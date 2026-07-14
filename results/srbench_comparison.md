@@ -14,7 +14,7 @@ Ruido 0. `solution`: SRBench=symbolic_solution (sympy); nosso=R²>0.999 (proxy).
 | DSR | 19.7 | 35.8 | 0.954 |
 | Operon | 16.6 | 94.0 | 1.000 |
 | gplearn | 16.4 | 50.4 | 0.990 |
-| **NOSSO (bon_ppo)** | 15.6 | 26.7 | 0.830 |
+| **NOSSO (bon_ppo)** | 16.2 | 27.3 | 0.808 |
 | SBP-GP | 12.7 | 94.1 | 1.000 |
 | EPLEX | 12.4 | 78.0 | 0.999 |
 | BSR | 2.5 | 22.2 | 0.769 |

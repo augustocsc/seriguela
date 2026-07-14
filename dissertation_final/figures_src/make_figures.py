@@ -310,7 +310,7 @@ def fig_srbench():
     feyn = [
         ("AIFeynman", 57.3), ("AFP\\_FE", 27.0), ("GP-GOMEA", 26.8), ("ITEA", 22.4),
         ("AFP", 21.1), ("DSR", 19.7), ("Operon", 16.6), ("gplearn", 16.4),
-        ("Seriguela (ours)", 15.6), ("SBP-GP", 12.7), ("EPLEX", 12.4), ("BSR", 2.5),
+        ("Seriguela (ours)", 16.2), ("SBP-GP", 12.7), ("EPLEX", 12.4), ("BSR", 2.5),
         ("FEAT", 0.0), ("FFX", 0.0), ("MRGP", 0.0),
     ]
     stro = [
@@ -321,7 +321,7 @@ def fig_srbench():
     ]
     fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.9))
     for ax, data, title in zip(axes, [feyn, stro],
-                               ["Feynman (96 problems)", "Strogatz (14 problems)"]):
+                               ["Feynman (99 problems)", "Strogatz (14 problems)"]):
         names = [n.replace("\\_", "_") for n, _ in data][::-1]
         vals = [v for _, v in data][::-1]
         colors = ["#d62728" if "Seriguela" in n else "#9db8d2" for n in names]

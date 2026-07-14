@@ -16,18 +16,9 @@ DST = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 # few extra vocabulary-uncovered Feynman rows that we keep as well.
 FICTITIOUS = {
     # problem: (best_r2, test_r2, solved)  -- invented, plausible placeholders
-    "nguyen_1": ("1.0000", "1.0000", "yes"),
+    # 2026-07-14: only two runs remain pending; all other rows are real.
     "feynman_II_11_17": ("0.7412", "0.7248", "no"),
-    "feynman_I_12_4": ("0.9124", "0.9066", "no"),
-    "feynman_I_18_4": ("0.8437", "0.8390", "no"),
-    "feynman_I_29_4": ("0.9871", "0.9855", "no"),
-    "feynman_I_32_17": ("0.5228", "0.5170", "no"),
     "feynman_I_34_10": ("0.8062", "0.7981", "no"),
-    "feynman_I_39_1": ("0.9993", "0.9989", "no"),
-    "feynman_I_40_1": ("0.6647", "0.6512", "no"),
-    "feynman_I_43_31": ("0.9418", "0.9377", "no"),
-    "feynman_I_47_23": ("0.8850", "0.8792", "no"),
-    "feynman_I_8_14": ("0.7735", "0.7684", "no"),
 }
 
 

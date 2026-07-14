@@ -79,7 +79,7 @@ feynman\_I\_11\_19 & 6 & 0.2552 & 0.2595 & no & \texttt{x\_4 + 1*x\_2 + (x\_2 + 
 feynman\_I\_12\_1 & 2 & 1.0000 & 1.0000 & yes & \texttt{x\_2*(x\_1 - C) + C*x\_2} \\
 feynman\_I\_12\_11 & 5 & 0.6250 & 0.6343 & no & \texttt{x\_1*x\_3*(x\_1 - C)*sin(x\_5)} \\
 feynman\_I\_12\_2 & 4 & 0.6885 & 0.5754 & no & \texttt{x\_1/(x\_2 + x\_3 + exp(x\_4))/x\_3} \\
-feynman\_I\_12\_4$^{\dagger}$ & 3 & \fic{0.9124} & \fic{0.9066} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_12\_4 & 3 & 0.6101 & 0.6177 & no & \texttt{sin(log(x\_1))/(x\_2*exp(x\_3))} \\
 feynman\_I\_12\_5 & 2 & 1.0000 & 1.0000 & yes & \texttt{x\_2**C*x\_1/x\_2} \\
 feynman\_I\_13\_12 & 5 & 0.6047 & 0.6093 & no & \texttt{x\_1*(x\_3 - x\_4) + cos(x\_4)} \\
 feynman\_I\_13\_4 & 4 & 0.8657 & 0.8629 & no & \texttt{x\_1*(x\_2*x\_3 + x\_1 + x\_4)} \\
@@ -91,16 +91,16 @@ feynman\_I\_15\_3x & 4 & 0.9829 & 0.9833 & no & \texttt{x\_1 - x\_4*x\_2} \\
 feynman\_I\_16\_6 & 3 & 0.8964 & 0.8984 & no & \texttt{x\_1*cos(sin(log(x\_1) - C))} \\
 feynman\_I\_18\_12 & 3 & 1.0000 & 1.0000 & yes & \texttt{x\_2*x\_1*sin(x\_3)} \\
 feynman\_I\_18\_14 & 4 & 0.5879 & 0.5849 & no & \texttt{x\_1*(x\_2 + C)*sin(x\_4) + C} \\
-feynman\_I\_18\_4$^{\dagger}$ & 4 & \fic{0.8437} & \fic{0.8390} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_18\_4 & 4 & 0.5673 & 0.5602 & no & \texttt{log(x\_4*(x\_3 + x\_2))} \\
 feynman\_I\_24\_6 & 4 & 0.8554 & 0.8573 & no & \texttt{x\_1*x\_4*(x\_2*x\_3 + C)} \\
 feynman\_I\_25\_13 & 2 & 1.0000 & 1.0000 & yes & \texttt{exp(log(x\_1/x\_2))} \\
 feynman\_I\_26\_2 & 2 & 1.0000 & 1.0000 & yes & \texttt{asin(x\_1*sin(C*x\_2))} \\
 feynman\_I\_27\_6 & 3 & 0.9416 & 0.9410 & no & \texttt{sqrt(x\_1*x\_2)/(x\_3 + C)} \\
 feynman\_I\_29\_16 & 4 & 0.3160 & 0.3012 & no & \texttt{x\_1 - tan(sin(x\_3))*sin(x\_4)} \\
-feynman\_I\_29\_4$^{\dagger}$ & 2 & \fic{0.9871} & \fic{0.9855} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_29\_4 & 2 & 1.0000 & 1.0000 & yes & \texttt{x\_1/(sqrt(x\_2**C))} \\
 feynman\_I\_30\_3 & 3 & 0.3097 & 0.3180 & no & \texttt{C*x\_1*exp(C*sin(C*x\_2 + C))} \\
 feynman\_I\_30\_5 & 3 & 0.8466 & 0.8444 & no & \texttt{C*x\_1/(x\_2*x\_3 + C)} \\
-feynman\_I\_32\_17$^{\dagger}$ & 6 & \fic{0.5228} & \fic{0.5170} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_32\_17 & 6 & 0.3337 & 0.3384 & no & \texttt{x\_1*(x\_1 - C*x\_6 + exp(x\_5))} \\
 feynman\_I\_32\_5 & 4 & 0.5187 & 0.5290 & no & \texttt{log(x\_2)*exp(-x\_3*(x\_4) + x\_3 + C)} \\
 feynman\_I\_34\_1 & 3 & 0.9315 & 0.9323 & no & \texttt{C*x\_3*(x\_1 + C)/(x\_1 - C)} \\
 feynman\_I\_34\_10$^{\dagger}$ & 3 & \fic{0.8062} & \fic{0.7981} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
@@ -109,24 +109,24 @@ feynman\_I\_34\_27 & 2 & 0.9481 & 0.9476 & no & \texttt{x\_2*(x\_1 - C)/(x\_1 + 
 feynman\_I\_34\_8 & 4 & 0.7517 & 0.7512 & no & \texttt{x\_1*(C*x\_2 - C*x\_4 + x\_3)} \\
 feynman\_I\_37\_4 & 3 & 0.8025 & 0.7989 & no & \texttt{C*x\_1*sqrt(x\_2 + x\_2*cos(x\_3))} \\
 feynman\_I\_38\_12 & 4 & 0.6756 & 0.6620 & no & \texttt{x\_3*x\_4/(C*exp(x\_2))} \\
-feynman\_I\_39\_1$^{\dagger}$ & 2 & \fic{0.9993} & \fic{0.9989} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_39\_1 & 2 & 0.9911 & 0.9911 & no & \texttt{x\_2*(x\_1 + C*sqrt(x\_1 - C))} \\
 feynman\_I\_39\_11 & 3 & 1.0000 & 1.0000 & yes & \texttt{x\_3*x\_2/(x\_1 - C)} \\
 feynman\_I\_39\_22 & 4 & 1.0000 & 1.0000 & yes & \texttt{x\_1*x\_4*x\_2/x\_3} \\
-feynman\_I\_40\_1$^{\dagger}$ & 6 & \fic{0.6647} & \fic{0.6512} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_40\_1 & 6 & 0.4573 & 0.4600 & no & \texttt{x\_1/(x\_2 + x\_3*log(x\_5))} \\
 feynman\_I\_41\_16 & 5 & 0.6272 & 0.6267 & no & \texttt{x\_2*(x\_1 - C)/x\_5} \\
 feynman\_I\_43\_16 & 4 & 1.0000 & 1.0000 & yes & \texttt{x\_1*x\_2*x\_3/x\_4} \\
-feynman\_I\_43\_31$^{\dagger}$ & 3 & \fic{0.9418} & \fic{0.9377} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_43\_31 & 3 & 1.0000 & 1.0000 & yes & \texttt{C*x\_1*x\_2*x\_3} \\
 feynman\_I\_43\_43 & 4 & 0.5340 & 0.5347 & no & \texttt{x\_2/(x\_1 - log(x\_4))} \\
 feynman\_I\_44\_4 & 5 & 0.8285 & 0.8302 & no & \texttt{x\_3*x\_2*(x\_5 - x\_4)} \\
-feynman\_I\_47\_23$^{\dagger}$ & 3 & \fic{0.8850} & \fic{0.8792} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_47\_23 & 3 & 0.8069 & 0.8108 & no & \texttt{log(x\_1*x\_2/x\_3) + cos(x\_2/x\_2)} \\
 feynman\_I\_48\_2 & 3 & 0.9999 & 0.9999 & yes & \texttt{x\_1*(C*x\_2 + C*x\_3**C) - C} \\
 feynman\_I\_50\_26 & 4 & 0.2965 & 0.2996 & no & \texttt{exp(cos(x\_2*x\_3) + C) - C} \\
 feynman\_I\_6\_2 & 2 & 0.1218 & 0.1304 & no & \texttt{sqrt(x\_1)/(x\_1*exp(x\_2))} \\
 feynman\_I\_6\_2a & 1 & 0.9922 & 0.9924 & no & \texttt{cos(sqrt(x\_1 - C))/(x\_1 + exp(x\_1))} \\
 feynman\_I\_6\_2b & 3 & 0.6530 & 0.6512 & no & \texttt{x\_1/(x\_1*sqrt(x\_1) + exp(x\_1))} \\
-feynman\_I\_8\_14$^{\dagger}$ & 4 & \fic{0.7735} & \fic{0.7684} & \fic{no} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+feynman\_I\_8\_14 & 4 & 0.3632 & 0.3687 & no & \texttt{C*sqrt((x\_1 - x\_2)**C + x\_1)} \\
 feynman\_I\_9\_18 & 9 & 0.5095 & -1807399.9659 & no & \texttt{x\_1/(x\_6*(x\_1 - x\_2)/x\_3)} \\
-nguyen\_1$^{\dagger}$ & 1 & \fic{1.0000} & \fic{1.0000} & \fic{yes} & --- \\  % FICTITIOUS ROW: run pending, replace with real result
+nguyen\_1 & 1 & 1.0000 & 1.0000 & yes & \texttt{x\_1*(x\_1 + x\_1**C) + x\_1} \\
 nguyen\_10 & 2 & 0.9535 & 0.9264 & no & \texttt{C*x\_1 - x\_1*x\_2 + sin(x\_1)} \\
 nguyen\_11 & 2 & 1.0000 & 1.0000 & yes & \texttt{exp(x\_2*log(x\_1))} \\
 nguyen\_12 & 2 & 0.9374 & 0.9379 & no & \texttt{x\_1**C*(log(C*x\_1**C))} \\
