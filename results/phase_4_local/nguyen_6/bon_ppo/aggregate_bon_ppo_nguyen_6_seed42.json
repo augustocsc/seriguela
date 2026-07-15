@@ -16,12 +16,12 @@
   "median_test_r2": null,
   "solution_rate": null,
   "n_solved": 0,
-  "mean_best_r2": 0.9460312800896287,
+  "mean_best_r2": 0.7709668210887943,
   "std_best_r2": 0.0,
   "individual_results": [
     {
-      "best_r2": 0.9460312800896287,
-      "best_expression": "x_1*cos(x_1**C) + x_1",
+      "best_r2": 0.7709668210887943,
+      "best_expression": "tan(x_1 - C*x_1*(x_1 - C))",
       "best_reward": 0.9460312800896287,
       "best_step": 197,
       "total_steps": 200,

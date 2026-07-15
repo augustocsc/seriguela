@@ -16,12 +16,12 @@
   "median_test_r2": null,
   "solution_rate": null,
   "n_solved": 0,
-  "mean_best_r2": 0.9988866717658558,
+  "mean_best_r2": 0.996810981079232,
   "std_best_r2": 0.0,
   "individual_results": [
     {
-      "best_r2": 0.9988866717658558,
-      "best_expression": "C*exp(sqrt(x_1) + x_1 - C)**C",
+      "best_r2": 0.996810981079232,
+      "best_expression": "x_1*x_1*exp(x_1 + sqrt(x_1))",
       "best_reward": 0.9988866717658558,
       "best_step": 199,
       "total_steps": 200,

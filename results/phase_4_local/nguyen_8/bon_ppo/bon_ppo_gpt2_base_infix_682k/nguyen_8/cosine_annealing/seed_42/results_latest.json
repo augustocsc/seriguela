@@ -1,6 +1,6 @@
 {
   "best_r2": 1.0,
-  "best_expression": "sqrt(sqrt(C*x_1)**C)",
+  "best_expression": "sqrt(x_1)",
   "best_reward": 1.0,
   "best_step": 199,
   "total_steps": 200,
