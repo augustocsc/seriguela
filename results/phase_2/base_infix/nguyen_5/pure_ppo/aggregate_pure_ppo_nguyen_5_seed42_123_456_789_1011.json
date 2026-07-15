@@ -89639,7 +89639,7 @@
     },
     {
       "best_r2": 1.0,
-      "best_expression": "sin(x_1**C)*cos(x_1) - C",
+      "best_expression": "sin(x_1*x_1)*cos(x_1) - C",
       "best_reward": 1.0,
       "best_step": 116,
       "total_steps": 200,

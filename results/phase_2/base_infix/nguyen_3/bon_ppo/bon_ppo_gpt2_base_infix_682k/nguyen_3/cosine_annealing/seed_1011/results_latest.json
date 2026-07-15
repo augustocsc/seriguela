@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.9992557093764678,
-  "best_expression": "C*(C*exp(x_1) - cos(x_1))**C",
+  "best_r2": 0.9982612515267407,
+  "best_expression": "C*exp((x_1 + C)*sqrt(C*x_1 + sin(x_1)) - C)",
   "best_reward": 0.9992557093764678,
   "best_step": 198,
   "total_steps": 200,

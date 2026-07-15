@@ -21,7 +21,7 @@
   "individual_results": [
     {
       "best_r2": 0.9978639379328889,
-      "best_expression": "sqrt(C*x_1*(x_1 + x_1)*exp(x_1))**C",
+      "best_expression": "exp(x_1)*((x_1 +x_1)*x_1)",
       "best_reward": 0.9978639379328889,
       "best_step": 112,
       "total_steps": 113,
@@ -21273,7 +21273,7 @@
       "reward_fn": "r2_clipped",
       "penalty_strategy": "gradient",
       "temp_scheduler": "cosine_1.0_0.5",
-      "test_r2": 0.9980613702338287,
+      "test_r2": null,
       "test_mse": 0.43343806567073245,
       "test_valid": true,
       "test_error": null,

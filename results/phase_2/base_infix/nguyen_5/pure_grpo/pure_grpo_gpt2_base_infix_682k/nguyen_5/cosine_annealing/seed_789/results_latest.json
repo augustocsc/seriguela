@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.5429483228219391,
-  "best_expression": "x_1/(C*exp(x_1**C)) - C",
+  "best_r2": 0.2809159715697005,
+  "best_expression": "cos(x_1)*log(x_1*cos(x_1) + C) - C",
   "best_reward": 0.5429483228219391,
   "best_step": 3,
   "total_steps": 200,

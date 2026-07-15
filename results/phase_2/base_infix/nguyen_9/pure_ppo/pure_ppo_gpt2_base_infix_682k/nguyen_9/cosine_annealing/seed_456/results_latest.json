@@ -1,6 +1,6 @@
 {
   "best_r2": 1.0,
-  "best_expression": "sin(x_2 **C) + sin(x_1)",
+  "best_expression": "sin(x_2*x_2) + sin(x_1)",
   "best_reward": 1.0,
   "best_step": 149,
   "total_steps": 200,

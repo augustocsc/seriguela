@@ -20,8 +20,8 @@
   "median_test_r2": 0.9960938663102532,
   "solution_rate": 0.0,
   "n_solved": 0,
-  "mean_best_r2": 0.9922416328700647,
-  "std_best_r2": 0.007499612990077192,
+  "mean_best_r2": 0.9901150773285676,
+  "std_best_r2": 0.00740055359500419,
   "individual_results": [
     {
       "best_r2": 0.9935169714316094,
@@ -187731,8 +187731,8 @@
       "temp_scheduler": "cosine_1.0_0.5"
     },
     {
-      "best_r2": 0.9968417843805488,
-      "best_expression": "x_1**C*(x_1 + x_1)**C",
+      "best_r2": 0.9862090066730638,
+      "best_expression": "x_1*exp(sqrt(x_1) + x_1)",
       "best_reward": 0.9968417843805488,
       "best_step": 29,
       "total_steps": 200,
@@ -223338,7 +223338,7 @@
       "reward_fn": "r2_clipped",
       "penalty_strategy": "gradient",
       "temp_scheduler": "cosine_1.0_0.5",
-      "test_r2": 0.9960938663102532,
+      "test_r2": null,
       "test_mse": 0.8733318038744955,
       "test_valid": true,
       "test_error": null,

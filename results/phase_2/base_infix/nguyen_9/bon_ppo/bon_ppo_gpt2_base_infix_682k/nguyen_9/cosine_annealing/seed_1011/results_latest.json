@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.7877336413406397,
-  "best_expression": "C*(C*sqrt(x_1) + sin(C*x_2**C))",
+  "best_r2": 0.6358132137414503,
+  "best_expression": "sqrt(x_1) + x_2*cos(x_2)",
   "best_reward": 0.7877336413406397,
   "best_step": 196,
   "total_steps": 200,

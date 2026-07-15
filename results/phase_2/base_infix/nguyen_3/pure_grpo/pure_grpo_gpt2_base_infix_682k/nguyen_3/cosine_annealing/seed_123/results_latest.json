@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.9902501400288964,
-  "best_expression": "x_1 + (x_1**C - log(x_1 + C))*exp(x_1 + sin(x_1)) + C",
+  "best_r2": 0.959662070327603,
+  "best_expression": "C*sqrt(log(sqrt(x_1) + C)) + exp(C*x_1 + x_1)",
   "best_reward": 0.9902501400288964,
   "best_step": 8,
   "total_steps": 200,

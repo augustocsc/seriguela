@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.9727389384546351,
-  "best_expression": "x_1 + exp(x_1)**C",
+  "best_r2": 0.9060308682482754,
+  "best_expression": "exp(x_1*2)/sqrt(x_1)*x_1",
   "best_reward": 0.9727389384546351,
   "best_step": 2,
   "total_steps": 136,

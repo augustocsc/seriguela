@@ -1,6 +1,6 @@
 {
-  "best_r2": 0.9846387826972567,
-  "best_expression": "sqrt(x_1/sqrt(C*x_1))*exp(x_1)**C",
+  "best_r2": 0.971274984074794,
+  "best_expression": "exp(x_1*(sin(C*sqrt(x_1 + C - C)) + C))",
   "best_reward": 0.9846387826972567,
   "best_step": 199,
   "total_steps": 200,

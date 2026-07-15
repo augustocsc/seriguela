@@ -20,12 +20,12 @@
   "median_test_r2": null,
   "solution_rate": null,
   "n_solved": 0,
-  "mean_best_r2": 0.9970791707578627,
-  "std_best_r2": 0.001731338822774836,
+  "mean_best_r2": 0.9942763932879007,
+  "std_best_r2": 0.0052982765325989625,
   "individual_results": [
     {
-      "best_r2": 0.9936531669717492,
-      "best_expression": "x_1 *x_1*exp(x_1)*x_1 + x_1**C*x_1**C**C",
+      "best_r2": 0.9929190725522767,
+      "best_expression": "x_1*x_1*exp(x_1)*x_1 +x_1*x_1**(x_1)",
       "best_reward": 0.9936531669717492,
       "best_step": 97,
       "total_steps": 100,
@@ -34248,8 +34248,8 @@
       "temp_scheduler": "cosine_1.0_0.5"
     },
     {
-      "best_r2": 0.9977295200248676,
-      "best_expression": "x_1**C*(x_1 + cos(cos(x_1) + C) + C)**C",
+      "best_r2": 0.9844497270945307,
+      "best_expression": "x_1*exp(x_1)*x_1*x_1 + x_1",
       "best_reward": 0.9977295200248676,
       "best_step": 95,
       "total_steps": 96,
@@ -76044,7 +76044,7 @@
     },
     {
       "best_r2": 0.9978639379328889,
-      "best_expression": "sqrt(C*x_1*(x_1 + x_1)*exp(x_1))**C",
+      "best_expression": "exp(x_1)*((x_1 +x_1)*x_1)",
       "best_reward": 0.9978639379328889,
       "best_step": 112,
       "total_steps": 113,

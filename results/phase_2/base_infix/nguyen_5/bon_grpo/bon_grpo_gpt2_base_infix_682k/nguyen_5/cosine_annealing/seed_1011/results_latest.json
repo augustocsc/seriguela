@@ -1,5 +1,5 @@
 {
-  "best_r2": 0.26965210589885147,
+  "best_r2": 0.1129658419851769,
   "best_expression": "sin(log(sin(sin(x_1) + C)**C) - sin(C))",
   "best_reward": 0.0,
   "best_step": 199,
