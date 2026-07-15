@@ -131,7 +131,7 @@ class Expression:
             computable_expression = re.sub(rf'\bx_{i}\b', f'x[{i-1}]', computable_expression)
         
 
-        self.computable_expression = computable_expression.replace('**C', '**2')
+        self.computable_expression = computable_expression
         
         self.constant_count = self.computable_expression.count('C')
         self.best_constants = [1.0] * self.constant_count
