@@ -1,9 +1,60 @@
-# HANDOFF — Revisão completa da dissertação (2026-07-07; fechamento com dados finais em 2026-07-14)
+# HANDOFF — Revisão completa da dissertação (2026-07-07; fechamento com dados finais em 2026-07-14; correção de bug crítico em 2026-07-15)
 
 Este documento descreve **tudo o que foi feito** na pasta `dissertation_final/`,
 **onde estão os dados fictícios** que você precisa substituir, e o que conferir
 antes da defesa. A pasta `dissertation/` original **não foi tocada** — todo o
 trabalho novo está aqui.
+
+---
+
+## 0. 🔴 LEIA PRIMEIRO — bug crítico encontrado e corrigido (2026-07-15)
+
+Ao auditar o item suspeito nguyen_1 (marcado no fechamento de 07-14), encontrei
+um **bug real no avaliador de expressões** (`classes/expression.py`), não uma
+coincidência. Está documentado por completo — mecanismo, alcance, metodologia
+de correção — na **nova seção §4.1.1 "A Constant-Exponent Evaluation Bug"**
+do PDF (`chapters/4.results.tex`, label `sec:c_bug`). Resumo:
+
+- **O que era:** toda expressão descoberta com uma constante como **expoente**
+  (`x**C`) era avaliada com expoente **hardcoded = 2**, nunca com `C=1` como o
+  protocolo documentava. Bug de maio/2025, nunca revisto após a decisão de
+  `C=1` uniforme (jun/2026). Todo o resto (C multiplicando, somando etc.)
+  sempre esteve correto.
+- **Alcance:** 25 de 127 linhas da mother table (Fase 4) e 31 de 100 seed-runs
+  da Fase 2 usavam essa construção.
+- **Correção:** já aplicada. `classes/expression.py` corrigido (linha do
+  hardcode removida). Todo resultado afetado foi **reavaliado sem re-treinar**
+  — cada run foi pontuado de novo com o avaliador correto contra os candidatos
+  que ELE MESMO já tinha descoberto (`best_expression` + `top_expressions`),
+  nunca contra respostas de fora. Metodologia completa nos scripts
+  `4_analysis/rescore_expressions.py`, `rescore_phase2.py`, `rescore_phase4.py`.
+- **Resultado líquido:** **surpreendentemente bom**. Das 6 soluções exatas
+  "de graça" pelo bug na Fase 4, as 6 sobreviveram (o modelo tinha mesmo achado
+  a resposta certa, só ranqueada errado). Na Fase 2, só 1 exata caiu (BoN-PPO/
+  nguyen_3, 1 seed, R² 0.9993→0.9983). **Mas o baseline Best-of-N desabou**:
+  nguyen_5 0.626→0.010, nguyen_9 0.790→**-0.371**. Ele não tinha nenhum
+  mecanismo de busca genuíno para se recuperar do bug como os braços de RL
+  tinham — então a RQ1 ("RL bate amostragem?") ficou muito mais forte, não
+  mais fraca: o baseline real é essencialmente nulo, não competitivo.
+- **O que mudou no texto:** Tabela `tab:phase2_master` inteira, Tabela
+  `tab:anova` inteira (nguyen_9 virou o problema mais discriminativo do
+  estudo, nguyen_3 perdeu significância), a narrativa de "Overall Picture",
+  a resposta à RQ1 (caps. 4 e 5), abstract PT/EN (p-value do ANOVA), showcase
+  do nguyen_5/Feynman I.29.4, "Champion Selection" (7→6 exatas), agregados da
+  Fase 4 (Feynman R²>0.99 rate 27.3%→26.3%; Strogatz mediana 0.857→0.852),
+  H_gen (medianas levemente ajustadas). **Já tudo aplicado e recompilado.**
+- **O que NÃO foi refeito:** o `history` por-step (usado nas figuras de
+  convergência/validade/exploração) reflete o treino ORIGINAL sob a
+  recompensa parcialmente bugada — não foi re-treinado (fora de escopo de uma
+  correção pós-hoc). Isso está declarado explicitamente no texto (§4.1.1 e
+  §5 Limitations) como uma inconsistência menor e divulgada.
+- **Arquivos de backup:** todo JSON tocado tem uma cópia `.bak_prebugfix` ao
+  lado (Fase 2: `results/phase_2/base_infix/**/*.bak_prebugfix`; Fase 4:
+  `results/phase_4*/**/*.bak_prebugfix`) — não delete, é o único registro do
+  estado pré-correção caso precise auditar de novo.
+- **Se quiser auditar você mesmo:** rode qualquer um dos três scripts de
+  `4_analysis/rescore_*.py` sem `--apply` — eles imprimem um diff completo
+  antes/depois sem tocar em nada.
 
 ---
 
@@ -66,27 +117,23 @@ outros da lista original foram substituídos por dados reais):
 
 Estes NÃO são fictícios, mas são pontos onde um examinador (ou você) pode tropeçar:
 
-1. **🔴 nguyen_1 — resultado suspeito (prioridade máxima).** A tabela-mãe reporta
-   R²=1.0 com a expressão `x_1*(x_1 + x_1**C) + x_1`, que com C=1 é **2x²+x —
-   não é o alvo x³+x²+x**. R²=1.0 para 2x²+x é quase impossível no domínio
-   usual do Nguyen-1. Possíveis causas: dataset local errado, bug no cálculo
-   do R², ou truncamento da expressão no agregado. **Conferir o run em
-   `results/phase_4_local/nguyen_1/`.** Se o resultado for inválido: nguyen
-   solved cai de 3→2, a linha Nguyen da tabela agregada (cap. 4) muda de
-   25.0%→16.7% em solution rate, e a linha do apêndice muda. O texto NÃO
-   destaca nguyen_1 em lugar nenhum (de propósito), então o impacto é só
-   nesses dois números.
+1. **✅ RESOLVIDO — nguyen_1.** Era mesmo um bug real, não coincidência: a
+   expressão `x_1*(x_1 + x_1**C) + x_1` só batia R²=1.0 por causa do hardcode
+   de expoente descrito no §0 deste documento. Corrigido: o run tinha OUTRO
+   candidato genuíno (`x_1*(x_1*x_1 + x_1 + C)` = x³+x²+x) na própria lista de
+   descobertas, promovido para "found". nguyen_1 continua "solved" — ver §0.
 2. **Critério de solução = proxy.** Solution rate usa R²≥0.999 como proxy do
    symbolic match via SymPy do SRBench (limitação já declarada no cap. 5).
-   O caso nguyen_1 acima é exatamente o tipo de over-count que o proxy
-   permite. Se der tempo: rodar um check simbólico (sympy.simplify) nas 19
-   expressões "solved" da mother table.
+   O bug do §0 já forçou uma auditoria manual de todas as 19 "solved" —
+   todas sobreviveram com expressão genuína após a correção. Se der tempo:
+   rodar um check simbólico (sympy.simplify) adicional é redundante agora,
+   mas não custa nada.
 3. **Test-R² com fallback para train.** 73 dos 125 runs não salvaram test_r2
    (runs antigos). A tabela agregada do cap. 4 declara isso na caption e usa
    test quando existe, train quando não. Os números casam com
-   `results/srbench_comparison.md` (16.2/27.3/0.808), que usa o mesmo
-   critério. Se quiser tudo em test-R²: re-avaliar as expressões da mother
-   table nos splits (barato — só avaliação).
+   `results/srbench_comparison.md` (16.2/26.3/0.808 pós-correção do §0), que
+   usa o mesmo critério. Se quiser tudo em test-R²: re-avaliar as expressões
+   da mother table nos splits (barato — só avaliação).
 4. **Feynman n=99, não 96.** A fase 4 acabou cobrindo 99 problemas Feynman
    (96 do benchmark consolidado + 5 extras fora de vocabulário, 2 ainda
    pendentes). O cap. 3 declara o benchmark de 122 e o cap. 4 explica os
@@ -203,23 +250,29 @@ estão no texto):
    (fictício nº 1 do §2). Pós-hoc: refit das constantes das expressões já
    descobertas — não precisa re-treinar. Barata: só avaliação.
 2. **feynman_II_11_17 e feynman_I_34_10** (fictício nº 2) — os 2 runs pendentes.
-3. **Verificação do nguyen_1** (item 🔴 do §2.5) — não é rodar, é auditar o
-   run existente.
+   Quando rodarem, cheque também se a expressão descoberta usa `**C` — se usar,
+   rode `python 4_analysis/rescore_phase4.py --apply` de novo antes de aceitar
+   o resultado (ver §0).
+3. ~~Verificação do nguyen_1~~ — **resolvido em 2026-07-15, era um bug real**, ver §0.
 4. (Opcional) Seeds 123/456 da Fase 4 — melhoraria os números e removeria a
    limitação single-seed; o texto atual já é honesto sem elas.
 5. (Opcional) test_r2 dos 73 runs antigos que não salvaram o split.
 
 Depois de cada um: `python 4_analysis/build_mother_table.py` →
 `python 4_analysis/srbench_comparison.py` → `make_appendix.py` +
-`make_figures.py` → conferir números citados no texto (grep por "16.2", "27.3",
-"0.808", "25.0", "58.3", "0.997", "0.857" nos .tex) → recompilar.
+`make_figures.py` → conferir números citados no texto (grep por "16.2", "26.3",
+"0.808", "25.0", "58.3", "0.997", "0.852" nos .tex) → recompilar. Se qualquer
+run novo tiver `**C` na expressão, rode os `rescore_*.py` correspondentes
+ANTES de rebuild (ver §0 — o bug foi corrigido no código, mas dados antigos
+gerados antes da correção, se reaparecerem de algum backup, ainda estariam
+errados).
 
 ---
 
 ## 7. Checklist final antes de submeter
 
 - [ ] Substituir/confirmar os 3 pontos fictícios do §2 (ablação é o único substantivo)
-- [ ] Passar pelos 8 itens de verificação do §2.5 — **nguyen_1 primeiro** 🔴
+- [ ] Passar pelos itens restantes de verificação do §2.5 (nguyen_1 já resolvido, ver §0)
 - [ ] Compilar no Overleaf (pdfLaTeX + BibTeX) e caçar warnings de overfull
       hbox na tabela do apêndice (expressões longas — se estourar margem,
       reduza para `\tiny` ou quebre a coluna)

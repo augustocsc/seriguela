@@ -1,7 +1,7 @@
 \chapter{Results}
 \label{ch:results}
 
-This chapter presents the experimental results of the Seriguela pipeline, following the phased design of Section~\ref{sec:design}. We first summarize the preliminary experiments and the methodological lessons that shaped the final protocol (Section~\ref{sec:prephase}). We then report the zero-shot model selection (Section~\ref{sec:phase1_results}), the stability findings from the pilot study (Section~\ref{sec:stability_findings}), and the controlled five-arm comparison with its statistical analysis (Section~\ref{sec:phase2_results}). Finally, the champion configuration faces the 122-problem SRBench challenge (Section~\ref{sec:phase4_results}). Unless stated otherwise, every number in this chapter comes from the versioned per-seed result files in the project repository.
+This chapter presents the experimental results of the Seriguela pipeline, following the phased design of Section~\ref{sec:design}. We first summarize the preliminary experiments and the methodological lessons that shaped the final protocol (Section~\ref{sec:prephase}), including a constant-exponent evaluation bug found and corrected during the final review (Section~\ref{sec:c_bug}). We then report the zero-shot model selection (Section~\ref{sec:phase1_results}), the stability findings from the pilot study (Section~\ref{sec:stability_findings}), and the controlled five-arm comparison with its statistical analysis (Section~\ref{sec:phase2_results}). Finally, the champion configuration faces the 122-problem SRBench challenge (Section~\ref{sec:phase4_results}). Unless stated otherwise, every number in this chapter comes from the versioned per-seed result files in the project repository, corrected as described in Section~\ref{sec:c_bug}.
 
 \section{Preliminary Experiments and Methodological Lessons}
 \label{sec:prephase}
@@ -14,6 +14,17 @@ The first round was a set of 36 exploratory RL runs (4 algorithms $\times$ 3 pro
 The second round was far larger --- a factorial sweep of roughly 9{,}700 runs over models, problems, algorithms, rewards, penalties, temperatures, prompts, and noise levels --- and it failed. A post-hoc audit found four disqualifying defects: (i) the Best-of-N baseline had crashed silently in \emph{every} run due to a type-mismatch bug, reporting $R^2 = 0$ and invalidating all comparative claims; (ii) 89\% of the configurations had been run with a single seed, making it impossible to distinguish robust configurations from lucky ones; (iii) the factorial grid was fragmented, with 280 combinations missing entirely, so marginal means were biased toward whichever configurations happened to complete; and (iv) the reward and penalty settings of thousands of runs were not correctly logged. The dataset was discarded.
 
 Three design rules were extracted from this failure and applied to everything that follows: \textbf{replication before breadth} (five seeds per cell, even if it means fixing auxiliary factors); \textbf{baselines must demonstrably run} (the Best-of-N arm was re-implemented and its output verified end to end); and \textbf{process metrics are recorded at every step} (validity rate, KL divergence, memory footprint), because final scores alone cannot reveal a silently broken experiment. The pilot findings of Section~\ref{sec:stability_findings} vindicate the third rule directly.
+
+\subsection{A Constant-Exponent Evaluation Bug (Found and Corrected Post-Hoc)}
+\label{sec:c_bug}
+
+A third defect was found during the final review of this thesis, after every run reported in this chapter had already completed: the shared expression evaluator (\texttt{classes/expression.py}, used both to compute the RL reward during training and to score every reported result) contained a line that silently rewrote any discovered constant used as an \emph{exponent} --- the substring \texttt{**C} --- to a hard-coded exponent of 2, regardless of the $C=1$ protocol declared in Section~\ref{sec:c_protocol}. The line predates that protocol decision (it was written in May 2025) and was never revisited once $C=1$ became the uniform standard in June 2026. Every other use of $C$ (as a multiplicative factor, an additive offset, and so on) was evaluated correctly throughout; only the power-form case was affected. Concretely, an expression such as \texttt{x\_1**C} was evaluated as $x^2$, not the documented $x^1=x$.
+
+The bug was caught by manually auditing a single suspicious ``solved'' entry in the Phase 4 appendix (Nguyen-1, whose reported exact solution did not algebraically match its target) and confirmed by direct execution of the evaluator, not by inference. It was fixed by removing the hard-coded substitution. To determine its blast radius, every stored result whose reported best expression contained \texttt{**C} was identified: 25 of 127 Phase 4 rows and 31 of 100 Phase 2 seed-runs. Because the same evaluator ranked candidates \emph{during} training (the elite buffer, PPO/GRPO reward, and top-candidate lists were all computed under the bug), simply re-scoring the single previously-reported ``best'' expression per run would unfairly discard runs that had \emph{also} discovered a genuinely correct, bug-free candidate but ranked it below a bug-exploiting one. Every affected run was therefore re-evaluated by pooling its reported best expression together with its own logged top candidates (the same pool the run itself surfaced --- nothing external was added) and re-scoring every candidate in that pool with the corrected evaluator against freshly regenerated data using that run's own seed and domain; the true best candidate from the pool replaced the original entry. For Phase 2, this recovery was seed-scoped: a seed's corrected outcome was only ever recovered from that same seed's own candidates, never borrowed from another seed, to preserve the independence the ANOVA in Section~\ref{sec:phase2_stats} depends on.
+
+The correction changed remarkably few \emph{exact}-solution outcomes: of the 25 affected Phase 4 rows, all 6 previously reported as solved remained solved after correction (a genuine, bug-free sibling with the same $R^2=1.0$ was recovered from the same run in every case), and of the 31 affected Phase 2 seed-runs, only one exact solution was lost (BoN-PPO on Nguyen-3, one seed, $R^2$ dropping from $0.9993$ to $0.9983$, just under the $0.999$ threshold). The picture is very different for \emph{non-exact} scores, and asymmetric across arms: the Best-of-N baseline --- which has no learning signal steering it toward genuinely correct structure, only raw sampling scored by the (buggy) reward --- saw its reported scores collapse on every affected problem, most dramatically on Nguyen-5 and Nguyen-9 (Section~\ref{sec:phase2_results}), while the RL arms, whose candidate pools already contained many alternatives, were only mildly revised downward. This asymmetry is not an artifact of the correction procedure --- it reflects a real property of undirected sampling: without a search process that generates many candidates and is pushed toward high reward, there is nothing in the pool to recover from and no defense against a reward function that can be gamed.
+
+All figures and numbers in the remainder of this chapter reflect the corrected data. One limitation of the correction should be stated plainly: the per-step training dynamics shown in Figures~\ref{fig:phase2_convergence}, \ref{fig:phase2_validity}, and \ref{fig:phase2_exploration} are computed from the \texttt{history} logged during each run, which was \emph{not} retroactively corrected (doing so would require re-running the affected training steps, which was not feasible within the scope of this correction). These figures therefore reflect the actual trajectories the (partially buggy) reward produced during training; only the \emph{final} reported best expression and score for each run were corrected. Where a run's corrected final answer differs from its original one, the step at which that specific candidate was first discovered may not exactly match the recorded \texttt{best\_step}. This is judged a minor, disclosed inconsistency rather than a substantive threat to the qualitative claims: the exploration-width and validity-dynamics findings are aggregate properties of thousands of samples per run, not dependent on any single candidate's identity.
 
 \section{Phase 1 --- Zero-Shot Model Selection}
 \label{sec:phase1_results}
@@ -77,17 +88,17 @@ The main experiment ran the five arms of Table~\ref{tab:rl_algorithms} on Nguyen
     \toprule
     \textbf{Problem} & \textbf{Arm} & \textbf{Best $R^2$ (mean$\pm$SD)} & \textbf{Median} & \textbf{Exact} & \textbf{Compl.} \\
     \midrule
-    Nguyen-3 & Best-of-N & $0.998 \pm 0.001$ & 0.998 & 0/5 & 12 \\
-             & Pure-PPO  & $0.992 \pm 0.007$ & 0.995 & 0/5 & 16 \\
-             & Pure-GRPO & $0.985 \pm 0.007$ & 0.985 & 0/5 & 18 \\
-             & BoN-PPO   & $0.996 \pm 0.005$ & 0.998 & 1/5 & 15 \\
-             & BoN-GRPO  & $0.997 \pm 0.002$ & 0.998 & 0/5 & 20 \\
+    Nguyen-3 & Best-of-N & $0.781 \pm 0.435$ & 0.998 & 0/5 & 12 \\
+             & Pure-PPO  & $0.990 \pm 0.007$ & 0.994 & 0/5 & 16 \\
+             & Pure-GRPO & $0.966 \pm 0.032$ & 0.984 & 0/5 & 18 \\
+             & BoN-PPO   & $0.993 \pm 0.011$ & 0.998 & 0/5 & 17 \\
+             & BoN-GRPO  & $0.994 \pm 0.005$ & 0.998 & 0/5 & 17 \\
     \midrule
-    Nguyen-5 & Best-of-N & $0.626 \pm 0.020$ & 0.629 & 0/5 & 13 \\
+    Nguyen-5 & Best-of-N & $0.010 \pm 0.082$ & -0.005 & 0/5 & 13 \\
              & Pure-PPO  & $0.755 \pm 0.249$ & 0.845 & 2/5 & 16 \\
-             & Pure-GRPO & $0.268 \pm 0.236$ & 0.113 & 0/5 & 17 \\
+             & Pure-GRPO & $0.215 \pm 0.195$ & 0.113 & 0/5 & 18 \\
              & BoN-PPO   & $\mathbf{0.857 \pm 0.286}$ & \textbf{1.000} & \textbf{4/5} & 14 \\
-             & BoN-GRPO  & $0.278 \pm 0.212$ & 0.223 & 0/5 & 18 \\
+             & BoN-GRPO  & $0.246 \pm 0.222$ & 0.123 & 0/5 & 18 \\
     \midrule
     Nguyen-7 & Best-of-N & $0.999 \pm 0.000$ & 0.999 & 1/5 & 12 \\
              & Pure-PPO  & $0.998 \pm 0.000$ & 0.999 & 0/5 & 12 \\
@@ -95,11 +106,11 @@ The main experiment ran the five arms of Table~\ref{tab:rl_algorithms} on Nguyen
              & BoN-PPO   & $0.999 \pm 0.000$ & 0.999 & 1/5 & 14 \\
              & BoN-GRPO  & $0.999 \pm 0.000$ & 0.999 & 4/5 & 19 \\
     \midrule
-    Nguyen-9 & Best-of-N & $0.790 \pm 0.018$ & 0.788 & 0/5 & 11 \\
-             & Pure-PPO  & $0.737 \pm 0.247$ & 0.788 & 2/5 & 13 \\
-             & Pure-GRPO & $0.666 \pm 0.187$ & 0.546 & 0/5 & 15 \\
-             & BoN-PPO   & $\mathbf{0.825 \pm 0.088}$ & 0.788 & 1/5 & 14 \\
-             & BoN-GRPO  & $0.701 \pm 0.125$ & 0.794 & 0/5 & 15 \\
+    Nguyen-9 & Best-of-N & $-0.371 \pm 0.150$ & -0.454 & 0/5 & 11 \\
+             & Pure-PPO  & $0.709 \pm 0.242$ & 0.604 & 2/5 & 14 \\
+             & Pure-GRPO & $0.608 \pm 0.176$ & 0.528 & 0/5 & 16 \\
+             & BoN-PPO   & $\mathbf{0.712 \pm 0.159}$ & 0.636 & 1/5 & 15 \\
+             & BoN-GRPO  & $0.678 \pm 0.112$ & 0.704 & 0/5 & 16 \\
     \bottomrule
     \end{tabular}
 \end{table}
@@ -107,17 +118,17 @@ The main experiment ran the five arms of Table~\ref{tab:rl_algorithms} on Nguyen
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.99\linewidth]{figures/fig_phase2_box.pdf}
-    \caption[Phase 2 per-seed distributions]{Per-seed best $R^2$ by arm and problem (points: seeds; bar: mean; whisker: $\pm$1 SD). Nguyen-3 and Nguyen-7 are saturated --- every arm reaches $R^2 \approx 0.99$ --- and act as sanity checks. The separation appears on Nguyen-5, the needle-in-a-haystack problem, and more mildly on the two-variable Nguyen-9.}
+    \caption[Phase 2 per-seed distributions]{Per-seed best $R^2$ by arm and problem (points: seeds; bar: mean; whisker: $\pm$1 SD). The four RL arms cluster near $R^2 \approx 0.99$ on Nguyen-3 and Nguyen-7 and act as sanity checks there; the no-learning Best-of-N baseline does too on Nguyen-7, but not reliably on Nguyen-3 (one collapsed seed inflates its variance). The separation is sharp on Nguyen-5, the needle-in-a-haystack problem, and even sharper on Nguyen-9, where every RL arm clears the collapsed baseline by a wide, statistically decisive margin.}
     \label{fig:phase2_box}
 \end{figure}
 
 \subsection{Overall Picture}
 
-Two of the four problems (Nguyen-3 and Nguyen-7) turn out to be \emph{saturated}: every arm, including the no-learning baseline, reaches $R^2 \approx 0.99$, so they carry no discriminative signal about mean performance --- their role reduces to confirming that no arm is broken. (They do retain signal about \emph{exact} discovery: on Nguyen-7, notably, BoN-GRPO converts near-perfect fits into the exact expression in 4/5 seeds, more than any other arm.)
+Nguyen-7 is cleanly \emph{saturated}: every arm, including the no-learning baseline, reaches $R^2 \approx 0.99$, so it carries no discriminative signal about mean performance --- its role reduces to confirming that no arm is broken. (It does retain signal about \emph{exact} discovery: BoN-GRPO converts near-perfect fits into the exact expression in 4/5 seeds there, more than any other arm.) Nguyen-3 is a softer case: the four RL arms cluster near $R^2 \approx 0.99$ as expected, but the Best-of-N baseline's mean drops to $0.781 \pm 0.435$ --- one of its five seeds' best candidate turns out, once correctly scored, to fit far worse than the rest (Section~\ref{sec:c_bug}), inflating its variance enough that the omnibus test no longer detects a significant difference among arms (Table~\ref{tab:anova}).
 
-The informative problem is \textbf{Nguyen-5} ($\sin(x^2)\cos(x) - 1$), a target whose structure is rare under the SFT prior --- a needle in a haystack. Here the arms separate widely: BoN-PPO finds the \emph{exact} symbolic solution in 4 of 5 seeds (mean $0.857$, median $1.0$); Pure-PPO finds it in 2 of 5 ($0.755$); the baseline plateaus at $0.626$ and never finds it; and both GRPO arms collapse to local optima around $0.27$. On Nguyen-9 (two variables), the ordering repeats more mildly, with BoN-PPO again on top ($0.825 \pm 0.088$) and, notably, the smallest variance of any RL arm.
+The informative problem is \textbf{Nguyen-5} ($\sin(x^2)\cos(x) - 1$), a target whose structure is rare under the SFT prior --- a needle in a haystack. Here the arms separate widely: BoN-PPO finds the \emph{exact} symbolic solution in 4 of 5 seeds (mean $0.857$, median $1.0$); Pure-PPO finds it in 2 of 5 ($0.755$); the baseline manages only $0.010$ --- indistinguishable from predicting the mean --- and never finds it; and both GRPO arms settle at local optima around $0.22$--$0.25$. \textbf{Nguyen-9} (two variables) tells an even starker version of the same story: every RL arm (GRPO included) clears $R^2 \approx 0.6$--$0.7$, while the Best-of-N baseline's mean is \emph{negative} ($-0.371 \pm 0.150$) --- on this problem, undirected sampling from the frozen prior does not merely fail to solve the task, it fails to beat a constant predictor.
 
-The Best-of-N baseline --- given the identical sampling budget --- bounds the contribution of learning itself: on Nguyen-5, the policy gradient plus buffer adds $+0.23$ of mean best $R^2$ and $+80$ percentage points of exact-discovery rate over pure sampling. This answers \textbf{RQ1} affirmatively, with a caveat the saturated problems make explicit: RL earns its cost only where the prior does not already solve the problem.
+The Best-of-N baseline --- given the identical sampling budget --- bounds the contribution of learning itself, and on both discriminative problems that bound turns out to be at or below zero. On Nguyen-5, the policy gradient plus buffer adds $+0.85$ of mean best $R^2$ and $+80$ percentage points of exact-discovery rate over pure sampling; on Nguyen-9, every RL arm adds more than a full point of $R^2$ over a baseline that is worse than guessing the mean. This answers \textbf{RQ1} unambiguously: learning is not merely helpful on the hard problems, it is what separates a working method from one that is not better than chance. The caveat from the saturated case still holds at the other extreme --- RL earns essentially nothing additional where the SFT prior already solves the problem (Nguyen-7) --- so the honest summary is that RL's value is concentrated precisely where the prior runs out, which is also where it is needed most.
 
 \subsection{Convergence and the Validity Valley}
 
@@ -171,39 +182,43 @@ Table~\ref{tab:anova} reports the per-problem one-way ANOVA over best $R^2$ (5 s
     \toprule
     \textbf{Problem} & \textbf{ANOVA} & \textbf{Significant contrasts (Tukey HSD)} & \textbf{Cohen's $d$} \\
     \midrule
-    Nguyen-3 & $F=3.68$, $p=0.021$ & Best-of-N $\times$ Pure-GRPO & $+2.4$ \\
-             &                     & Pure-GRPO $\times$ BoN-GRPO   & $-2.2$ \\
+    Nguyen-3 & $F=0.90$, $p=0.48$  & none & --- \\
     \midrule
-    Nguyen-5 & $F=6.05$, $p=0.002$ & Pure-PPO $\times$ Pure-GRPO   & $+2.0$ \\
-             &                     & Pure-PPO $\times$ BoN-GRPO    & $+2.1$ \\
-             &                     & Pure-GRPO $\times$ BoN-PPO    & $-2.2$ \\
-             &                     & BoN-PPO $\times$ BoN-GRPO     & $+2.3$ \\
+    Nguyen-5 & $F=11.4$, $p=5\times10^{-5}$ & Best-of-N $\times$ Pure-PPO   & $-4.0$ \\
+             &                     & Best-of-N $\times$ BoN-PPO    & $-4.0$ \\
+             &                     & Pure-PPO $\times$ Pure-GRPO   & $+2.4$ \\
+             &                     & Pure-PPO $\times$ BoN-GRPO    & $+2.2$ \\
+             &                     & Pure-GRPO $\times$ BoN-PPO    & $-2.6$ \\
+             &                     & BoN-PPO $\times$ BoN-GRPO     & $+2.4$ \\
     \midrule
     Nguyen-7 & $F=3.37$, $p=0.029$ & Pure-PPO $\times$ BoN-GRPO    & $-2.3$ \\
     \midrule
-    Nguyen-9 & $F=0.69$, $p=0.61$  & none & --- \\
+    Nguyen-9 & $F=29.5$, $p=4\times10^{-8}$ & Best-of-N $\times$ Pure-PPO   & $-5.4$ \\
+             &                     & Best-of-N $\times$ Pure-GRPO  & $-6.0$ \\
+             &                     & Best-of-N $\times$ BoN-PPO    & $-7.0$ \\
+             &                     & Best-of-N $\times$ BoN-GRPO   & $-8.0$ \\
     \bottomrule
     \end{tabular}
 \end{table}
 
-On the discriminative problem (Nguyen-5), the omnibus test is strongly significant ($p=0.002$) and all four significant pairwise contrasts point the same way: the PPO arms dominate the GRPO arms with very large effects ($|d| \geq 2.0$). On the saturated problems the significant contrasts involve differences of a few thousandths of $R^2$ --- statistically detectable because the within-arm variance is tiny, but practically irrelevant. Nguyen-9 shows no significant separation, consistent with its overlapping distributions.
+The two informative problems both now return strongly significant omnibus tests. On Nguyen-5 ($p<10^{-4}$), the pairwise picture is unchanged from a purely-RL-arm perspective --- PPO dominates GRPO with large effects ($|d|\geq2.2$) --- and gains two additional contrasts: the Best-of-N baseline is now significantly worse than both Pure-PPO and BoN-PPO, with the largest effect sizes in the table ($d=-4.0$). On Nguyen-9 the story is different in kind: none of the four RL arms differ significantly from one another, but \emph{every one of them} differs enormously from the collapsed Best-of-N baseline ($d$ from $-5.4$ to $-8.0$, the largest effects observed anywhere in Phase 2). Nguyen-9 is thus not, as it first appeared, an uninformative problem --- it is the cleanest demonstration in the study that undirected sampling from the SFT prior is not a competitive method on its own; the RL arms are statistically indistinguishable from each other here but jointly, overwhelmingly distinguishable from no-learning. On Nguyen-3, the corrected Best-of-N baseline's one collapsed seed inflates its variance enough that the omnibus test no longer reaches significance ($p=0.48$); the RL arms remain visually clustered near $R^2\approx0.99$ (Table~\ref{tab:phase2_master}), but this problem contributes no statistically defensible discriminative signal after correction. Nguyen-7 is unaffected by the correction described in Section~\ref{sec:c_bug} (none of its 25 runs used the affected construct) and reproduces the original finding unchanged.
 
-Two caveats temper the parametric analysis. With $n=5$ per cell, power reaches 80\% only for effects of $d \gtrsim 1.5$ --- adequate here, since the effects of interest are of exactly that magnitude, but small and moderate differences remain undetectable. And the outcome distributions of the PPO arms are bimodal (a seed either finds the exact solution or stalls at a local optimum), violating ANOVA's normality assumption; for this reason we lean on the \emph{exact-discovery rate} (4/5 vs.\ 0/5 with a Wilson binomial interval) as the primary evidence on Nguyen-5, with the ANOVA in a supporting role, and non-parametric checks (Kruskal--Wallis) agree with the reported conclusions.
+Two caveats temper the parametric analysis. With $n=5$ per cell, power reaches 80\% only for effects of $d \gtrsim 1.5$ --- comfortably cleared by the effects reported here, but smaller differences remain undetectable. And the outcome distributions of the PPO arms are bimodal on Nguyen-5 (a seed either finds the exact solution or stalls at a local optimum), violating ANOVA's normality assumption; for this reason we lean on the \emph{exact-discovery rate} (4/5 vs.\ 0/5 with a Wilson binomial interval) as the primary evidence on Nguyen-5, with the ANOVA in a supporting role.
 
 \subsection{What the Model Actually Found}
 
 Beyond the numbers, the discovered expressions themselves carry evidence. The exact solutions to Nguyen-5 ($\sin(x^2)\cos(x)-1$) arrived in several algebraically equivalent but syntactically distinct forms:
 
 \begin{itemize}
-    \item Pure-PPO: \ \texttt{sin(x\_1*x\_1)*cos(x\_1) - C} \quad and \quad \texttt{sin(x\_1**C)*cos(x\_1) - C}
+    \item Pure-PPO: \ \texttt{sin(x\_1*x\_1)*cos(x\_1) - C} \quad (two seeds, independently)
     \item BoN-PPO: \ \texttt{cos(x\_1)*sin(x\_1*x\_1) - C}, \quad \texttt{sin(x\_1/C*x\_1)*cos(x\_1) - C}, \\ \hspace*{1.55cm}\texttt{sin(x\_1*x\_1)*cos(x\_1) - C}
 \end{itemize}
 
-With $C=1$, all five reduce to the target. The variety matters: the model is not retrieving a memorized string --- it writes the same function as $x \cdot x$, as $x^C$, and as $x/C \cdot x$, in different operand orders, which indicates discovery of the underlying \emph{structure} rather than literal recall (a relevant rebuttal to the memorization critique of LLM-based SR). Equally noteworthy is what the solutions do \emph{not} show: bloat. The winners' complexity ($\approx$10--14 tokens) sits at the target's own scale, even though the uniform reward contains no parsimony term. A plausible explanation is that the SFT corpus's short-expression prior acts as an implicit regularizer --- an interesting contrast with the GP literature, where bloat control must be explicit.
+With $C=1$, all four reduce to the target. The variety matters: the model is not retrieving a memorized string --- it writes the same function as $x \cdot x$ and as $x/C \cdot x$, in different operand orders, which indicates discovery of the underlying \emph{structure} rather than literal recall (a relevant rebuttal to the memorization critique of LLM-based SR). Equally noteworthy is what the solutions do \emph{not} show: bloat. The winners' complexity ($\approx$10--14 tokens) sits at the target's own scale, even though the uniform reward contains no parsimony term. A plausible explanation is that the SFT corpus's short-expression prior acts as an implicit regularizer --- an interesting contrast with the GP literature, where bloat control must be explicit.
 
 \subsection{Champion Selection}
 
-Phase 3's decision rule asked for the arm with the best combination of discovery rate and stability across problems. \textbf{BoN-PPO} is the champion: it holds the highest mean on both discriminative problems, the highest exact-discovery count overall (7 of 20 seeds across the four problems), the smallest variance among RL arms on Nguyen-9, and it is the only arm whose wins are explained --- not just observed --- by the exploration--retention mechanism. The configuration carried to Phase 4 is therefore: Base Infix (124M), BoN-PPO, clipped-$R^2$ reward, gradient penalty, cosine annealing, $C=1$, 200 steps $\times$ 1024 expressions.
+Phase 3's decision rule asked for the arm with the best combination of discovery rate and stability across problems. \textbf{BoN-PPO} is the champion: it holds the highest mean on both discriminative problems, the highest exact-discovery count overall (6 of 20 seeds across the four problems), and it is the only arm whose wins are explained --- not just observed --- by the exploration--retention mechanism. The configuration carried to Phase 4 is therefore: Base Infix (124M), BoN-PPO, clipped-$R^2$ reward, gradient penalty, cosine annealing, $C=1$, 200 steps $\times$ 1024 expressions.
 
 \section{Phase 4 --- The 122-Problem SRBench Challenge}
 \label{sec:phase4_results}
@@ -222,8 +237,8 @@ Table~\ref{tab:phase4_aggregate} summarizes the aggregate outcome per benchmark 
     \toprule
     \textbf{Family} & \textbf{Solution rate} & \textbf{$R^2 > 0.99$ rate} & \textbf{Median $R^2$} \\
     \midrule
-    Feynman (99) & 16.2\% & 27.3\% & 0.808 \\
-    Strogatz (14) & 7.1\% & 7.1\% & 0.857 \\
+    Feynman (99) & 16.2\% & 26.3\% & 0.808 \\
+    Strogatz (14) & 7.1\% & 7.1\% & 0.852 \\
     Nguyen (12) & 25.0\% & 58.3\% & 0.997 \\
     \bottomrule
     \end{tabular}
@@ -248,7 +263,7 @@ On the Feynman set the champion solves 16.2\% of the problems --- essentially ma
     \label{fig:hgen}
 \end{figure}
 
-The SFT corpus contains no expression with more than five variables, yet seven of the evaluated problems have six to nine. Does the model fall off a cliff at its training boundary? Figure~\ref{fig:hgen} answers: no. Median best $R^2$ declines smoothly with dimensionality --- 0.998 (1 variable), 0.954 (2), 0.878 (3), 0.689 (4), 0.623 (5) --- and beyond the training scope the model still produces useful approximations (0.794 on the eight-variable problem; 0.509 on the nine-variable one; the six-variable group is hardest, at a median of 0.334). Aggregating, the median within training scope is 0.863 versus 0.454 beyond it: a substantial drop, but far from collapse --- the model composes more variables than it ever saw composed. The sub-word tokenization of variable names (Section~\ref{sec:sft_setup}), which makes \texttt{x\_7} expressible even if rarely seen, plausibly underwrites this graceful degradation. No exact solution was found beyond five variables, so the generalization is approximative rather than symbolic --- a nuance the answer to \textbf{RQ4} must carry.
+The SFT corpus contains no expression with more than five variables, yet seven of the evaluated problems have six to nine. Does the model fall off a cliff at its training boundary? Figure~\ref{fig:hgen} answers: no. Median best $R^2$ declines smoothly with dimensionality --- 0.997 (1 variable), 0.950 (2), 0.878 (3), 0.689 (4), 0.623 (5) --- and beyond the training scope the model still produces useful approximations (0.794 on the eight-variable problem; 0.509 on the nine-variable one; the six-variable group is hardest, at a median of 0.334). Aggregating, the median within training scope is 0.859 versus 0.454 beyond it: a substantial drop, but far from collapse --- the model composes more variables than it ever saw composed. The sub-word tokenization of variable names (Section~\ref{sec:sft_setup}), which makes \texttt{x\_7} expressible even if rarely seen, plausibly underwrites this graceful degradation. No exact solution was found beyond five variables, so the generalization is approximative rather than symbolic --- a nuance the answer to \textbf{RQ4} must carry.
 
 \subsection{Accuracy, Complexity, and Showcase Discoveries}
 
@@ -265,11 +280,11 @@ Figure~\ref{fig:pareto} extends the no-bloat observation to the full benchmark: 
     \item \textbf{Nguyen-11} ($x^y$): found as \texttt{exp(x\_2*log(x\_1))} --- the model produced a non-trivial algebraic identity, $x^y = e^{y \ln x}$, rather than the literal power form.
     \item \textbf{Strogatz shear-flow} ($\cot(y)\cos(x)$): found exactly as \texttt{cos(x\_1)/tan(x\_2)}, recovering a cotangent absent from the operator vocabulary by composing $\cos/\tan$.
     \item \textbf{Feynman III.17.37} ($\beta(1 + \alpha\cos\theta)$): found exactly as \texttt{x\_1*(x\_2*cos(x\_3) + C)} with $C=1$.
-    \item \textbf{Feynman I.29.4} ($k = \omega/c$): found as \texttt{x\_1/(sqrt(x\_2**C))}, exploiting $\sqrt{x^C} = x$ at $C=1$ --- correct, through an idiosyncratic route.
+    \item \textbf{Feynman I.29.4} ($k = \omega/c$): found as \texttt{x\_1*(x\_1-x\_1 + C)/x\_2}, which simplifies to $x_1/x_2$ --- correct, through a redundant detour ($x_1-x_1=0$).
     \item \textbf{Feynman III.21.20} ($-\rho q A / m$): found with $R^2 = 1.0$ as \texttt{x\_1*(x\_2 - x\_3 - x\_2)*x\_2/x\_4}, which simplifies to $-x_1 x_2 x_3 / x_4$ --- correct, but reached through a redundant detour ($x_2 - x_3 - x_2 = -x_3$) that a symbolic simplification pass cleans up.
 \end{itemize}
 
-The last example is instructive: syntactic redundancy occasionally survives when it is semantically neutral, which is why the evaluation pipeline applies SymPy simplification before judging symbolic equivalence.
+The last two examples are instructive: syntactic redundancy occasionally survives when it is semantically neutral, which is why the evaluation pipeline applies SymPy simplification before judging symbolic equivalence.
 
 \subsection{Ablation: the Cost of $C=1$}
 \label{sec:constant_ablation}
@@ -291,7 +306,7 @@ The uniform protocol froze constants at $C=1$ to keep the reward comparable acro
     \textbf{Metric (Feynman, 99)} & \textbf{$C=1$ (protocol)} & \textbf{$C$ fitted} \\
     \midrule
     Solution rate & 16.2\% & \fic{19.2\%} \\ % FICTITIOUS
-    $R^2 > 0.99$ rate & 27.3\% & \fic{33.3\%} \\ % FICTITIOUS
+    $R^2 > 0.99$ rate & 26.3\% & \fic{33.3\%} \\ % FICTITIOUS
     Median $R^2$ & 0.808 & \fic{0.849} \\ % FICTITIOUS
     Mean evaluation cost per expression & $1\times$ & \fic{$6.3\times$} \\ % FICTITIOUS
     \bottomrule
