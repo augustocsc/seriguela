@@ -2,6 +2,12 @@
 
 Ruido 0. `solution`: SRBench=symbolic_solution (sympy); nosso=R²>0.999 (proxy).
 
+_Atualizado em 2026-07-15 apos correcao do bug de expoente-C (ver
+dissertation_final/HANDOFF.md §0 e classes/expression.py); numeros de
+"solution %" nao mudaram (nenhuma solucao exata dependia do bug), "R²>0.99 %"
+e a mediana ajustaram levemente. Regenerar com `python
+4_analysis/srbench_comparison.py`._
+
 ## Feynman (ruido 0)
 
 | metodo | solution % | R²>0.99 % | R² mediana |
@@ -14,7 +20,7 @@ Ruido 0. `solution`: SRBench=symbolic_solution (sympy); nosso=R²>0.999 (proxy).
 | DSR | 19.7 | 35.8 | 0.954 |
 | Operon | 16.6 | 94.0 | 1.000 |
 | gplearn | 16.4 | 50.4 | 0.990 |
-| **NOSSO (bon_ppo)** | 16.2 | 27.3 | 0.808 |
+| **NOSSO (bon_ppo)** | 16.2 | 26.3 | 0.808 |
 | SBP-GP | 12.7 | 94.1 | 1.000 |
 | EPLEX | 12.4 | 78.0 | 0.999 |
 | BSR | 2.5 | 22.2 | 0.769 |
@@ -35,7 +41,7 @@ Ruido 0. `solution`: SRBench=symbolic_solution (sympy); nosso=R²>0.999 (proxy).
 | Operon | 11.4 | 93.6 | 1.000 |
 | EPLEX | 8.9 | 38.4 | 0.975 |
 | gplearn | 8.9 | 17.0 | 0.889 |
-| **NOSSO (bon_ppo)** | 7.1 | 7.1 | 0.860 |
+| **NOSSO (bon_ppo)** | 7.1 | 7.1 | 0.852 |
 | ITEA | 7.1 | 25.0 | 0.892 |
 | FEAT | 0.9 | 66.1 | 0.999 |
 | BSR | 0.9 | 47.3 | 0.976 |
