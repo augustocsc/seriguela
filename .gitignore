@@ -81,11 +81,14 @@ scripts/output/*
 # Dados (podem ser grandes, usar Git LFS ou armazenar fora se necessário)
 # Note: CSV files in data/processed/ can be 100MB+ and are excluded from git
 # Run scripts/data/prepare_training_data_fixed.py on target system to generate them
-data/*
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
+# data/benchmarks: metadados, Nguyen e Strogatz ficam no git; os CSVs do Feynman
+# (100 mil linhas cada) e os resultados oficiais do SRBench sao baixados sob demanda.
+data/benchmarks/feynman/*.csv
+data/benchmarks/*.feather
+# Entregaveis locais (videos, pareceres): fora do git
+outputs/
+# Runs v3 interrompidos por tripwire ficam so na maquina que os gerou
+results/v3/**/*.tmp
 
 # OS generated files
 .DS_Store

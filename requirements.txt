@@ -1,0 +1,8 @@
+# torch e instalado a parte: CPU no CI, CUDA no pod (ver README).
+transformers==4.51.3
+peft==0.15.1
+numpy>=1.26,<2.3
+scipy>=1.11
+sympy==1.13.1
+pandas>=2.2
+pytest>=8
