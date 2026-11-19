@@ -50,7 +50,7 @@
 
 \RequirePackage[titletoc]{appendix}
 
-\usepackage[absolute]{textpos}
+%\usepackage[absolute]{textpos}
 
 \RequirePackage{fancyhdr}
 
@@ -180,9 +180,9 @@
     \textbf{\@UNICAMP} \\
     \textbf{\@IC} \\
   \end{center}
-  \begin{textblock}{2.3}(2,1.3)
-    \includegraphics[width=2.25cm]{figures/logo-unicamp.eps}
-  \end{textblock}
+  %\begin{textblock}{2.3}(2,1.3)
+  %  \%includegraphics{logo-unicamp}.eps}
+  %\end{textblock}
 }
 
 

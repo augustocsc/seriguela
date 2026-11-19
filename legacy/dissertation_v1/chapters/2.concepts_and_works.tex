@@ -1,0 +1,305 @@
+\chapter{Theoretical Background and Related Work}
+Symbolic regression is a field of growing interest within the academic community, offering a variety of approaches to discover mathematical expressions from data \cite{dong2025RecentAdvances}. This work explores a specific branch: the use of Large Language Models (LLMs) combined with Deep Reinforcement Learning (DRL). This synergistic approach guides a model to discover the optimal expression, effectively addressing the challenges of symbolic regression. This chapter provides the essential theoretical background for these key concepts and reviews related work in the field.
+
+\section{Symbolic Regression}
+
+\subsection{Problem Definition and Core Challenges}
+Symbolic regression (SR) is the task of mapping a set of inputs to a mathematical expression (or model) that best maps an output \cite{lample2019deep, petersen2020deep}. Consider the following task. Given a dataset \(D = \{(\mathbf{x}_i, y_i)\}_{i=1}^{n}\), where \(\mathbf{x}_i \in \mathbb{R}^d\) indicates the \(i^{th}\) sample has \(d\)-dimensions and \(y_i \in \mathbb{R}\) represents the target variable. The goal of SR is to find a function \(f^*\), in the space of all possible mathematical expressions \(\mathcal{S}\), with a specific set of functions (e.g. exp, ln, sine, cosine) and a specific set of operators (e.g. +, -, \(\times\), \(\div\)) and constants. That satisfies the following optimization problem \cite{lample2019deep}:
+
+\begin{equation}
+f^* = \mathrm{arg} \min_{f \in \mathcal{S}} \sum_{i=1}^n (f(\mathbf{x}_i) - y_i)^2
+\end{equation}
+
+where \(f\) is an expression that belongs to the space \(\mathcal{S}\) and \(f^*\) is the optimal model found.
+
+This description reveals the high complexity of the problem, as the search space \(\mathcal{S}\) grows exponentially due to the vast number of possible expressions \cite{petersen2020deep}. Additionally, the interpretability of the generated model is crucial \cite{Rudin2019Stop}. A model should not produce an expression longer than necessary, as this can lead to overfitting, meaning the model fits the training data too closely and loses the ability to generalize to new data \cite{wilstrup2021symbolic}.
+
+In an ideal scenario, the goal of SR is to recover the expression that generates the data, i.e., to find a function \(f^* = f\) that perfectly describes the relationship between inputs and outputs. This property is known as \textbf{recoverability} \cite{guimera2020bayesian, tohme2022gsr}. However, in most practical cases, this task is infeasible due to the vastness of the search space \cite{petersen2020deep}. Since the generating function is usually unknown, two other factors are crucial in evaluating an SR model: \textbf{accuracy} and \textbf{simplicity} \cite{guimera2020bayesian, lacava2021contemporary}. Accuracy can be quantified by a distance metric that measures how closely the model approximates the target function. Simplicity, on the other hand, involves considerations beyond merely evaluating the distance metric \cite{lacava2021contemporary}.
+
+These factors are contradictory; the greater the accuracy in a database, the more complex the model, and vice versa. A good SR method works by balancing them.
+
+    \section{Traditional Approaches to Symbolic Regression}
+        \subsection{Genetic Programming}
+
+        Genetic Programming (GP) is the most traditional approach for implementing SR \cite{lacava2021contemporary}. At its core, GP emulates the principles of \textbf{natural selection} to refine and evolve expressions progressively. The aim is to identify an expression that accurately models the data with a low prediction error.
+        
+        GP navigates an extensive \textbf{search space} of potential solutions. It achieves this by applying "genetic operations" such as \textbf{crossover} (combining parts of two parent expressions) and \textbf{mutation} (randomly altering parts of an expression). These operations allow the algorithm to efficiently explore numerous combinations, breeding new expressions based on their \textbf{fitness} – a measure of how well they perform. This can be conceptualized as searching for the most "fitted" individual computer program within the vast landscape of all possible programs, which are constructed from a defined set of functions and terminals. 
+        
+        According to the traditional approach presented by Koza \cite{Koza1992}, expressions are represented using binary trees that are randomly generated and used as the initial population. Each member of this population is evaluated in terms of their ability to solve the given problem effectively. This measure is referred to as the \textit{fitness measure}. For some problems, fitness may comprise a combination of factors, such as correctness, parsimony, or efficiency. In the case of SR, it is usually related to the error produced by the program. The first generation will probably perform poorly, but some elements will have a better fit than others. The Darwinian principle of reproduction and survival of the fittest, along with the genetic operation of sexual recombination (crossover), is used to create a new population \cite{Koza1992}.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\linewidth]{figures/genetic_tree.pdf}
+                \caption[The key stages of Genetic Programming]{The figure illustrates key stages of Genetic Programming (GP) for Symbolic Regression: it begins with an (1). Initial Population of randomly generated binary trees, each representing a mathematical expression. From these, (2) Segments from the Population (sub-trees) are selected based on their fitness. Finally, these selected segments are recombined through genetic operations, such as crossover, to produce (3) two offspring, representing new, potentially improved, mathematical expressions for the next generation. Figure inspired by \cite{Koza1992}}.
+            \label{fig:genetic-tree}
+        \end{figure}
+        
+        The selection is made based on the fitness, meaning that those with a higher score are copied and "survive" to the new generation. Genetic reproduction occurs between two individuals that can vary in size and shape, and their offspring are also different from them. The idea is that by combining two effective solutions using random parts, a new, more effective solution can be found. The latest population is evaluated, and the process repeats until a termination criterion is reached \cite{Koza1992}. The figure \ref{fig:genetic-tree} gives an overview of the classic process of SR using GP.
+        
+        While effective in its search, GP does have potential drawbacks, including the risk of generating \textbf{overfit expressions} (which perform well on training data but poorly on new data), not always recovering the exact solution, and lacking the benefits of prior knowledge learned from large-scale pre-training \cite{Koza1992}.
+        \newpage'
+        \subsection{Neural Network-based Methods}
+        
+        Artificial Neural Networks (ANNs), also known as Neural Networks (NNs), are computational models inspired by the structure and function of neurons in the human brain. At its core, a neuron in an NN is conceptualized as a single computational unit. This unit takes a set of real numbers as inputs and produces a single output after performing a series of operations on these inputs \cite{jm3_llm_book}.
+        The primary operation within a neuron involves computing a weighted sum of its inputs, where each input is multiplied by a corresponding weight. An additional term, known as a bias, is then added to this sum. This can be mathematically expressed as:
+
+        \begin{equation}
+            z = w \cdot x + b
+            \label{eq:linear}
+        \end{equation}
+
+        Here, $z$ represents the output, $w$ is the weight, $x$ is the input, and $b$ is the bias term. 
+        The result, $z$, is then passed through an activation function, which modulates the output to introduce non-linearity and allows for more complex mappings. One widely used activation function is the sigmoid function ($\sigma$), which maps the input z to a value between 0 and 1:
+        \begin{equation}
+            y = \sigma(z) =\frac{1}{1+ e^{-z}}
+            \label{eq:sigma}
+        \end{equation}
+
+        This function is particularly useful for "squashing" outlier values towards 0 or 1, making it suitable for tasks like binary classification. Combining these operations, the complete mathematical expression defining the output of a single artificial neuron can be written as:
+            \begin{equation}
+                y = \sigma( w \cdot x + b) =\frac{1}{1+ exp({-(w \cdot x + b)})}
+                \label{eq:full_neuron}
+            \end{equation}
+                \begin{figure}[htbp]
+        
+        \centering
+            \includegraphics[width=0.9\linewidth]{figures/neuron.pdf}
+            \caption[Abstraction of a Artificial Neuron and a Feedforward Neural Network]{On the left, an ``Artificial Neuron'' is depicted, illustrating how multiple weighted inputs ($x_1, x_2, x_3$ with weights $w_1, w_2, w_3$) are summed along with a bias ($b$) before passing through a sigmoid activation function ($\sigma$) to produce an output ($y$). The right side, labeled ``Feedforward Neural Network,'' shows a multi-layered architecture where inputs ($x_0$ to $x_{n_0}$) connect to a hidden layer ($h_1$ to $h_{n_1}$) via weights ($W$), and its outputs then feed into an output layer ($y_1$ to $y_{n_2}$) through another set of weights ($U$), demonstrating the unidirectional flow of information in such networks. Inspired by \cite{jm3_llm_book}}.
+            \label{fig:neuron}
+        \end{figure}
+        
+        The simplest form of an artificial neuron is often called a perceptron. Neural networks are typically structured as a collection of these computational units, organized into interconnected layers. In a common configuration known as a \textit{feedforward network}, these units are arranged in a multi-layered structure without any cyclical connections, as illustrated in Figure \ref{fig:neuron}. Information flows unidirectionally. Outputs from neurons in one layer are passed forward exclusively to neurons in the subsequent layer, never returning to previous layers \cite{jm3_llm_book}. 
+        
+        These intermediate connections form "hidden layers", where neurons process the input received from the preceding layer. Each unit from the hidden layer has weights and biases as parameters. The computation of this unit has three steps: multiplying the weight matrix $\textbf{w}$ by the input vector $\textbf{x}$, adding the bias vector $\textbf{b}$ and applying an activation function (such as the sigmoid function \ref{eq:sigma}) \cite{jm3_llm_book}. 
+
+        \newpage
+        
+        The result of the hidden layer is passed to an output layer, whose role is to get this new representation and compute the final output. That could be a real number, a binary number, or a set representing a distribution. In the last case, each output node represents a distinct value in the set. Resulting in a vector $\textbf{y}$. To ensure that these final values are inside a normalized probability distribution, a final operation can be used, such as the softmax function \cite{jm3_llm_book}.
+        
+        The NNs are used in supervised learning problems, where for each observation $x$, a correct output $y$ is provided and the output from the system is $\hat{y}$. The network is then trained to minimize the distance between the outputs, adjusting the parameters of the network, creating a \textbf{model} that maps the input to an output. To measure the distance, a loss function is used. A common option for classification tasks is the \textbf{cross-entropy loss}, which quantifies the dissimilarity between the predicted probability distribution and the true distribution. To minimize this loss, the \textbf{backpropagation} algorithm is employed. Backpropagation computes the gradient of the loss function for each weight in the network by applying the chain rule of calculus recursively, layer by layer. These gradients are then used by an optimization algorithm, such as \textbf{stochastic gradient descent}, to update the weights and improve the model’s performance during training \cite{jm3_llm_book}.
+
+        In training neural networks, epochs, batch size, and learning rate are important concepts in the learning process and model performance. An \textbf{epoch} refers to one complete pass through the entire training dataset, and typically, multiple epochs are required for the model to converge. The \textbf{batch size} determines the number of training samples processed before the model's internal parameters are updated. Smaller batches can lead to noisier but faster updates, while larger batches provide more stable gradients at the cost of memory and computational resources. The \textbf{learning rate} controls the size of the steps the optimization algorithm takes when updating the model weights—too high a learning rate can cause the model to overshoot optimal solutions, while too low a value can lead to slow convergence or getting stuck in local minima. Carefully tuning these hyperparameters is essential for practical training and achieving good generalization on unseen data \cite{jm3_llm_book}.
+   
+\section{Language Models}
+    A language model is a machine learning model designed to predict the next word in a sequence based on probability. The simplest form is the n-gram model, which estimates the probability of the next word given the preceding $n-1$ words. This approach has a wide range of applications, including speech recognition, machine translation, and text generation.
+        
+    \subsubsection{Overview of Language Models}
+    
+    The idea that the probability of an event depends only on a limited number of immediately preceding events is known as the Markov assumption. In the context of Language Models (LMs), the goal is to predict the next token given a set of previous tokens. A \textbf{token} can vary from a character, a subword unit, to a whole word. Tokenization using subword units (such as Byte Pair Encoding or WordPiece) is widely adopted \cite{jm3_llm_book}, primarily because it allows models to handle any form of text (including rare or out-of-vocabulary words) and avoids the computational expense of representing every possible complete word. 
+    
+    This process converts raw text into a sequence of standardized tokens, which are then mapped to unique numerical identifiers, as computers do not inherently understand human language. These numerical codes, however, do not inherently capture the meaning of the tokens. Semantic representation is achieved through the embedding process, which maps each token's numerical identifier to a dense vector of real numbers \cite{jm3_llm_book}.
+
+    Traditional language models, such as n-gram models, compute the probability of a word based on its frequency of occurrence in a fixed number of preceding words. While foundational, these models inherently suffer from limited context, as they can only consider a short, fixed window of prior words, leading to issues with data sparsity and an inability to generalize effectively to unseen word combinations or capture long-range dependencies in language. Early feedforward neural language models (FFNLMs) also processed information within a fixed window \cite{jm3_llm_book}.
+    
+    The training of these neural language models is primarily achieved through self-supervision (also known as self-training). In this paradigm, the model learns by predicting the next token in a sequence, given the preceding tokens in a large corpus of unlabeled text. This approach allows the networks to automatically discover useful representations of the input, including these word embeddings, as part of the training process itself. This fundamental concept of learning rich, contextual representations is central to more advanced architectures, such as Recurrent Neural Networks and Transformers \cite{jm3_llm_book}.
+
+    \subsection{Recurrent Neural Networks}
+    
+    Recurrent Neural Networks (RNNs) are neural networks designed for processing sequential data, such as audio or text \cite{Elman1990FindingSI}. In Natural Language Processing (NLP) problems, understanding the order of words is crucial for interpreting the meaning of a sentence. The term "recurrent" stems from the network's ability to repeat the same computational task for each element in a sequence, with the output from one step serving as an input to the next. This sequential processing provides the network with a form of "memory" about what has been previously calculated or observed in the sequence.
+    
+    For each time step $t$, an RNN typically receives two inputs: a word ($x_t$) from the input sequence and a vector $h_t$, referred to as the "hidden state". Before processing, the input word is converted into a vector through a process called \textbf{word embedding}. This transformation is essential because algorithms operate on numerical values, often through matrix operations. The values within a word embedding vector are not random; they are learned representations designed to capture semantic meaning, such that words with similar contexts or meanings (e.g., \textit{"friends"} and \textit{"family"}) are represented closer in an $n$-dimensional vector space than dissimilar words (e.g., \textit{"car"}). The hidden state vector, $h_t$, serves as the network's "memory", with its value calculated using the current input and the hidden state value from the previous time step ($h_{t-1}$). Figure TODO provides a schematic of an RNN, where each layer processes the input, and the hidden state is passed through and utilized to compute the output $y_t$ \cite{jm3_llm_book}.
+    
+    The RNN architecture has a limitation when dealing with long sequences. Among the primary reasons for its computational difficulties are the problems of vanishing gradients and exploding gradients. When trained using Backpropagation Through Time (BPTT), gradients must propagate from the last cell back to the first. The product of these gradients can either shrink towards zero (vanishing) or increase exponentially (exploding). With gradient values in either of these extreme cases, the model may converge very slowly by taking minuscule "steps," or fail to converge entirely due to excessively large "steps" in parameter updates \cite{jm3_llm_book}.
+    
+    Their successors have largely overcome some of the limitations of simple recurrent networks. Key advancements include Long Short-Term Memory (LSTM) networks and Gated Recurrent Units (GRUs). These two variants are the most commonly used RNN architectures in modern NLP applications \cite{jm3_llm_book}.
+    
+\subsection{Transformer Architecture}
+
+The Transformer architecture was introduced to overcome the fundamental limitations of NN architectures, such as RNNs and LSTMs, in sequence transduction tasks. These limitations include their inherently sequential computation, which hinders parallelization during training, and their difficulty in effectively capturing very long-range dependencies in text \cite{vaswani2017_attention_is_all}. The Transformer relies only on attention mechanisms to draw global dependencies within sequences. This design allows for significantly more parallelization and achieves state-of-the-art results on machine translation tasks \cite{jm3_llm_book, vaswani2017_attention_is_all}.
+
+The Transformer follows an encoder-decoder architecture. The \textbf{encoder} maps an input sequence of symbol representations ($x_1, \ldots, x_n$) to a sequence of continuous representations. The \textbf{decoder} then generates an output sequence ($y_1, \ldots, y_m$) one token at a time, consuming previously generated symbols as additional input \cite{jm3_llm_book}.
+
+Both the encoder and decoder are composed of a stack of identical layers. In the original work, the encoder stack consists of $N=6$ layers, each with two sub-layers: a Multi-Head Self-Attention mechanism and a position-wise fully connected Feed-Forward Network (FFN). The decoder stack also comprises $N=6$ identical layers, but it includes a third sub-layer: a Multi-Head Attention over the output of the encoder stack, allowing every position in the decoder to attend over all positions in the input sequence. All sub-layers and embedding layers produce outputs of a consistent dimension, referred to as the model dimensionality ($d_{model}$), which was 512 in the original paper \cite{vaswani2017_attention_is_all}.
+
+The main component of the Transformer is the \textbf{Multi-Head Self-Attention} mechanism. An attention function maps a query and a set of key-value pairs to an output, where all are vectors. Self-attention, a specific form of attention, relates different positions of a single sequence to compute a representation of that sequence. This mechanism operates by linearly projecting each token's input embedding into three distinct learned vectors: a \textbf{Query (Q)}, a \textbf{Key (K)}, and a \textbf{Value (V)} \cite{vaswani2017_attention_is_all}. 
+
+The similarity between the Query of a token and the Key of all other tokens is computed via a dot product, then scaled by the square root of the key dimension ($\sqrt{d_k}$) to prevent large magnitudes from pushing the softmax function into regions of extremely small gradients. A softmax function is then applied to these scaled dot products to produce attention weights. These weights are subsequently used to take a weighted sum of the Value vectors, forming the output for that token \cite{jm3_llm_book, vaswani2017_attention_is_all}. 
+
+Multi-Head Attention extends this by performing multiple functions in parallel (e.g., $h=8$ heads with $d_k=d_v=d_{model}/h=64$ \cite{vaswani2017_attention_is_all}), each with its own learned Q, K, and V projections, enabling the model to jointly attend to information from different representation subspaces at different positions. The outputs from these parallel heads are concatenated and linearly projected back to the $d_{model}$ dimension. In the decoder's self-attention layers, a masking mechanism is applied to prevent positions from attending to subsequent positions, preserving the auto-regressive property.
+
+Since the Transformer model contains no recurrence or convolution, it cannot inherently encode the order of the sequence. To address this, \textbf{positional encodings} are added to the input embeddings at the beginning of both the encoder and decoder stacks. These encodings inject crucial information about the position of tokens, and they can either be learned or follow a fixed pattern (e.g., sinusoidal functions of different frequencies) \cite{jm3_llm_book, vaswani2017_attention_is_all}.
+
+
+Each FFN within the Transformer layers consists of two linear transformations with a ReLU activation in between. While parameters are shared across different positions within a layer, they differ from layer to layer. The FFN's inner-layer dimensionality ($d_{ff}$) is typically larger than $d_{model}$ 2048 when $d_{model}=512$ \cite{jm3_llm_book}.
+
+
+A significant advantage of the Transformer architecture is its high parallelization during training, as attention computations for all tokens can be performed simultaneously through efficient matrix operations, greatly speeding up training compared to the sequential nature of RNNs. For sequence transduction tasks, such as machine translation, the decoder's output is converted to predicted next-token probabilities via a learned linear transformation and a softmax function, often sharing the weight matrix between the embedding layers and this final linear transformation \cite{jm3_llm_book}.
+
+Despite their power, Transformers can exhibit quadratic computational complexity with respect to sequence length due to the all-to-all attention mechanism, which can be a limitation for extremely long sequences. Nevertheless, their ability to capture long-range dependencies and their training efficiency have established them as the dominant architecture for modern large language models \cite{jm3_llm_book}.
+%IMPORTANT%%TRANSFER LEARNING FINETUNING PRETRAINING%
+\subsubsection{GPT-2}
+
+Generative Pre-trained Transformer 2 (GPT-2) is a large-scale language model built upon the Transformer architecture. Unlike Transformer variants that utilize an encoder-decoder structure, GPT-2 is specifically a decoder-only Transformer, a design choice that explicitly tailors it for unidirectional (left-to-right) language generation \cite{radford2019language}. This architecture predicts the next token conditioned solely on the preceding sequence, an objective achieved through a causal masking mechanism within its self-attention layers. Its architectural modifications from earlier GPT models include moving layer normalization to the input of each sub-block, adding an extra layer normalization after the final self-attention block, and employing a modified initialization scheme to account for model depth. Furthermore, its context window was expanded from 512 to 1024 tokens, and a larger batch size of 512 was used during training \cite{radford2019language}.
+
+The smallest model, with 117 million parameters, is comparable in size to the original GPT model \cite{radford2019language}. Intermediate versions include models with 345 million and 762 million parameters. While the largest and most widely recognized version, referred to simply as GPT-2, has 1.5 billion parameters, representing over an order of magnitude more parameters than the original GPT \cite{jm3_llm_book, radford2019language}. 
+
+The pre-training paradigm for GPT-2 involves unsupervised learning on a massive and diverse corpus of internet text, famously named \textbf{WebText}. WebText was specifically curated to emphasize document quality, created by scraping outbound links from Reddit that received at least 3 karma, serving as a heuristic for human curation.\footnote{
+    \textbf{Reddit} is a large social news aggregation and discussion website, organized around user-submitted content (posts and links).
+    \textbf{Karma} is a score that represents a user's reputation on Reddit, calculated primarily from the net upvotes (approvals) received on their posts and comments. A higher karma score indicates that the content is highly valued by the community.
+} This resulted in a dataset comprising over 8 million documents, totaling 40 GB of text \cite{radford2019language}.
+
+A key capability demonstrated by GPT-2 is its performance in zero-shot and few-shot learning. This means the model can perform a wide variety of NLP tasks, such as reading comprehension, summarization, translation, and question answering, without any explicit supervised training examples (zero-shot) or with just a few examples provided as context in the input (few-shot) \cite{radford2019language}. 
+
+While it can generate coherent and fluent paragraphs of text, including creative narratives like news articles about talking unicorns, it can sometimes produce factually inaccurate information, often colloquially termed \textit{"hallucinations"}. Its outputs can also be sensitive to the precise phrasing of input prompts \cite{radford2019language}.
+
+    %\subsection{Applications of LLMs in Code Generation and Scientific Discovery}
+    %\subsection{LLMs for Mathematical Reasoning and Symbolic Manipulation}
+
+\section{Deep Reinforcement Learning (DRL)}
+Deep Reinforcement Learning (DRL) represents a subfield of machine learning that combines the principles of Reinforcement Learning (RL) with deep neural networks. This integration enables RL agents to learn directly from high-dimensional inputs, such as images or raw text, thereby eliminating the need for manual feature engineering. A seminal work in DRL is the Deep Q-Network (DQN) by \cite{Mnih2015HumanlevelCT}, which demonstrated human-level control on Atari games by training a deep neural network to estimate action values from pixel data directly. This breakthrough significantly advanced the field, showcasing the potential of DRL to solve complex problems that were previously intractable for traditional RL methods \cite{Mnih2015HumanlevelCT}.
+
+\subsection{Reinforcement Learning}
+Reinforcement Learning (RL) is a computational approach to understanding and automating goal-directed learning and decision-making through interaction \cite{Sutton2018ReinforcementL}. Unlike supervised learning, which relies on labeled examples, or unsupervised learning, which seeks hidden structures in data, RL agents learn by interacting directly with an environment to maximize a numerical reward signal over time \cite{Sutton2018ReinforcementL}. The agent is not explicitly told which actions to take but must discover optimal behaviors through trial and error \cite{Sutton2018ReinforcementL}.
+
+The fundamental elements of an RL system are \cite{Sutton2018ReinforcementL}:
+\begin{itemize}
+    \item \textbf{Agent}: The learner or decision-maker that interacts with the environment.
+    \item \textbf{Environment}: Everything outside the agent, with which the agent interacts.
+    \item \textbf{State ($S$)}: A representation of the current situation of the environment perceived by the agent.
+    \item \textbf{Action ($A$)}: A choice made by the agent that can influence the state of the environment.
+    \item \textbf{Reward Signal ($R$)}: A scalar feedback from the environment, indicating the immediate desirability of the agent's action in a given state. The agent's sole objective is to maximize the total reward received over the long run \cite{Sutton2018ReinforcementL}.
+    \item \textbf{Policy ($\pi$)}: Defines the agent's behavior at a given time, mapping perceived states to actions. Policies can be stochastic, representing a probability distribution over actions for each state \cite{Sutton2018ReinforcementL}.
+    \item \textbf{Value Function ($V$ or $Q$)}: Specifies what is good in the long run. The value of a state (or state-action pair) is the total amount of reward an agent can expect to accumulate over the future, starting from that state (or taking that action in that state) \cite{Sutton2018ReinforcementL}. Value functions are crucial for efficient decision-making, as agents seek actions that lead to states of highest value, not just highest immediate reward \cite{Sutton2018ReinforcementL}.
+\end{itemize}
+A key challenge in RL is the exploration-exploitation dilemma, where the agent must balance exploiting known good actions to maximize immediate reward with exploring new actions to discover potentially better ones for future rewards \cite{Sutton2018ReinforcementL}.
+
+\subsection{Policy Gradient Methods}
+Policy gradient methods are a class of Reinforcement Learning algorithms that directly optimize the agent's policy without necessarily relying on a value function to select actions \cite{Sutton2018ReinforcementL}. These methods are a class of algorithms that update the policy's parameters, $\theta$, by performing gradient ascent on the performance objective $J(\theta)$. They search in the space of policies, defined by a collection of numerical parameters, and estimate the directions these parameters should be adjusted to most rapidly improve the policy's performance \cite{Sutton2018ReinforcementL}.
+
+A foundational work in this area is the REINFORCE algorithm introduced by \cite{Williams1992Simple}. REINFORCE is a simple statistical gradient-following algorithm that adjusts policy parameters in a direction that lies along the gradient of expected reinforcement, even without explicitly computing gradient estimates or storing information for such estimates \cite{Williams1992Simple}. 
+
+While REINFORCE provides a solid theoretical foundation, "vanilla" policy gradient methods often suffer from poor data efficiency and robustness \cite{Schulman2017ProximalPO}. Subsequent advancements, such as Trust Region Policy Optimization (TRPO) \cite{Schulman2015TrustRP}, aimed to improve stability by constraining the size of policy updates, ensuring that each step leads to a monotonic improvement in performance. TRPO maximizes a "surrogate" objective function subject to a constraint on the Kullback-Leibler (KL) divergence between the new and old policies \cite{Schulman2017ProximalPO}.
+
+
+\subsection{Actor-Critic Methods}
+A different and widely successful approach to mitigating the high variance of policy gradient estimates is to introduce a learned value function to guide the policy updates. This leads to a family of algorithms known as \textbf{Actor-Critic methods}, which combine elements of both policy-based (the "Actor") and value-based (the "Critic") approaches. These methods feature two distinct components:
+\begin{itemize}
+    \item \textbf{The Actor:} A policy-based component that learns and decides which action to take.
+    \item \textbf{The Critic:} A value-based component that evaluates the action taken by the actor by estimating a value function.
+\end{itemize}
+
+The critic's feedback is used to guide the updates of the actor's policy. To reduce the high variance often found in policy gradient estimates, modern actor-critic methods use the \textbf{advantage function}, $A^\pi(s, a)$, which describes how much better it is to take a specific action $a$ in state $s$ compared to the average action according to the policy $\pi$. It is defined as:
+\begin{equation}
+    A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s)
+\end{equation}
+By utilizing the advantage function, the agent learns to increase the probability of actions that yield returns better than the average. This approach is central to many state-of-the-art algorithms, such as the Asynchronous Advantage Actor-Critic (A3C) \cite{mnih2016asynchronous}.
+
+
+\subsection{Proximal Policy Optimization (PPO)}
+Proximal Policy Optimization (PPO) is a family of policy gradient methods that balance between sample complexity, simplicity, and performance \cite{Schulman2017ProximalPO}. Introduced by \cite{Schulman2017ProximalPO}, PPO aims to achieve the data efficiency and reliable performance of Trust Region Policy Optimization (TRPO) while being significantly simpler to implement, often using only first-order optimization methods \cite{Schulman2017ProximalPO}.
+
+The core innovation of PPO lies in its novel objective function, the \textit{clipped surrogate objective} ($L^{CLIP}$). This objective is formulated as:
+$$ L^{CLIP}(\theta) = \hat{\mathbb{E}}_{t}[\min(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t)] $$
+Here, $r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$ represents the ratio of probabilities under the new policy ($\pi_{\theta}$) and the old policy ($\pi_{\theta_{old}}$) for a given action $a_t$ in state $s_t$, and $\hat{A}_t$ is an estimator of the advantage function. The \textit{$\min$} operation combined with the `\textit{clip}` function ensures that the policy updates remain within a "proximal" region around the old policy, preventing drastic changes by penalizing probability ratios that move outside a specified interval $[1-\epsilon, 1+\epsilon]$ (where $\epsilon$ is a hyperparameter, e.g., $0.2$). This structure provides a pessimistic estimate (a lower bound) of the policy's performance, promoting stable and more monotonic improvement during training.
+
+PPO algorithms typically alternate between collecting data through interaction with the environment and performing multiple epochs of optimization on the collected data using stochastic gradient ascent \cite{Schulman2017ProximalPO}. The objective function often combines the clipped policy surrogate with a value function error term and an entropy bonus for exploration \cite{Schulman2017ProximalPO}. PPO has demonstrated strong empirical performance across a wide range of benchmark tasks, including simulated robotic locomotion and Atari game playing, making it one of the most widely used and robust policy optimization algorithms in Deep Reinforcement Learning \cite{Schulman2017ProximalPO}.
+
+%IMPORTANT%%\subsection{Fine-tuning LLMs with Reinforcement Learning}%
+    
+\section{Related Work}
+This review examines the trajectory of the field of Symbolic Regression, first covering the foundational techniques in GP and then detailing the recent advances driven by Transformers and large language models.
+
+\subsection{Genetic Programming as a Classical Approach for Symbolic Regression}
+The process of developing models to understand natural phenomena is a fundamental aspect of the scientific method. As pointed out by Dong et al. \cite{dong2025RecentAdvances} and Cranmer \cite{cranmer2023interpretable}, the trial-and-error process of finding a symbolic model given a set of observations was crucial for Kepler's findings on planetary orbits and Newton's law of motion. The work that introduced GP for SR was \cite{Koza1992}, which extensively details the foundational GP paradigm, where populations of computer programs are "genetically bred" using natural selection and crossover to solve problems, including symbolic regression and Boolean function learning, and introduces the concept of automatically defined functions for hierarchical problem decomposition \cite{Koza1992}. In GP, the individuals in the population are the programs themselves, commonly represented as rooted, point-labeled trees that correspond to LISP S-expressions or parse trees. The genetic operators, like subtree crossover, directly manipulate these tree structures. 
+
+In contrast, Grammatical Evolution (GE) evolves simple binary strings which are then translated into syntactically correct programs using a formal grammar as introduced by O'Neill and Ryan \cite{oneill_grammatical_2003}. GE separated the search space (genotype) from the solution space (phenotype). Then evolves variable-length binary strings that, through a mapping process guided by a Backus-Naur Form (BNF) grammar, are translated into syntactically correct programs, avoiding the problem of GP that produces syntactically invalid programs. As GP systems grew in complexity, avoiding premature convergence to local optima became a critical area of research. Genetic approaches can generate complex solutions converging to a local optimum. To prevent that, Schmidt and Lipson \cite{schmidt2011age} proposed Age-Fitness Pareto Optimization (AFP), which treats the genotypic age of an individual as a second optimization objective alongside fitness. By allowing younger, less-fit individuals to survive and mature, it preserves exploration and reduces the risk of a single high-fitness lineage dominating the population. 
+
+La Cava et al. \cite{cava_epsilon-lexicase_2016} point out that selecting individuals based only on a test score is a problem for problems as SR. To allow more diverse individuals an $\epsilon$ threshold is introduced, allowing individuals to pass if their error is within $\epsilon$ of the best error. With methods to automatically adapt $\epsilon$ based on the population's performance, it effectively achieves high diversity by selecting for specialists that excel on different subsets of the data, leading to more accurate final models.
+
+Traditional GP operators manipulate syntax blindly, meaning a small change to a tree can cause a drastic and unpredictable change in its output, a property known as low locality \cite{uy_semantically-based_2011}. Semantic GP seeks to remedy this by designing operators that induce more controlled and meaningful changes in behavior. An early approach was the Semantic Similarity-based Crossover (SSC) from Uy et al. \cite{uy_semantically-based_2011}. For real-valued SR, the semantics of a subtree are defined as its vector of outputs on a sample of data points. The SSC operator then constrains crossover only to swap subtrees that are semantically similar but not identical. This prevents both redundant crossovers (swapping equivalent subtrees), improving search locality and leading to more stable evolution.
+
+On the work from Moraglio et al. \cite{moraglio2012gsgp} with Geometric Semantic GP (GSGP), the features are exact geometric operators designed to produce offspring with guaranteed semantic properties. This work formalized the search in semantic space, introducing exact geometric operators that guarantee offspring lie on the semantic segment between their parents, transforming the fitness landscape into an easily searchable "cone". A trade-off is that the results grow in length, necessitating the use of Computer Algebra Systems (CAS) to simplify them.
+
+Building on these ideas, Virgolin \cite{virgolin_improving_2019} proposes enhancements to Semantic Backpropagation (SB) based GP, a technique to make more effective changes in a GP tree, specifically for symbolic regression, by integrating Linear Scaling (LS), an optimization method to improve formula accuracy, both synergistically with SB and within the library search process \cite{virgolin2019linear}. They show that these adaptations significantly reduce error and outperform traditional GP operators, even with increased computational time due to the sophisticated search mechanism \cite{virgolin2019linear}. Kommenda et al. explore the integration of nonlinear least squares (NLS) for parameter identification within GP-based SR, showing that this local search mechanism, particularly with the Levenberg-Marquardt algorithm, significantly enhances model accuracy and generalization abilities for differentiable functions \cite{kommenda2020parameter}. 
+
+GP-GOMEA, a Model-Based Evolutionary Algorithm adapted for SR by Virgolin et al. \cite{virgolin_improving_2019}, learns a statistical model of interdependencies between different parts of the solution (nodes in the tree). This linkage tree model is then used to guide a Gene-pool Optimal Mixing (GOM) operator, which creates new solutions by combining promising sub-components from different parents. Generalized Symbolic Regression (GSR), from Tohme et al. \cite{tohme2022gsr}, reformulates the SR problem itself. Instead of searching for expressions of the form $y = f(x)$, GSR searches for the more general form $g(y) = f(x)$. It uses a GP to evolve sets of basis functions for both inputs and outputs, which are represented by a novel matrix-based encoding. The fitness of each individual is then determined by feeding these basis functions into a Lasso ($L_1$ regularized) regression, which finds an optimal, sparse linear combination. This approach can uncover simpler and more elegant solutions (e.g., $\ln(y) = \cos(x)$ instead of $y = e^{\cos(x)}$), resulting in significant performance gains.
+ 
+The increasing complexity of hybrid methods has driven the development of sophisticated software frameworks to make SR practical for scientific applications. These tools aim to address critical challenges in computational efficiency and usability. For instance, PySR provides a user-friendly Python interface to a high-performance Julia backend, implementing an "evolve-simplify-optimize" loop and introducing realistic features. For maximum performance, Operon is a C++ framework that uses a cache-friendly linear tree encoding and a scalable concurrency model to achieve significant speedups. For maximum flexibility, Bingo offers a modular Python architecture that allows users to easily construct custom hybrid workflows by swapping evolutionary components. Together, these frameworks highlight a trend towards making advanced SR methods more powerful, efficient, and accessible to the scientific community.
+
+As pointed out by Dong et al. \cite{dong2025RecentAdvances}, Genetic Programming (GP) is a powerful and classical approach for symbolic regression, offering high interpretability that reveals the structure and logic of solutions. Its primary strengths lie in its adaptability and expressiveness, stemming from diverse chromosome representations (such as trees or graphs) that enable it to tackle a wide variety of regression tasks across multiple domains. Furthermore, GP's performance can be significantly enhanced through various optimization strategies, including feature analysis, dimensionality reduction, and refined genetic operators like semantic crossover and adaptive mutation.
+
+However, the vast search space makes algorithms prone to overfitting, and their performance is susceptible to hyperparameter settings, which can lead to instability or long training times. GP also struggles with the "curse of dimensionality", making it less effective on high-dimensional data, and it faces the risk of getting trapped in local optima, which can compromise solution quality. Finally, the method is computationally intensive, often requiring parallel or distributed computing to achieve efficiency on complex, large-scale problems.
+
+\subsection{Language Models to Expression Finding}
+
+For decades, the search for symbolic equations has been dominated by evolutionary methods, such as Genetic Programming (GP). While powerful, these approaches are often computationally intensive and must start their search from scratch for each new problem, limiting knowledge transfer between tasks. The advent of deep learning, particularly the advances and successes of RNNs and the Transformer architecture, has introduced a new paradigm for SR. By pre-training on vast, synthetically generated datasets, these models learn implicit priors about the structure of mathematical expressions. This innovation reframes the SR task, moving it from a pure search problem to one where the discovery of equations is efficiently guided by learned knowledge.
+
+A significant step forward for the field was Deep Symbolic Regression (DSR) by Petersen et al. (2021) \cite{petersen2020deep}, which utilized an RNN trained with a risk-seeking policy gradient to generate expressions. This reinforcement learning (RL) approach rewards the model for finding the single best expression rather than optimizing for average performance, and it became a foundational technique. The same group extended this idea to control problems with Deep Symbolic Policy (DSP) Landajuela et al. \cite{landajuela_discovering_2021}, reinforcing the viability of RNNs for generating symbolic policies represented by mathematical expressions. DSR outperformed baselines, but was slower than GP without early stopping and failed on certain complex structures. 
+
+The results shown by the Transformer Architecture \cite{vaswani2017_attention_is_all} demonstrate a promising approach to problems involving sequence-to-sequence solutions. Biggio et al. \cite{biggio_neural_2021} proposed NeSymReS, the first method to leverage large-scale pre-training for SR. Using a set of standard Transformer Encoder and Decoder blocks trained on millions of synthetic equations to predict the expressions "skeleton", they tried to solve the problem as a translation problem \cite{biggio_neural_2021}. Similarly, Valipour et al. introduced SymbolicGPT, framing SR as a "captioning" task where a T-net encoder and a GPT-style decoder translate a point cloud into an equation skeleton. Both works were trained to predict only the structure of the expression and later find the constants in a post-processing optimization step. During this period, Landajuela et al.  \cite{landajuela_unified_2022} proposed uDSR, a unified framework that modularly combined DSR, AI Feynman \cite{ai_feyman2}, genetic programming, and other techniques, demonstrating the power of hybridization.
+
+Later works shifted towards refining their training and inference. Shojaee et al. \cite{shojaee_transformer-based_2023} introduced TPSR. This inference-time strategy utilizes Monte Carlo Tree Search (MCTS) to guide the decoding process of a pre-trained transformer, enabling it to optimize for non-differentiable, equation-level objectives such as accuracy and complexity. Holt et al. developed Deep Generative Symbolic Regression (DGSR) \cite{holt_deep_2023}, a framework that improves computational efficiency through a novel pre-training and refinement strategy. Its core feature is an end-to-end NMSE loss, which enables a pre-trained model to be fine-tuned with gradient updates directly on a new problem at inference time.
+
+New training objectives also emerged. Li et al. \cite{li_transformer-based_2023} introduced T-JSL, which utilizes a supervised contrastive loss to enable the model to better distinguish between expressions that share the same symbolic skeleton but have different constants, by increasing the similarity between vectors representing expressions with the same or similar skeleton. In the specialized domain of dynamical systems, d'Ascoli et al. \cite{dascoli_odeformer_2023} developed ODEFormer, a transformer pretrained to infer symbolic Ordinary Differential Equations (ODEs) directly from noisy, sparse trajectory data.
+
+The most recent works rely on the LLM's capacity to generate computable results by outputting computer code, rather than training SR-specific Transformer models from scratch. Instead, works like LLM-SR (Shojaee et al. \cite{shojaee_llm-sr_2024}) and funsearch (Ellenberga et al. \cite{ellenberg_generative_2025}) use an LLM as an intelligent mutation and crossover operator within a genetic algorithm, generating Python code for candidate equations. LASR Grayeli et al. \cite{grayeli2024symbolicregressionlearnedconcept} takes this a step further, performing a two-stage evolution over natural-language concepts and programmatic hypotheses. First, uses a set of initial expressions (hypothesis). Those are evolved using genetic operations and using an LLM to help guide the process with concepts learned. By the end of each run, the LLM analyses the best ones and creates new ideas that are added to a concepts library.  
+
+Relying on the decoder-only model, Llama 3 \cite{grattafiori2024llama3herdmodels}, Merler et al. introduce In-Context Symbolic Regression (ICSR) \cite{merler_-context_2024}, which uses an iterative optimization loop where an LLM is prompted with high-performing equations from previous steps to generate better ones, requiring no task-specific training. FormulaGPT \cite{li_generative_2024} introduces "algorithmic distillation," training a transformer on the entire search history of existing RL algorithms, such as DSR, to effectively internalize their search policies. As TPSR, Li et al. \cite{li_discovering_2024} also utilized MCTS combined with a Transformer to develop SR-GPT, a framework for SR that leverages a GPT model to guide MCTS, thereby improving search efficiency. The resulting data is used to refine the GPT model. This self-play loop allows the GPT to become progressively better at solving equations without needing a massive, pre-generated dataset.
+
+A new trend in symbolic regression is the shift towards multimodality and interactivity, which aims to enhance the discovery process by incorporating information beyond raw numerical data and facilitating human-in-the-loop collaboration. This paradigm shift reframes the task to better align with the intuitive, visual, or knowledge-driven methods of human scientists. Methods like SNIP, from Meidani et al. \cite{meidani_snip_2023} and MMSR \cite{li_mmsr_2024}, from Deng et al., conceptualize SR as an intrinsic multimodal task, utilizing contrastive learning to align the latent representations of numeric data and symbolic expressions, as if they were two distinct languages. Complementing this is the focus on human-AI collaboration, most notably in Sym-Q \cite{tian_interactive_2025}, an offline reinforcement learning framework that features a "co-design" mechanism allowing a domain expert to interactively provide partial equations to guide the search process at any stage.
+
+
+
+\vspace{1em}
+
+\begin{small}
+\begin{longtable}{>{\raggedright}p{0.18\linewidth} >{\centering}p{0.08\linewidth} >{\raggedright}p{0.46\linewidth} >{\centering\arraybackslash}p{0.18\linewidth}}
+\toprule
+\textbf{Work} & \textbf{Year} & \textbf{Model/Method} & \textbf{Parameters} \\
+\midrule
+\endfirsthead
+
+\multicolumn{4}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\toprule
+\textbf{Work} & \textbf{Year} & \textbf{Model/Method} & \textbf{Parameters} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+\textbf{DSR} \cite{petersen2020deep} & 2020 & RNN + RL & -- \\
+\addlinespace
+\textbf{NeSymReS} \cite{biggio_neural_2021} & 2021 & Encoder-Decoder Transformer & 24M \\
+\addlinespace
+\textbf{SymbolicGPT} \cite{valipour_symbolicgpt_2021} & 2021 & Encoder-Decoder (T-net + GPT) & -- \\
+\addlinespace
+\textbf{uDSR} \cite{landajuela_unified_2022} & 2022 & Hybrid (Transformer-RNN, GP, RL) & -- \\
+\addlinespace
+\textbf{TPSR} \cite{shojaee_transformer-based_2023} & 2023 & Pre-trained Transformer + MCTS & -- \\
+\addlinespace
+\textbf{T-JSL} \cite{li_transformer-based_2023} & 2023 & Encoder-Decoder (PointMLP + GPT) & -- \\
+\addlinespace
+\textbf{ODEFormer} \cite{dascoli_odeformer_2023} & 2023 & Encoder-Decoder Transformer & -- \\
+\addlinespace
+\textbf{FormulaGPT \cite{li_generative_2024}} & 2024 & Encoder-Decoder Transformer & -- \\
+\addlinespace
+\textbf{MMSR} \cite{li_mmsr_2024} & 2024 & Multimodal Encoder-Decoder & -- \\
+\addlinespace
+\textbf{SNIP} \cite{meidani_snip_2023} & 2023 & Multimodal Encoder-Decoder & -- \\
+\addlinespace
+\textbf{LLM-SR} \cite{shojaee_llm-sr_2024} & 2024 & LLM + Evolutionary Search & -- \\
+\addlinespace
+\textbf{FunSearch} \cite{ellenberg_generative_2025} & 2025 & LLM + Genetic Algorithm & -- \\
+\addlinespace
+\textbf{LASR} \cite{grayeli2024symbolicregressionlearnedconcept} & 2024 & LLM + Genetic Programming & -- \\
+\addlinespace
+\textbf{ICSR} \cite{merler_-context_2024} & 2024 & LLM + Iterative Prompting & -- \\
+\addlinespace
+\textbf{SR-GPT} & 2024 & GPT + MCTS & -- \\
+\addlinespace
+\textbf{Sym-Q} \cite{tian_interactive_2025} & 2025 & Offline RL Q-network & -- \\
+\addlinespace
+\textbf{DGSR} \cite{holt_deep_2023} & 2023 & Encoder-Decoder Transformer + RL/GP & 0.12M \\
+\addlinespace
+\textbf{Seriguela (ours)} & 2025 & Pre-trained Transformer + RL (PPO) & 0.12M \\
+\end{longtable}
+\end{small}
+
+
+
+%!important DGSR is basicaly our work%
+
+%https://gemini.google.com/app/ba71c779da92c138
+%https://gemini.google.com/app/1dfa5288fac30a15
