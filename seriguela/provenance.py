@@ -17,10 +17,16 @@ class DirtyTreeError(RuntimeError):
 
 
 def git_state() -> Tuple[str, bool]:
-    """``(commit, sujo)``. Arquivos não rastreados (ex.: resultados) não contam."""
+    """``(commit, sujo)``.
+
+    Sujo = arquivo rastreado modificado em qualquer lugar, ou arquivo novo dentro do
+    pacote. Arquivos não rastreados fora do pacote (resultados, entregáveis) não contam.
+    """
     def git(*args):
         return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True).stdout.strip()
-    return git("rev-parse", "HEAD") or "desconhecido", bool(git("status", "--porcelain", "--untracked-files=no"))
+    dirty = bool(git("status", "--porcelain", "--untracked-files=no")) or \
+        bool(git("status", "--porcelain", "--", "seriguela"))
+    return git("rev-parse", "HEAD") or "desconhecido", dirty
 
 
 def config_hash(config: Dict) -> str:
