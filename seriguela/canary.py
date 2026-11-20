@@ -39,8 +39,12 @@ def check_arm(algo: str, replay: str, args, policy_factory=None, problem=None) -
     if result["status"] != "ok":
         return False, f"status {result['status']}"
     learned = any(h.get("updated") for h in result["history"])
-    if (algo != "bon") != learned:
-        return False, "braço que aprende não atualizou" if algo != "bon" else "bon atualizou pesos"
+    if algo == "bon" and learned:
+        return False, "bon atualizou pesos"
+    if algo != "bon" and not learned:
+        if not any(h.get("signal") for h in result["history"]):
+            return False, "nenhum passo teve recompensas distintas: a atualização não foi exercitada"
+        return False, "braço que aprende teve sinal e não atualizou"
     drift = max(h["sample_drift"] for h in result["history"])
     per_step = (time.time() - started) / (args.steps + 1)
     best = result["best"] or {}

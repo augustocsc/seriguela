@@ -150,9 +150,10 @@ def _update(policy: Policy, optimizer, cfg: RunConfig, sequences, rewards, n_fre
         raise TripwireError("vantagem não finita")
     idx = np.flatnonzero(keep)
     stats = {"loss": 0.0, "approx_kl": 0.0, "kl_ref": 0.0, "entropy": 0.0, "grad_norm": 0.0,
-             "epochs_used": 0, "update_tokens": 0, "updated": False}
+             "epochs_used": 0, "update_tokens": 0, "updated": False, "signal": False}
     if len(idx) == 0 or not np.any(adv[idx] != 0):
         return stats                                 # lote sem sinal: nada a aprender
+    stats["signal"] = True
     device = policy.device
     params = policy.trainable_parameters()
     clip = preset["objective"] == "clip"
@@ -261,7 +262,7 @@ def run(config: RunConfig, policy: Optional[Policy] = None, problem: Optional[Pr
                 if not evaluators_agree(ev.expression, problem.x_train, ev.constants):
                     raise TripwireError(f"avaliador rápido e de referência divergem em: {ev.expression}")
 
-        update = {"updated": False}
+        update = {"updated": False, "signal": False}
         n_replay = 0
         if learn:
             sequences = [s.tokens for s in samples]
