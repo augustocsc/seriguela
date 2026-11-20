@@ -1,0 +1,9 @@
+{
+ "name": "g1_timing",
+ "description": "Portão G1 no pod: mede o tempo real por passo com lote 1024 e 3 runs por GPU. Não é evidência.",
+ "common": {"steps": 20, "batch": 1024},
+ "cells": [
+  {"problems": ["nguyen_1"], "algos": ["bon", "ppo", "rspg"], "replays": ["none"], "seeds": [0]},
+  {"problems": ["nguyen_1"], "algos": ["ppo"], "replays": ["elite"], "seeds": [0]}
+ ]
+}

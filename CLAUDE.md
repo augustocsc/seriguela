@@ -38,6 +38,10 @@ seriguela/            núcleo v3 (pacote Python)
   symbolic.py         equivalência simbólica no critério do SRBench
   provenance.py       commit, versões, hashes
   run.py              linha de comando (um run por chamada)
+  campaign.py         fila de runs de um arquivo, vários por GPU, teto de horas
+  pod.py              RunPod: subir, acompanhar, buscar resultados, desligar
+  canary.py, collect.py  portão G1 e tabela da campanha
+campaigns/            arquivos de campanha (JSON)
 tests/                pytest; modelo minúsculo aleatório, sem GPU e sem download
 data/benchmarks/      Nguyen, Strogatz, metadados do Feynman (CSVs do Feynman sob demanda)
 results/v2/           resultados antigos (legado)   results/v3/  resultados novos
@@ -64,6 +68,19 @@ Teste toy na GPU local (RTX 3050 6GB), só para verificar que o código roda:
 ```bash
 python -m seriguela.run --problem nguyen_1 --algo ppo --replay elite --steps 12 --batch 128 --update_mb 32 --allow_dirty --out /tmp/toy
 ```
+
+Campanha (arquivo em `campaigns/`, commitado e com push antes de subir o pod):
+
+```bash
+python -m seriguela.campaign plan campaigns/g1_timing.json      # lista os runs
+python -m seriguela.pod up campaigns/g1_timing.json --budget 2  # teto em US$
+python -m seriguela.pod watch                                   # acompanha, busca, desliga
+python -m seriguela.pod down                                    # apaga o pod na mão
+```
+
+No pod, o job roda G0 (pytest) e G1 (canário) antes da campanha, tudo sob `timeout`,
+e o pod se desliga sozinho ao fim; se ninguém buscar os resultados em 45 min, ele
+para em vez de apagar e o volume `/workspace` fica guardado.
 
 ## Regras do experimento (não negociáveis)
 
@@ -103,8 +120,9 @@ Achados conferidos no código (detalhes e evidências no plano v3):
 
 - Local: i5-12450HX, 16 GB, RTX 3050 6 GB. Serve para `pytest` e testes toy.
   O Python do sistema (3.13, torch 2.11+cu128, transformers 5.8) roda o núcleo v3.
-- Campanha: RunPod (3090 ≈ US$ 0,22/h em junho de 2026). O orquestrador antigo está
-  em `legacy/v2/runpod/`; o da v3 (portões + desligamento automático) ainda não existe.
+- Campanha: RunPod, RTX 3090 da comunidade (≈ US$ 0,22/h em junho de 2026), vários
+  runs por placa. Orquestrador: `seriguela/pod.py` + `seriguela/campaign.py`. AWS foi
+  descartada (sem créditos; mais cara por hora).
 - Versões fixadas para CI e pod: `requirements.txt` (transformers 4.51.3, peft 0.15.1).
 
 **Última atualização:** 2026-11-19
