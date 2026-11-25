@@ -37,6 +37,7 @@ def make_policy(seed=0, **kwargs):
     torch.manual_seed(seed)
     tokenizer = ToyTokenizer()
     config = GPT2Config(vocab_size=len(tokenizer.vocab), n_layer=2, n_head=2, n_embd=32, n_positions=128,
+                        bos_token_id=0, eos_token_id=0,
                         resid_pdrop=0.0, embd_pdrop=0.0, attn_pdrop=0.0)
     model = get_peft_model(GPT2LMHeadModel(config),
                            LoraConfig(r=4, lora_alpha=8, target_modules=["c_attn"], lora_dropout=0.0, bias="none", fan_in_fan_out=True))

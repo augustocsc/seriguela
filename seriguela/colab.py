@@ -140,6 +140,7 @@ try:
     head = run_checked(["git", "rev-parse", "HEAD"], cwd=REPO_DIR).strip()
     assert head == COMMIT, f"HEAD {{head}} != {{COMMIT}}"
 
+    subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-q", "torchao"], check=False)
     run_checked([sys.executable, "-m", "pip", "install", "-q",
                  "transformers>=4.51", "peft>=0.15", "sympy>=1.13.1",
                  "scipy>=1.11", "pandas>=2.2", "pytest>=8"],
