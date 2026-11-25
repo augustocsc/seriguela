@@ -26,3 +26,7 @@ def test_clear_mismatch_is_decided_numerically_without_sympy(monkeypatch):
 
 def test_fitted_constants_are_substituted():
     assert symbolic_match("C*x_1", "2.5*x_1", constants=[2.5]) is True
+    # Constantes ajustadas por L-BFGS-B com ruído numérico de ~1e-7 devem casar (critério SRBench)
+    assert symbolic_match("exp(C*x_1)", "exp(2*x_1)", constants=[1.9999998]) is True
+    assert symbolic_match("C*x_1**2 + C*x_1", "x_1**2 + 2.5*x_1", constants=[1.0000001, 2.4999999]) is True
+    assert symbolic_match("C*x_1**2 + C*x_1", "x_1**2 + 2.5*x_1", constants=[1.5, 2.5]) is False

@@ -1,0 +1,51 @@
+{
+  "name": "feynman_test_15",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "c",
+    "v",
+    "omega",
+    "theta"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_15/feynman_test_15.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_15",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nomega_0 = sqrt(1-v**2/c**2)*omega/(1+v/c*cos(theta))\n\nc in [5.0,20.0]\nv in [1.0,3.0]\nomega in [1.0,5.0]\ntheta in [0.0,6.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "omega_0, Frequency, s^(-1)"
+    },
+    "features": [
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "v",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "omega",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      },
+      {
+        "name": "theta",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

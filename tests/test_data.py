@@ -39,3 +39,24 @@ def test_srbench_split_and_noise():
 def test_unknown_problem():
     with pytest.raises(ValueError):
         load_problem("nope", 0)
+
+
+def test_all_local_srbench_truths_parse_without_unmapped_variables():
+    import json, re, sympy
+    from seriguela.data import srbench_truth
+
+    known = {"sin", "cos", "tan", "exp", "log", "sqrt", "abs", "asin", "acos", "atan",
+             "sinh", "cosh", "tanh", "cot", "pi", "E"}
+    checked = 0
+    for family in ("feynman", "strogatz"):
+        for meta in sorted((BENCH_DIR / family).glob("*.meta.json")):
+            d = json.loads(meta.read_text(encoding="utf-8"))
+            cols = [f["name"] for f in d.get("pmlb_metadata", {}).get("features", [])] or d["variables"]
+            truth = srbench_truth(d["name"], family, cols)
+            assert truth is not None, f"truth ausente em {d['name']}"
+            ids = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", truth))
+            leftover = [i for i in ids if not re.match(r"^x_\d+$", i) and i not in known]
+            assert not leftover, f"{d['name']}: símbolos não mapeados {leftover} em {truth}"
+            assert sympy.sympify(truth) is not None
+            checked += 1
+    assert checked >= 115

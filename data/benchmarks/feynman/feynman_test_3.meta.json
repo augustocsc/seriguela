@@ -1,0 +1,51 @@
+{
+  "name": "feynman_test_3",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "d",
+    "alpha",
+    "theta1",
+    "theta2"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_3/feynman_test_3.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_3",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nr = d*(1-alpha**2)/(1+alpha*cos(theta1-theta2))\n\nd in [1.0,3.0]\nalpha in [2.0,4.0]\ntheta1 in [4.0,5.0]\ntheta2 in [4.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "r, Length, m^1"
+    },
+    "features": [
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "alpha",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "theta1",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "theta2",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

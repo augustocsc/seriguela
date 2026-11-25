@@ -55,3 +55,43 @@ def compute(kind: str, rewards: np.ndarray, epsilon: float = 0.05) -> Tuple[np.n
     if kind == "risk":
         return risk_seeking(rewards, epsilon)
     raise ValueError(f"vantagem desconhecida: {kind}")
+
+
+def compute_with_replay(kind: str, rewards: np.ndarray, n_fresh: int,
+                        epsilon: float = 0.05) -> Tuple[np.ndarray, np.ndarray]:
+    """Calcula vantagens usando APENAS o lote novo como referência, sem que o replay
+    distorça a média/desvio, os postos ou o quantil de risco das amostras novas.
+    """
+    r = np.asarray(rewards, dtype=np.float64)
+    if n_fresh >= len(r):
+        return compute(kind, r, epsilon)
+    r_fresh, r_rep = r[:n_fresh], r[n_fresh:]
+    if kind == "zscore":
+        mu, std = r_fresh.mean(), r_fresh.std()
+        if std < _EPS:
+            std_all = r.std()
+            adv_fresh = np.zeros_like(r_fresh)
+            adv_rep = np.zeros_like(r_rep) if std_all < _EPS else (r_rep - mu) / std_all
+        else:
+            adv_fresh = (r_fresh - mu) / std
+            adv_rep = (r_rep - mu) / std
+        return np.concatenate([adv_fresh, adv_rep]), np.ones(len(r), dtype=bool)
+    if kind == "rank":
+        adv_fresh = centered_rank(r_fresh)
+        s = np.sort(r_fresh)
+        left = np.searchsorted(s, r_rep, side="left")
+        right = np.searchsorted(s, r_rep, side="right")
+        # posição média equivalente na escala [0, n_fresh - 1]
+        rep_ranks = 0.5 * (left + np.maximum(right - 1, left))
+        raw_fresh = np.arange(len(r_fresh), dtype=np.float64)
+        mu, std = raw_fresh.mean(), raw_fresh.std()
+        adv_rep = np.zeros_like(r_rep) if std < _EPS else (rep_ranks - mu) / std
+        return np.concatenate([adv_fresh, adv_rep]), np.ones(len(r), dtype=bool)
+    if kind == "risk":
+        threshold = np.quantile(r_fresh, 1.0 - epsilon)
+        keep_fresh = r_fresh >= threshold
+        keep_rep = r_rep >= threshold
+        adv_fresh = np.where(keep_fresh, r_fresh - threshold, 0.0)
+        adv_rep = np.where(keep_rep, r_rep - threshold, 0.0)
+        return np.concatenate([adv_fresh, adv_rep]), np.concatenate([keep_fresh, keep_rep])
+    raise ValueError(f"vantagem desconhecida: {kind}")

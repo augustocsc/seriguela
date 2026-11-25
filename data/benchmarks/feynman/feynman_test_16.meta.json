@@ -1,0 +1,63 @@
+{
+  "name": "feynman_test_16",
+  "n_samples": 100000,
+  "n_vars": 6,
+  "variables": [
+    "m",
+    "c",
+    "p",
+    "q",
+    "A_vec",
+    "Volt"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_16/feynman_test_16.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_16",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nE_n = sqrt((p-q*A_vec)**2*c**2+m**2*c**4)+q*Volt\n\nm in [1.0,5.0]\nc in [1.0,5.0]\np in [1.0,5.0]\nq in [1.0,5.0]\nA_vec in [1.0,5.0]\nVolt in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "E_n, Energy, m^2 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "c",
+        "type": "continuous",
+        "description": "Velocity, m^1 * s^(-1)"
+      },
+      {
+        "name": "p",
+        "type": "continuous",
+        "description": "Momentum, m^1 * s^(-1) * kg^1"
+      },
+      {
+        "name": "q",
+        "type": "continuous",
+        "description": "Charge, m^2 * s^(-2) * kg^1 * V^(-1)"
+      },
+      {
+        "name": "A_vec",
+        "type": "continuous",
+        "description": "Vector potential, m^(-1) * s^1 * V^1"
+      },
+      {
+        "name": "Volt",
+        "type": "continuous",
+        "description": "Voltage, V^1"
+      }
+    ]
+  }
+}

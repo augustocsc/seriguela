@@ -97,6 +97,34 @@ def _download(name: str, csv_path: Path) -> None:
     csv_path.with_suffix(".tsv").unlink()
 
 
+def _normalize_truth(equation: str, columns) -> str:
+    """Padroniza nomes de funções para SymPy e renomeia colunas para ``x_1..x_n``."""
+    equation = re.sub(r"\barcsin\b", "asin", equation)
+    equation = re.sub(r"\barccos\b", "acos", equation)
+    equation = re.sub(r"\barctan\b", "atan", equation)
+    equation = re.sub(r"\bln\b", "log", equation)
+    for index, column in sorted(enumerate(columns), key=lambda kv: -len(kv[1])):
+        equation = re.sub(rf"(?<![A-Za-z0-9_]){re.escape(column)}(?![A-Za-z0-9_])", f"x_{index + 1}", equation)
+    return equation
+
+
+def _meta_truth(name: str, family: str, columns) -> Optional[str]:
+    """Lê a fórmula oficial da descrição PMLB (cobre Feynman e Strogatz)."""
+    import json
+    meta_path = BENCH_DIR / family / f"{name}.meta.json"
+    if not meta_path.exists():
+        return None
+    data = json.loads(meta_path.read_text(encoding="utf-8"))
+    desc = data.get("pmlb_metadata", {}).get("description", "")
+    for line in desc.splitlines():
+        s = line.strip()
+        if "=" in s and not s.startswith("http"):
+            rhs = s.split("=", 1)[1].strip()
+            if rhs:
+                return _normalize_truth(rhs, columns)
+    return None
+
+
 def _feynman_truth(name: str, columns) -> Optional[str]:
     path = BENCH_DIR / "feynman_equations.py"
     if not path.exists():
@@ -107,11 +135,15 @@ def _feynman_truth(name: str, columns) -> Optional[str]:
     entry = getattr(module, "FEYNMAN_EQUATIONS", {}).get(name)
     if not entry:
         return None
-    equation = entry["equation"]
-    # Renomeia por palavra inteira, do nome mais longo para o mais curto.
-    for index, column in sorted(enumerate(columns), key=lambda kv: -len(kv[1])):
-        equation = re.sub(rf"(?<![A-Za-z0-9_]){re.escape(column)}(?![A-Za-z0-9_])", f"x_{index + 1}", equation)
-    return equation
+    return _normalize_truth(entry["equation"], columns)
+
+
+def srbench_truth(name: str, family: str, columns) -> Optional[str]:
+    """Equação-alvo em ``x_1..x_n``: prioriza metadado oficial PMLB, com fallback."""
+    truth = _meta_truth(name, family, columns)
+    if truth is not None:
+        return truth
+    return _feynman_truth(name, columns) if family == "feynman" else None
 
 
 def _srbench(name: str, seed: int, max_train: int, noise: float, download: bool) -> Problem:
@@ -135,7 +167,7 @@ def _srbench(name: str, seed: int, max_train: int, noise: float, download: bool)
     y_train = y[train_idx].copy()
     if noise > 0:                                    # mesma definição do SRBench
         y_train += rng.normal(0, noise * np.sqrt(np.mean(np.square(y_train))), len(y_train))
-    truth = _feynman_truth(name, features) if family == "feynman" else None
+    truth = srbench_truth(name, family, features)
     return Problem(name, X[train_idx], y_train, X[test_idx], y[test_idx], truth=truth,
                    meta={"family": family, "columns": features, "noise": noise,
                          "n_rows": int(len(y)), "max_train": max_train})

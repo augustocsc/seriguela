@@ -43,6 +43,7 @@ def test_bon_never_touches_the_weights_and_ppo_does(problem):
     assert any(h["updated"] for h in result["history"])
     assert any(not torch.equal(before[n], p) for n, p in lora_state(learner).items())
     assert result["final_policy"]["kl_from_prior_per_token"] != 0.0
+    assert all(h["approx_kl"] >= 0.0 for h in result["history"] if h.get("updated"))
 
 
 def test_same_seed_same_run(problem):

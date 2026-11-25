@@ -35,3 +35,24 @@ def test_compute_dispatch():
     assert A.compute("zscore", r)[1].all() and A.compute("rank", r)[1].all()
     with pytest.raises(ValueError):
         A.compute("nope", r)
+
+
+def test_replay_never_hijacks_fresh_quantile_or_baseline():
+    """Elites antigas não podem deslocar o quantil de 5% do rspg nem a média do zscore."""
+    fresh = np.linspace(0.0, 0.5, 100)
+    elites = np.full(20, 0.99)
+    both = np.concatenate([fresh, elites])
+
+    adv_r, keep_r = A.compute_with_replay("risk", both, n_fresh=100, epsilon=0.05)
+    # Top 5% das amostras NOVAS deve continuar sendo mantido (5 amostras de 100)
+    assert keep_r[:100].sum() == 5
+    assert np.allclose(adv_r[:100], A.risk_seeking(fresh, 0.05)[0])
+    assert keep_r[100:].all() and (adv_r[100:] > 0).all()
+
+    adv_z, _ = A.compute_with_replay("zscore", both, n_fresh=100)
+    assert np.allclose(adv_z[:100], A.zscore(fresh))
+    assert (adv_z[100:] > 0).all()
+
+    adv_k, _ = A.compute_with_replay("rank", both, n_fresh=100)
+    assert np.allclose(adv_k[:100], A.centered_rank(fresh))
+    assert (adv_k[100:] > 0).all()

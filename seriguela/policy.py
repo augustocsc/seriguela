@@ -20,7 +20,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-OPERATORS = ["+", "-", "*", "/", "sin", "cos", "sqrt", "log", "exp", "**"]
+# Mesmos 13 operadores e mesma ordem alfabética usados nos prompts do corpus SFT (682K).
+OPERATORS = ["*", "**", "+", "-", "/", "abs", "asin", "cos", "exp", "log", "sin", "sqrt", "tan"]
 
 
 def build_prompt(n_vars: int) -> str:

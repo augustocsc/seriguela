@@ -1,0 +1,57 @@
+{
+  "name": "feynman_test_14",
+  "n_samples": 100000,
+  "n_vars": 5,
+  "variables": [
+    "Ef",
+    "theta",
+    "r",
+    "d",
+    "alpha"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_14/feynman_test_14.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_14",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nVolt = Ef*cos(theta)*(-r+d**3/r**2*(alpha-1)/(alpha+2))\n\nEf in [1.0,5.0]\ntheta in [0.0,6.0]\nr in [1.0,5.0]\nd in [1.0,5.0]\nalpha in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "Volt, Voltage, V^1"
+    },
+    "features": [
+      {
+        "name": "Ef",
+        "type": "continuous",
+        "description": "Electric field, m^(-1) * V^1"
+      },
+      {
+        "name": "theta",
+        "type": "continuous",
+        "description": "Dimensionless"
+      },
+      {
+        "name": "r",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "alpha",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

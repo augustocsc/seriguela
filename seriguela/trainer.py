@@ -143,9 +143,16 @@ def _clean(value):
 
 
 def _update(policy: Policy, optimizer, cfg: RunConfig, sequences, rewards, n_fresh: int, temp: float) -> Dict:
-    """Uma atualização da política sobre o lote (novas + replay)."""
+    """Uma atualização da política sobre o lote (novas + replay).
+
+    As estatísticas da vantagem (média/desvio, postos ou quantil de risco) são
+    calculadas APENAS sobre as ``n_fresh`` amostras novas. Na loss, cada amostra
+    nova tem peso ``1 / n_fresh_kept`` e cada amostra de replay tem peso
+    ``replay_ratio / n_rep_kept`` (quando há replay mantido), de modo que o
+    buffer nunca sequestre o gradiente on-policy (em especial no ``rspg``).
+    """
     preset = PRESETS[cfg.algo]
-    adv, keep = advantages.compute(preset["advantage"], np.asarray(rewards), cfg.risk_epsilon)
+    adv, keep = advantages.compute_with_replay(preset["advantage"], np.asarray(rewards), n_fresh, cfg.risk_epsilon)
     if not np.all(np.isfinite(adv)):
         raise TripwireError("vantagem não finita")
     idx = np.flatnonzero(keep)
@@ -154,6 +161,11 @@ def _update(policy: Policy, optimizer, cfg: RunConfig, sequences, rewards, n_fre
     if len(idx) == 0 or not np.any(adv[idx] != 0):
         return stats                                 # lote sem sinal: nada a aprender
     stats["signal"] = True
+    n_fresh_kept = int(np.sum(idx < n_fresh))
+    n_rep_kept = int(np.sum(idx >= n_fresh))
+    w_fresh = 1.0 / max(n_fresh_kept, 1)
+    w_rep = (cfg.replay_ratio / n_rep_kept) if n_rep_kept > 0 else 0.0
+    total_weight = (1.0 if n_fresh_kept > 0 else 0.0) + (cfg.replay_ratio if n_rep_kept > 0 else 0.0)
     device = policy.device
     params = policy.trainable_parameters()
     clip = preset["objective"] == "clip"
@@ -170,31 +182,36 @@ def _update(policy: Policy, optimizer, cfg: RunConfig, sequences, rewards, n_fre
             m = mask.float()
             lengths = m.sum(1)
             a = torch.tensor(adv[mb], dtype=torch.float32, device=device)
+            is_fresh = torch.tensor(mb < n_fresh, dtype=torch.bool, device=device)
+            weights = torch.where(is_fresh, torch.full_like(a, w_fresh), torch.full_like(a, w_rep))
             if epoch == 0:
                 old[start] = logp.detach()
             if clip:
                 ratio = torch.exp(logp - old[start])
                 surrogate = torch.minimum(ratio * a[:, None],
                                           ratio.clamp(1 - cfg.clip_eps, 1 + cfg.clip_eps) * a[:, None])
-                loss = -((surrogate * m).sum(1) / lengths).sum()
+                per_seq = -((surrogate * m).sum(1) / lengths)
             else:
-                loss = -(a * (logp * m).sum(1) / lengths).sum()
+                per_seq = -(a * (logp * m).sum(1) / lengths)
+            loss = (per_seq * weights).sum()
             if cfg.entropy_coef > 0:
-                entropy = ((ent * m).sum(1) / lengths).sum()
+                entropy = (((ent * m).sum(1) / lengths) * weights).sum()
                 loss = loss - cfg.entropy_coef * entropy
                 totals["entropy"] += float(entropy.detach())
             if ref is not None:
-                fresh = torch.tensor(mb < n_fresh, dtype=torch.float32, device=device)
+                fresh_f = is_fresh.float()
                 ref_mb = torch.zeros_like(logp)
                 for row, i in enumerate(range(start, start + len(mb))):
                     ref_mb[row, :len(ref[i])] = torch.tensor(ref[i], device=device)
                 delta = (ref_mb - logp) * m           # estimador do DeepSeekMath, eq. 4
-                kl_ref = (((torch.exp(delta) - delta - 1) * m).sum(1) / lengths * fresh).sum()
+                kl_ref = (((torch.exp(delta) - delta - 1) * m).sum(1) / lengths * fresh_f * w_fresh).sum()
                 loss = loss + cfg.kl_ref_coef * kl_ref
                 totals["kl_ref"] += float(kl_ref.detach())
-            (loss / len(idx)).backward()
+            (loss / total_weight).backward()
             totals["loss"] += float(loss.detach())
-            totals["kl"] += float(((old[start] - logp.detach()) * m).sum()) if clip else 0.0
+            if clip:
+                d = (logp.detach() - old[start]) * m  # estimador k3 não-negativo de Schulman
+                totals["kl"] += float(((torch.exp(d) - d - 1) * m).sum())
             totals["tokens"] += float(m.sum())
         approx_kl = totals["kl"] / max(totals["tokens"], 1.0)
         if epoch > 0 and approx_kl > cfg.max_kl:
@@ -203,8 +220,8 @@ def _update(policy: Policy, optimizer, cfg: RunConfig, sequences, rewards, n_fre
         if not math.isfinite(grad_norm) or not math.isfinite(totals["loss"]):
             raise TripwireError("loss ou gradiente não finito")
         optimizer.step()
-        stats.update(loss=totals["loss"] / len(idx), approx_kl=approx_kl,
-                     kl_ref=totals["kl_ref"] / len(idx), entropy=totals["entropy"] / len(idx),
+        stats.update(loss=totals["loss"] / total_weight, approx_kl=approx_kl,
+                     kl_ref=totals["kl_ref"] / total_weight, entropy=totals["entropy"] / total_weight,
                      grad_norm=grad_norm, epochs_used=epoch + 1, updated=True)
         stats["update_tokens"] += int(totals["tokens"])
     return stats

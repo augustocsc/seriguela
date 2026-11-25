@@ -55,9 +55,18 @@ def _plausible(pred: str, truth: str, points: Optional[np.ndarray], tol: float =
     return False
 
 
-def _decide(pred: str, truth: str) -> bool:
+def _round_floats(expr, sigfigs: int = 3):
+    """Arredonda floats para ``sigfigs`` algarismos significativos (como no SRBench)."""
     import sympy
-    p, t = sympy.sympify(pred), sympy.sympify(truth)
+    repl = {}
+    for atom in expr.atoms(sympy.Float):
+        val = float(atom)
+        repl[atom] = sympy.Integer(0) if abs(val) <= 1e-12 else sympy.Rational(f"{val:.{sigfigs}g}")
+    return expr.xreplace(repl)
+
+
+def _match_pair(p, t) -> bool:
+    import sympy
     if not p.free_symbols:                            # modelo constante não conta
         return False
     difference = sympy.simplify(t - p)
@@ -65,6 +74,16 @@ def _decide(pred: str, truth: str) -> bool:
         return True
     ratio = sympy.simplify(t / p)
     return bool(ratio.is_constant() and ratio != 0)
+
+
+def _decide(pred: str, truth: str) -> bool:
+    import sympy
+    p, t = sympy.sympify(pred), sympy.sympify(truth)
+    if _match_pair(p, t):
+        return True
+    if p.atoms(sympy.Float) or t.atoms(sympy.Float):
+        return _match_pair(_round_floats(p), _round_floats(t))
+    return False
 
 
 def _worker(pred: str, truth: str, queue) -> None:

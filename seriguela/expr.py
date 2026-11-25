@@ -35,7 +35,10 @@ _NP_FUNCS = {
 }
 _MATH_FUNCS = {
     "sqrt": math.sqrt, "log": math.log, "exp": math.exp, "sin": math.sin, "cos": math.cos,
-    "tan": math.tan, "asin": math.asin, "Abs": abs, "pi": math.pi, "E": math.e,
+    "tan": math.tan, "asin": math.asin, "acos": math.acos, "atan": math.atan,
+    "sinh": math.sinh, "cosh": math.cosh, "tanh": math.tanh,
+    "cot": lambda x: 1.0 / math.tan(x),
+    "Abs": abs, "pi": math.pi, "E": math.e,
 }
 
 
@@ -139,7 +142,11 @@ class Expression:
 
         def loss(c):
             pred = self.evaluate(X, c)
-            return float(np.mean((y - pred) ** 2)) if np.all(np.isfinite(pred)) else 1e300
+            if not np.all(np.isfinite(pred)):
+                return 1e200
+            with np.errstate(all="ignore"):
+                mse = float(np.mean((y - pred) ** 2))
+            return mse if math.isfinite(mse) and mse < 1e200 else 1e200
 
         base = loss(ones)
         try:

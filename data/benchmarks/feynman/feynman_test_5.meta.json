@@ -1,0 +1,51 @@
+{
+  "name": "feynman_test_5",
+  "n_samples": 100000,
+  "n_vars": 4,
+  "variables": [
+    "d",
+    "G",
+    "m1",
+    "m2"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_5/feynman_test_5.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_5",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nt = 2*pi*d**(3/2)/sqrt(G*(m1+m2))\n\nd in [1.0,3.0]\nG in [1.0,3.0]\nm1 in [1.0,3.0]\nm2 in [1.0,3.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "t, \u03a4ime, s^1"
+    },
+    "features": [
+      {
+        "name": "d",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "G",
+        "type": "continuous",
+        "description": "Newton's constant, m^3 * s^(-2) * kg^(-1)"
+      },
+      {
+        "name": "m1",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "m2",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      }
+    ]
+  }
+}

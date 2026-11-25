@@ -8,7 +8,23 @@ import pytest
 
 from seriguela import pod
 
-BASH = shutil.which("bash")
+def _find_bash():
+    candidates = [
+        r"C:\Program Files\Git\bin\bash.exe",
+        r"C:\Program Files\Git\usr\bin\bash.exe",
+        shutil.which("bash"),
+    ]
+    for path in candidates:
+        if path and Path(path).exists():
+            try:
+                if subprocess.run([path, "-c", "true"], capture_output=True, timeout=5).returncode == 0:
+                    return path
+            except Exception:
+                continue
+    return None
+
+
+BASH = _find_bash()
 
 
 def test_budget_hours_discounts_setup_and_grace():

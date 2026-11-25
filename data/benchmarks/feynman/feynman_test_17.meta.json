@@ -1,0 +1,63 @@
+{
+  "name": "feynman_test_17",
+  "n_samples": 100000,
+  "n_vars": 6,
+  "variables": [
+    "m",
+    "omega",
+    "p",
+    "y",
+    "x",
+    "alpha"
+  ],
+  "target": "target",
+  "source": "PMLB (official)",
+  "url": "https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/feynman_test_17/feynman_test_17.tsv.gz",
+  "pmlb_metadata": {
+    "dataset": "feynman_test_17",
+    "description": "A synthetic physics model from the Feynman Lectures on Physics.         \nThis is the version of the model with units.\nFormula and simulated variable ranges given below. \n\nE_n = 1/(2*m)*(p**2+m**2*omega**2*x**2*(1+alpha*x/y))\n\nm in [1.0,5.0]\nomega in [1.0,5.0]\np in [1.0,5.0]\ny in [1.0,5.0]\nx in [1.0,5.0]\nalpha in [1.0,5.0]\n\nNote the original data has been down-sampled to 100,000 rows (see source). \n",
+    "source": "Feynman Symbolic Regression Database https://space.mit.edu/home/tegmark/aifeynman.html",
+    "publication": "AI Feynman - a Physics-Inspired Method for Symbolic Regression, Udrescu & Tegmark (2019), arXiv:1905.11481",
+    "task": "regression",
+    "keywords": [
+      "symbolic regression",
+      "physics"
+    ],
+    "target": {
+      "type": "continuous",
+      "description": "E_n, Energy, m^2 * s^(-2) * kg^1"
+    },
+    "features": [
+      {
+        "name": "m",
+        "type": "continuous",
+        "description": "Mass, kg^1"
+      },
+      {
+        "name": "omega",
+        "type": "continuous",
+        "description": "Frequency, s^(-1)"
+      },
+      {
+        "name": "p",
+        "type": "continuous",
+        "description": "Momentum, m^1 * s^(-1) * kg^1"
+      },
+      {
+        "name": "y",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "x",
+        "type": "continuous",
+        "description": "Length, m^1"
+      },
+      {
+        "name": "alpha",
+        "type": "continuous",
+        "description": "Dimensionless"
+      }
+    ]
+  }
+}

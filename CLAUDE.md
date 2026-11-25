@@ -39,8 +39,10 @@ seriguela/            núcleo v3 (pacote Python)
   provenance.py       commit, versões, hashes
   run.py              linha de comando (um run por chamada)
   campaign.py         fila de runs de um arquivo, vários por GPU, teto de horas
-  pod.py              RunPod: subir, acompanhar, buscar resultados, desligar
+  pod.py              RunPod (reserva): subir, acompanhar, buscar resultados, desligar
+  colab.py            Google Colab CLI (primário, 600 CUs): teto em CU, G0+G1, Drive/tgz, stop garantido
   canary.py, collect.py  portão G1 e tabela da campanha
+  analysis.py         análise estatística pré-registrada (R2c), teto de expressividade e relatório MD/HTML
 campaigns/            arquivos de campanha (JSON)
 tests/                pytest; modelo minúsculo aleatório, sem GPU e sem download
 data/benchmarks/      Nguyen, Strogatz, metadados do Feynman (CSVs do Feynman sob demanda)
@@ -69,13 +71,22 @@ Teste toy na GPU local (RTX 3050 6GB), só para verificar que o código roda:
 python -m seriguela.run --problem nguyen_1 --algo ppo --replay elite --steps 12 --batch 128 --update_mb 32 --allow_dirty --out /tmp/toy
 ```
 
-Campanha (arquivo em `campaigns/`, commitado e com push antes de subir o pod):
+Campanha via Google Colab CLI (primário — arquivo commitado e com push antes de rodar):
 
 ```bash
-python -m seriguela.campaign plan campaigns/g1_timing.json      # lista os runs
-python -m seriguela.pod up campaigns/g1_timing.json --budget 2  # teto em US$
-python -m seriguela.pod watch                                   # acompanha, busca, desliga
-python -m seriguela.pod down                                    # apaga o pod na mão
+python -m seriguela.campaign plan campaigns/g1_timing.json
+python -m seriguela.colab usage
+python -m seriguela.colab run campaigns/g1_timing.json --gpu L4 --budget_cu 8 --parallel 2 --drive
+python -m seriguela.colab down                                  # encerra sessão manualmente se preciso
+python -m seriguela.analysis results/v3/g1_timing --md outputs/g1_report.md --html outputs/g1_report.html
+```
+
+Reserva em RunPod (`seriguela.pod`):
+
+```bash
+python -m seriguela.pod up campaigns/g1_timing.json --budget 2
+python -m seriguela.pod watch
+python -m seriguela.pod down
 ```
 
 No pod, o job roda G0 (pytest) e G1 (canário) antes da campanha, tudo sob `timeout`,
