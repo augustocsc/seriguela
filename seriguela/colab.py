@@ -100,8 +100,13 @@ def log(msg: str) -> None:
     print(f"[colab {{time.strftime('%H:%M:%S')}}] {{msg}}", flush=True)
 
 
-def run_checked(cmd, cwd=None, timeout=900):
+def run_checked(cmd, cwd=None, timeout=900, stream=False):
     log("exec: " + " ".join(str(x) for x in cmd))
+    if stream:
+        p = subprocess.run(cmd, cwd=cwd, timeout=timeout)
+        if p.returncode != 0:
+            raise RuntimeError(f"comando falhou ({{p.returncode}}): {{cmd[0]}}")
+        return ""
     p = subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, timeout=timeout)
     if p.returncode != 0:
         log("STDOUT:\\n" + p.stdout[-1500:])
@@ -156,12 +161,12 @@ try:
 
     log("Portão G0: pytest")
     run_checked([sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:warnings"],
-                cwd=REPO_DIR, timeout=600)
+                cwd=REPO_DIR, timeout=600, stream=True)
 
     if not SKIP_CANARY:
         log("Portão G1: canário")
         run_checked([sys.executable, "-m", "seriguela.canary", "--steps", "4", "--batch", "128"],
-                    cwd=REPO_DIR, timeout=900)
+                    cwd=REPO_DIR, timeout=900, stream=True)
 
     log(f"Iniciando campanha {{CAMPAIGN}} (parallel={{PARALLEL}}, max_hours={{MAX_HOURS}})")
     proc = subprocess.Popen(
