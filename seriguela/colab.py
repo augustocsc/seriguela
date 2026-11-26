@@ -20,12 +20,14 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import queue
 import re
 import shutil
 import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
 import time
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence
@@ -203,23 +205,50 @@ finally:
 RunnerFn = Callable[[Sequence[str], int], subprocess.CompletedProcess]
 
 
-def _default_runner(cmd: Sequence[str], timeout: int = 3600) -> subprocess.CompletedProcess:
+def _default_runner(cmd: Sequence[str], timeout: int = 3600, idle_timeout: int = 240) -> subprocess.CompletedProcess:
     exe = shutil.which("colab")
     if not exe:
         raise ColabError("'colab' não encontrado no PATH (instale com: uv tool install google-colab-cli)")
     if cmd and cmd[0] == "exec":
-        # Transmite o progresso da VM ao vivo no terminal sem perder o código de retorno
+        # Transmite o progresso ao vivo com watchdog de inatividade (o colab-cli pode travar
+        # sem fechar stdout quando o websocket cai com 'Connection was lost.').
         proc = subprocess.Popen([exe, *cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        q: "queue.Queue[Optional[str]]" = queue.Queue()
+
+        def _reader():
+            assert proc.stdout is not None
+            for ln in proc.stdout:
+                q.put(ln)
+            q.put(None)
+
+        threading.Thread(target=_reader, daemon=True).start()
         lines: List[str] = []
-        started = time.time()
-        assert proc.stdout is not None
-        for line in proc.stdout:
-            print(line, end="", flush=True)
-            lines.append(line)
-            if time.time() - started > timeout:
+        started = last_io = time.time()
+        while True:
+            now = time.time()
+            if now - started > timeout:
                 proc.kill()
                 proc.wait()
                 raise subprocess.TimeoutExpired([exe, *cmd], timeout)
+            if now - last_io > idle_timeout:
+                proc.kill()
+                proc.wait()
+                raise ColabError(f"colab exec sem saída por {idle_timeout}s (possível travamento de websocket)")
+            try:
+                line = q.get(timeout=2.0)
+            except queue.Empty:
+                if proc.poll() is not None:
+                    break
+                continue
+            if line is None:
+                break
+            last_io = time.time()
+            print(line, end="", flush=True)
+            lines.append(line)
+            if "Connection was lost." in line:
+                proc.kill()
+                proc.wait()
+                raise ColabError("colab exec perdeu conexão websocket ('Connection was lost.')")
         proc.wait()
         return subprocess.CompletedProcess([exe, *cmd], proc.returncode, stdout="".join(lines), stderr="")
     return subprocess.run([exe, *cmd], text=True, capture_output=True, timeout=timeout)
@@ -281,6 +310,18 @@ def run_campaign(campaign_path: str, gpu: str = "L4", budget_cu: float = 10.0,
         )
         with tempfile.TemporaryDirectory() as tmp:
             tmp_dir = Path(tmp)
+            # Espera o kernel recém-alocado estabilizar (evita 'Connection was lost' nos primeiros segundos)
+            probe_file = tmp_dir / "probe.py"
+            probe_file.write_text("print('KERNEL_READY', flush=True)\n", encoding="utf-8")
+            for attempt in range(3):
+                try:
+                    pr = runner(["exec", "-s", session, "--timeout", "45", "-f", str(probe_file)], 90)
+                    if pr.returncode == 0:
+                        break
+                except ColabError:
+                    if attempt == 2:
+                        raise
+                time.sleep(5)
             driver_file = tmp_dir / "colab_driver.py"
             driver_file.write_text(driver_code, encoding="utf-8")
             hard_wall = int((max_hours + SETUP_HOURS + 0.25) * 3600)

@@ -35,55 +35,55 @@ Large language models such as GPT-2 are pre-trained on vast amounts of natural l
 
 To address this limitation, the model is specialized through supervised fine-tuning on a dedicated corpus of mathematical expressions. The data engineering pipeline that builds this corpus consists of three stages --- generation, cleaning, and prompt engineering --- outlined in Figure~\ref{fig:DataEngineering}.
 
-\subsection{Dataset Generation}
+\subsection{Dataset Generation and Pairing}
 
 \begin{table}[htbp]
     \centering
-    \caption{Equation generation configuration parameters.}
+    \caption{Base equation-tree generation parameters (Lample and Charton~\cite{lample2019deep}) and final corpus coverage.}
     \label{tab:eq_config}
-    \begin{tabular}{p{3cm}p{5.2cm}p{4.2cm}}
+    \begin{tabular}{p{3cm}p{5.5cm}p{4.0cm}}
     \toprule
     \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
     \midrule
-    \texttt{max\_len} & 20 & Maximum token length per equation \\
+    \texttt{max\_len} & 20 (pre-augmentation) & Target tree length per equation \\
     \addlinespace
     \texttt{operators} &
-    \texttt{add:10, mul:10, sub:5, div:5, sqrt:4, pow2:4, exp:4, sin:4, cos:4, tan:4, asin:2} &
-    Operator sampling weights \\
+    \texttt{*, **, +, -, /, abs, asin, cos, exp, log, sin, sqrt, tan} &
+    13 prompt operators (alphabetical) \\
     \addlinespace
-    \texttt{max\_ops} & 5 & Maximum operations per equation \\
+    \texttt{max\_ops} & 5 (base tree) & Base operations before constant augmentation \\
     \addlinespace
-    \texttt{variables} & \texttt{x\_1, \ldots, x\_10} & Base variables (extensible via the \texttt{x\_n} convention) \\
+    \texttt{variables} & \texttt{x\_1, \ldots, x\_10} & Remapped variable indices (1--4 active per expr.) \\
     \bottomrule
     \end{tabular}
 \end{table}
 
-The first step was to generate a large volume of diverse mathematical expressions. Expressions are treated as tree structures in which internal nodes are operators (e.g., $+$, $\sin$, $\times$) and leaves are operands --- variables (e.g., $x_1, x_2$) or constants.
+The first step builds a large corpus of diverse mathematical expressions represented as trees whose internal nodes are unary or binary operators and whose leaves are variables ($x_1, \ldots, x_{10}$) or scalar constants. Following Lample and Charton~\cite{lample2019deep}, random trees are sampled with near-uniform structural probability, converted to infix form, validated with SymPy~\cite{sympy}, and augmented by abstracting numeric constants into a shared placeholder token~\texttt{C} (\texttt{infix\_expr\_c}) and remapping variable indices into \texttt{x\_1}--\texttt{x\_10}.
 
-To sample these trees without biasing toward overly simple or overly deep structures, we adopted the algorithm proposed by Lample and Charton \cite{lample2019deep}, which gives different tree shapes a near-uniform probability of being generated. The algorithm handles internal nodes with one child (unary operators such as $\sin$) and two children (binary operators such as $+$). Expressions were first created in prefix notation and then converted to the more common infix format. The generation parameters are listed in Table~\ref{tab:eq_config}.
-
-After cleaning and augmentation, the final corpus contains \textbf{758{,}255 expressions}, split into 682{,}429 training samples (90\%) and 75{,}826 validation samples (10\%). The dataset is publicly available on HuggingFace as \texttt{augustocsc/sintetico\_natural\_prefix\_682k}. Table~\ref{tab:dataset_stats} summarizes its statistics and the representation formats available per expression, and Table~\ref{tab:dataset_examples} shows concrete examples.
+During dataset curation, an audit of the original repository (\texttt{augustocsc/sintetico\_natural}) revealed that its infix (\texttt{i\_prompt\_n}) and prefix (\texttt{p\_prompt\_n}) columns contained \emph{different} underlying expressions rather than paired translations, and that training runs had historically used an internal 90/10 split of the 758{,}255-row training file. To guarantee strict reproducibility and exact infix/prefix parity across all six models, we converted every expression in \texttt{i\_prompt\_n} deterministically to Polish prefix notation via SymPy (\texttt{p\_prompt\_n\_converted}, 100\% conversion success) and published the unified split as \texttt{augustocsc/sintetico\_natural\_prefix\_682k} (Table~\ref{tab:dataset_stats}, with format examples in Table~\ref{tab:dataset_examples}).
 
 \begin{table}[htbp]
     \centering
-    \caption{Final dataset statistics and available columns.}
+    \caption{Empirical statistics and columns of \texttt{augustocsc/sintetico\_natural\_prefix\_682k}.}
     \label{tab:dataset_stats}
     \begin{tabular}{ll}
     \toprule
-    \textbf{Statistic} & \textbf{Value} \\
+    \textbf{Statistic} & \textbf{Measured Value} \\
     \midrule
-    Total expressions & 758{,}255 \\
-    Training split & 682{,}429 (90\%) \\
-    Validation split & 75{,}826 (10\%) \\
-    File format & Parquet (143 MB) \\
+    Total examples & 758{,}255 (671{,}749 unique in \texttt{infix\_expr\_n}) \\
+    Training / Validation split & 682{,}429 (90\%) / 75{,}826 (10\%), \texttt{seed=42} \\
+    Train--validation exact overlap & 7{,}615 expressions (post-augmentation random split) \\
+    File format & Parquet (128.7~MB train + 14.4~MB validation) \\
+    Token length (median / IQR / p95 / max) & 14 / 11--16 / 21 / 43 tokens \\
+    Variables offered vs.\ used (mean) & 7.44 offered / 2.41 used (1--4 active vars) \\
     \midrule
     \textbf{Column} & \textbf{Description} \\
     \midrule
-    \texttt{infix\_expr\_n} & Infix notation (natural variables) \\
-    \texttt{prefix\_expr\_n} & Prefix notation (natural variables) \\
-    \texttt{i\_prompt\_n} & Complete infix prompt for training \\
-    \texttt{p\_prompt\_n\_converted} & Complete prefix prompt for training \\
-    \texttt{skeleton} & Expression template with variable wildcards \\
+    \texttt{infix\_expr\_n} / \texttt{infix\_expr\_c} & Infix with numeric constants vs.\ \texttt{C} placeholders \\
+    \texttt{prefix\_expr\_n} / \texttt{prefix\_expr\_c} & Prefix with numeric constants vs.\ \texttt{C} placeholders \\
+    \texttt{i\_prompt\_n} & Structured infix prompt (alphabetical \texttt{oper:}) \\
+    \texttt{p\_prompt\_n\_converted} & Paired prefix prompt converted from \texttt{i\_prompt\_n} \\
+    \texttt{skeleton} & Expression template with variable wildcards (\texttt{V}, \texttt{C}) \\
     \bottomrule
     \end{tabular}
 \end{table}
@@ -96,43 +96,43 @@ After cleaning and augmentation, the final corpus contains \textbf{758{,}255 exp
     \toprule
     \textbf{Format} & \textbf{Example} \\
     \midrule
-    Infix & \texttt{x\_1*x\_2 + exp(x\_2)} \\
-    Prefix & \texttt{+ * x\_1 x\_2 exp x\_2} \\
+    Infix & \texttt{x\_1*x\_2 + exp(x\_10)} \\
+    Prefix & \texttt{+ * x\_1 x\_2 exp x\_10} \\
     Skeleton & \texttt{V*V + exp(V)} \\
     \midrule
-    Infix & \texttt{cos(x\_1 + C*x\_2)/sin(C*(C*x\_1 + C)**2)} \\
-    Prefix & \texttt{/ cos + x\_1 * C x\_2 sin * C ** + * C x\_1 C C} \\
-    Skeleton & \texttt{cos(V + C*V)/sin(C*(C*V + C)**C)} \\
+    Infix & \texttt{cos(x\_1*exp(x\_1)) - C} \\
+    Prefix & \texttt{- cos * x\_1 exp x\_1 C} \\
+    Skeleton & \texttt{cos(V*exp(V)) - C} \\
     \bottomrule
     \end{tabular}
 \end{table}
 
-The corpus covers a comprehensive set of operators, summarized in Table~\ref{tab:operators}: basic arithmetic, trigonometric functions, and transcendental operations. Variables follow the naming convention \texttt{x\_1}, \texttt{x\_2}, \ldots, \texttt{x\_10}, allowing expressions with up to 10 input features, and constants are represented by the placeholder token \texttt{C}, whose treatment during discovery is discussed in Section~\ref{sec:c_protocol}.
+Table~\ref{tab:operators} summarizes the empirical presence of each operator across all 758{,}255 expressions. Two structural properties of the corpus directly inform the RL phase: (i) \texttt{abs} appears in 53.5\% of prompts as a distractor but in \textbf{0.0\%} of target expressions, whereas \textbf{29.52\%} of the corpus (223{,}841 expressions) contains \texttt{log} or \texttt{sqrt} without domain protection --- explaining why sampling the SFT prior on domains containing negative numbers (such as canonical Nguyen 1--6 on $[-1,1]$) produces high \texttt{NaN} rates; and (ii) the prompt operator list is sorted alphabetically in 100\% of training examples (0 unsorted in a 5{,}000-row audit), so preserving this alphabetical ordering and the full 13-operator set at inference time substantially increases zero-shot validity.
 
 \begin{table}[htbp]
     \centering
-    \caption{Mathematical operators available in the dataset.}
+    \caption{Operators in the SFT corpus and their empirical document frequency ($N = 758{,}255$).}
     \label{tab:operators}
-    \begin{tabular}{lll}
+    \begin{tabular}{lllr}
     \toprule
-    \textbf{Category} & \textbf{Operators} & \textbf{Arity} \\
+    \textbf{Category} & \textbf{Operators} & \textbf{Arity} & \textbf{Presence in corpus} \\
     \midrule
-    Arithmetic & $+$, $-$, $\times$, $\div$, \texttt{**} (power) & Binary \\
-    Trigonometric & $\sin$, $\cos$, $\tan$, $\arcsin$ & Unary \\
-    Transcendental & $\exp$, $\log$ & Unary \\
-    Other & $\sqrt{\cdot}$, $|\cdot|$ (abs) & Unary \\
+    Arithmetic & $+$, $-$, $\times$, $\div$, \texttt{**} & Binary & $*$: 80.0\%, $+$: 71.1\%, $-$: 53.3\%, \texttt{**}: 39.7\%, $/$: 29.3\% \\
+    Trigonometric & $\sin$, $\cos$, $\tan$, $\arcsin$ & Unary & $\sin$: 20.1\%, $\cos$: 20.0\%, $\tan$: 20.0\%, $\text{asin}$: 10.2\% \\
+    Transcendental & $\exp$, $\log$ & Unary & $\log$: 18.7\%, $\exp$: 18.5\% \\
+    Other & $\sqrt{\cdot}$, $|\cdot|$ (\texttt{abs}) & Unary & $\sqrt{\cdot}$: 12.3\%, \texttt{abs}: 0.0\% (prompt distractor only) \\
     \bottomrule
     \end{tabular}
 \end{table}
 
 \begin{table}[htbp]
     \centering
-    \caption{Comparison of the GPT-2 model's output before and after fine-tuning, demonstrating its improved ability to generate syntactically correct expressions.}
+    \caption{Comparison of GPT-2 Base outputs before and after SFT, illustrating the shift from prose to valid JSON-delimited expressions.}
     \label{tab:gpt2-comparison}
     \ttfamily
     \begin{tabularx}{\textwidth}{ >{\RaggedRight}X >{\RaggedRight}X }
     \toprule
-    \multicolumn{2}{c}{\textbf{Base Model}} \\
+    \multicolumn{2}{c}{\textbf{Pre-trained GPT-2 (Before SFT)}} \\
     \midrule
     \textbf{Prompt} & \textbf{Result} \\
     \midrule
@@ -140,47 +140,44 @@ The corpus covers a comprehensive set of operators, summarized in Table~\ref{tab
     &
     For example, if you want to calculate the kinetic energy of a baseball, you can use the following formula: $K=nx$ \\
     \addlinespace
-    Write a trigonometric expression involving sine and cosine that simplifies to 1.
-    &
-    Write a trigonometric expression involving sin and cosine that simplifies to 1. \\
-    \addlinespace
     Instruction: Generate a mathematical expression using variables [x\_1, x\_2, x\_3, x\_4], operands [+, -, *, exp], and [C] as a constant. Expression:
     &
     $x_1 = -(x_2 \cdot x_3) + (x_4 \cdot \exp)$ The expression above is a mathematical expression. \\
     \midrule[1pt]
-    \multicolumn{2}{c}{\textbf{After Fine-Tuning}} \\
+    \multicolumn{2}{c}{\textbf{After SFT (JSON Format, EXP-A)}} \\
     \midrule
-    vars: x\_1, \ldots, x\_9 \newline oper: *, **, +, -, abs, asin, cos, exp, log, sin, sqrt, tan \newline cons: C \newline expr:
+    \{"vars": ["x\_1", "x\_2"], "ops": ["*", "+", "sin"], "cons": "C", "expr": "
     &
-    $x_7 + \exp(C \cdot x_2^C) + C$ \\
+    sin(x\_1 + C*x\_2 - sin(x\_1))"\ \} \\
     \bottomrule
     \end{tabularx}
 \end{table}
 
-\subsection{Data Cleaning}
+\subsection{Data Cleaning and Contamination Audit}
 
-To ensure the corpus's integrity, every expression was validated with a SymPy \cite{sympy} parser, which flags issues such as unbalanced parentheses or dangling operators. Duplicate expressions were removed to maintain uniqueness.
+Every expression was parsed and validated with SymPy~\cite{sympy} to eliminate malformed syntax, unbalanced parentheses, or dangling operators. Because the 90/10 split was performed after variable/constant augmentation, 7{,}615 exact string matches appear in both the training and validation splits (1.0\% of the corpus); validation loss is therefore monitored only for SFT early stopping, while all symbolic-regression generalization is evaluated exclusively on external benchmark suites.
 
-\subsection{Prompt Engineering}
+To rule out memorization of the evaluation benchmarks, we audited all 758{,}255 corpus expressions against the ground-truth formulas of Nguyen~(12), Feynman~(101 base), and Strogatz~(14), testing both exact normalized strings ($C=1$) and abstract skeletons (\texttt{V}, \texttt{C}):
+\begin{itemize}
+    \item \textbf{Nguyen (12):} \textbf{0/12} exact matches; even under abstract skeletons, only three problems occur at trace levels (\texttt{nguyen\_1}: 6, \texttt{nguyen\_9}: 3, \texttt{nguyen\_10}: 5 out of 758{,}255, $<0.001\%$), and \texttt{nguyen\_5} has zero occurrences.
+    \item \textbf{Strogatz (14):} \textbf{13/14} have zero occurrences (only \texttt{strogatz\_glider2}, $x_1 - \cos(x_2)/x_1$, appears twice).
+    \item \textbf{Feynman (101):} 17 elementary 2--4 variable monomials and ratios (such as $x_1 x_2$, $x_1/x_2$, $x_1 x_2 \sin(x_3)$, and $\arcsin(x_1 \sin(x_2))$) appear in the corpus; no composite multi-term physics equation is present.
+\end{itemize}
+
+\subsection{Prompt Engineering and Stopping Mechanism}
 \label{sec:prompt_engineering}
 
-After generation and cleaning, the corpus was still a plain list of valid expressions --- unsuitable for fine-tuning for two reasons. First, bare expressions provide no \emph{guiding structure}: at inference time there would be no contextual prompt through which to steer generation. Second, the generator produces expressions with limited variable diversity (often five or fewer), and nothing teaches the model to cope with context it does not need.
-
-A prompt engineering phase therefore transformed each raw expression into a structured training sample --- human-readable, token-efficient, and explicit about the elements available for generation:
-
+In the Parquet files, each sample is stored as key--value lines (\texttt{vars:}, \texttt{oper:}, \texttt{cons:}, \texttt{expr:}) with intentionally over-provisioned variable and operator lists so the model learns to select only the relevant subset for a given task. During SFT (\texttt{train\_with\_json.py}), each record is converted on the fly into a single JSON object:
 \begin{verbatim}
-vars: x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9
-oper: *, **, +, -, abs, asin, cos, exp, log, sin, sqrt, tan
-cons: C
-expr: x_7 + exp(C*x_2**C) + C
+{"vars": ["x_1", "x_2"], "ops": ["*", "+", "sin"], "cons": "C",
+ "expr": "sin(x_1 + C*x_2)"}
 \end{verbatim}
-
-To enhance robustness, the \texttt{vars:} and \texttt{oper:} lists were intentionally over-provisioned: for each training sample, a random number of additional variables and operators --- beyond those strictly required by the target expression --- were included. This teaches the model to use only a \emph{subset} of the offered elements, mirroring real scenarios where not every feature is relevant. Finally, both the \textbf{infix} (standard) and \textbf{prefix} (Polish) representations were retained, allowing the notation format itself to be studied as a factor.
+At inference and RL time, the model is conditioned on the JSON prefix ending at \texttt{"expr": "} and generation terminates at the first token containing a closing double quote~(\texttt{"}) or \texttt{EOS}. This JSON boundary design was chosen empirically over native \texttt{<|endoftext|>} termination in a controlled ablation on GPT-2 Base (EXP-A vs.\ EXP-B): JSON formatting raised valid expression generation from \textbf{0.5\%} (1/200, plagued by non-terminating repetition) to \textbf{80.0\%} (160/200) while lowering validation loss from 0.366 to 0.298.
 
 \section{Supervised Fine-Tuning}
 \label{sec:sft_setup}
 
-With the structured corpus prepared, the next stage teaches the pre-trained model to generate syntactically correct, well-formed expressions. For input processing, the original GPT-2 tokenizer was employed without modification, as its vocabulary adequately covers the mathematical symbols and variables in our data. A useful property of this tokenizer is its fine granularity: words like \texttt{asin} decompose into sub-tokens (\texttt{as}, \texttt{in}) and variables like \texttt{x\_1} into (\texttt{x}, \texttt{\_}, \texttt{1}). This sub-word tokenization, illustrated in Figure~\ref{fig:tokenization}, lets the model generalize to variables never seen during training, such as \texttt{x\_99}.
+With the structured corpus prepared, the second stage specializes pre-trained GPT-2 backbones into mathematical expression generators. We retain the unmodified GPT-2 byte-level BPE tokenizer (vocabulary size 50{,}257; \texttt{pad\_token = eos\_token}), whose sub-word decomposition splits variables such as \texttt{x\_1} into (\texttt{x}, \texttt{\_}, \texttt{1}) and functions such as \texttt{asin} into (\texttt{as}, \texttt{in}), illustrated in Figure~\ref{fig:tokenization}.
 
 \begin{figure}[htbp]
     \centering
@@ -189,57 +186,61 @@ With the structured corpus prepared, the next stage teaches the pre-trained mode
     \label{fig:tokenization}
 \end{figure}
 
-Fine-tuning used the HuggingFace \texttt{Trainer}. To reduce computational cost and memory usage, we applied Parameter-Efficient Fine-Tuning with LoRA (Section~\ref{sec:bg_finetuning}), targeting the attention projection matrices (\texttt{c\_attn}) of every layer. The key hyperparameters are given in Table~\ref{tab:hyperparameters}. After training, the LoRA adapters were merged into the base weights, and a value head was attached to prepare the model for the PPO arms of the reinforcement learning phase.
+Fine-tuning used the HuggingFace \texttt{Trainer} with causal language-modeling loss over the full JSON string (\texttt{DataCollatorForLanguageModeling(mlm=False)}, without prompt loss masking) and Parameter-Efficient Fine-Tuning via LoRA (Section~\ref{sec:bg_finetuning}) applied to the attention projection matrices (\texttt{c\_attn}). Contrary to earlier drafts, an audit of the published \texttt{adapter\_config.json} and \texttt{trainer\_state.json} artifacts confirmed that all six models used the \textbf{exact same LoRA configuration} ($r=8$, $\alpha=32$, dropout $0.05$) and \textbf{FP16} mixed precision with \texttt{EarlyStoppingCallback} (patience 3, threshold $0.001$, evaluated every 500 optimizer steps), as recorded in Table~\ref{tab:hyperparameters}.
+
+For the RL phase (Section~\ref{sec:expression_discovery}), the SFT LoRA adapter is merged permanently into the base backbone (\texttt{merge\_and\_unload()}) to form the frozen SFT prior, and a \emph{fresh}, zero-initialized RL LoRA adapter ($r=8$, $\alpha=16$, dropout $0.0$, in \texttt{float32}, with no value head) is attached. At step 0 the RL policy is therefore identical to the SFT prior, and temporarily disabling the RL adapter recovers the exact SFT reference distribution for KL regularization.
 
 \begin{table}[htbp]
 \centering
-\caption{Hyperparameters for supervised fine-tuning.}
+\caption{Actual hyperparameters for supervised fine-tuning (verified from \texttt{train\_with\_json.py} and HuggingFace \texttt{adapter\_config.json}/\texttt{trainer\_state.json}).}
 \label{tab:hyperparameters}
-\begin{tabularx}{0.82\textwidth}{lX}
+\begin{tabularx}{0.88\textwidth}{lX}
 \toprule
 \textbf{Parameter category} & \textbf{Value / setting} \\
 \midrule
 \textbf{Optimization} & \\
-\quad Optimizer & AdamW (\texttt{adamw\_torch\_fused}) \\
-\quad Learning rate & $5 \times 10^{-5}$ with cosine decay (Base); $3\times10^{-5}$ (Medium); $2\times10^{-5}$ (Large) \\
-\quad AdamW betas & $\beta_1 = 0.9$, $\beta_2 = 0.999$ \\
-\quad Epsilon & $1 \times 10^{-8}$ \\
+\quad Optimizer & AdamW (PyTorch default, $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$) \\
+\quad Learning rate & $5 \times 10^{-5}$ (Base); $3 \times 10^{-5}$ (Medium); $2 \times 10^{-5}$ (Large) \\
+\quad Schedule & Linear decay with 500 warmup steps \\
 \quad Weight decay & 0.01 \\
 \addlinespace
 \textbf{Training} & \\
-\quad Epochs & 3 \\
-\quad Per-device batch size & 16 \\
-\quad Gradient accumulation & 4 (effective batch size: 64) \\
-\quad Mixed precision & BF16 \\
+\quad Max epochs & 3 (stopped early in Epoch~1 by early stopping) \\
+\quad Per-device batch size & 8 (Base); 4 (Medium); 2 (Large) \\
+\quad Gradient accumulation & 4 (effective batch size: 32 / 16 / 8) \\
+\quad Early stopping & \texttt{eval\_steps = 500}, patience = 3, threshold = $0.001$ \\
+\quad Mixed precision & FP16 (\texttt{fp16=True}) \\
+\quad Seed & 42 \\
 \addlinespace
 \textbf{LoRA (PEFT)} & \\
-\quad Rank ($r$) & 8 (Base); 16 (Medium, Large) \\
-\quad Alpha ($\alpha$) & 32 (Base); 64 (Medium, Large) \\
-\quad Dropout & 0.05 \\
-\quad Target modules & \texttt{c\_attn} \\
+\quad Rank ($r$) / Alpha ($\alpha$) & $r = 8$, $\alpha = 32$ (identical across all 6 models) \\
+\quad Dropout / Target modules & 0.05 / \texttt{c\_attn} (\texttt{fan\_in\_fan\_out=True}) \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Trained Models}
+\subsection{Trained Models and Early-Stopping Dynamics}
 \label{sec:trained_models}
 
-To investigate the effect of model scale and notation format, we trained six model variants covering all combinations of three GPT-2 sizes (Base, Medium, Large) and two notations (Infix, Prefix). Table~\ref{tab:models_trained} summarizes them. All six were fine-tuned on the same 682{,}429-expression corpus with the same schedule (3 epochs; batch size adjusted per model to fit GPU memory); the LoRA rank was increased from 8 to 16 for the Medium and Large models. All models and the dataset are publicly available on HuggingFace for reproducibility.
+We fine-tuned six model variants crossing three GPT-2 scales (Base 124M, Medium 355M, Large 774M) and two notations (Infix, Prefix) on the unified 682{,}429-expression training split. Table~\ref{tab:models_trained} reports the exact convergence state extracted from each repository's \texttt{trainer\_state.json} on HuggingFace.
+
+A crucial methodological observation emerges from Table~\ref{tab:models_trained}: because \texttt{eval\_steps = 500} was held fixed while the effective batch size shrank from 32 (Base) to 16 (Medium) and 8 (Large) to fit GPU memory, early stopping evaluated the Large models \textbf{four times more frequently per training sample} and halted them after seeing only \textbf{76{,}000--80{,}000 examples} ($\approx 0.11$--$0.12$ epoch), whereas Base Infix saw \textbf{368{,}000 examples} ($0.54$ epoch) before reaching virtually the same validation loss ($0.2912$ vs.\ $0.2884$). This budget-per-evaluation asymmetry provides a direct, mechanistic explanation for why the 124M Base Infix model matched or outperformed the 774M Large Infix model as a search prior at a fraction of the RL inference cost.
 
 \begin{table}[htbp]
     \centering
-    \caption{Summary of trained models with their configurations.}
+    \caption{Summary of the six SFT models on HuggingFace (all with LoRA $r=8, \alpha=32$, FP16, vocab 50{,}257; convergence metrics from \texttt{trainer\_state.json}).}
     \label{tab:models_trained}
-    \begin{tabular}{lllll}
+    \small
+    \begin{tabular}{lllrrrr}
     \toprule
-    \textbf{Model} & \textbf{Backbone} & \textbf{Params} & \textbf{LoRA $r$} & \textbf{HuggingFace repository} \\
+    \textbf{Model} & \textbf{Repo (\texttt{augustocsc/...})} & \textbf{Eff.\ B.} & \textbf{Best step} & \textbf{Examples seen} & \textbf{Best eval loss} & \textbf{Train loss} \\
     \midrule
-    Base Infix & GPT-2 & 124M & 8 & \texttt{augustocsc/gpt2\_base\_infix\_682k} \\
-    Base Prefix & GPT-2 & 124M & 8 & \texttt{augustocsc/gpt2\_base\_prefix\_682k} \\
-    Medium Infix & GPT-2 Medium & 355M & 16 & \texttt{augustocsc/gpt2\_medium\_infix\_682k} \\
-    Medium Prefix & GPT-2 Medium & 355M & 16 & \texttt{augustocsc/gpt2\_medium\_prefix\_682k} \\
-    Large Infix & GPT-2 Large & 774M & 16 & \texttt{augustocsc/gpt2\_large\_infix\_682k} \\
-    Large Prefix & GPT-2 Large & 774M & 16 & \texttt{augustocsc/gpt2\_large\_prefix\_682k} \\
+    Base Infix (124M)   & \texttt{gpt2\_base\_infix\_682k}   & 32 & 11{,}500 & 368K (53.9\%) & 0.2912 & 0.3047 \\
+    Base Prefix (124M)  & \texttt{gpt2\_base\_prefix\_682k}  & 32 & 10{,}000 & 320K (46.9\%) & 0.3033 & 0.3228 \\
+    Medium Infix (355M) & \texttt{gpt2\_medium\_infix\_682k} & 16 &  6{,}500 & 104K (15.2\%) & 0.2913 & 0.3022 \\
+    Medium Prefix (355M)& \texttt{gpt2\_medium\_prefix\_682k}& 16 & 13{,}500 & 216K (31.7\%) & 0.2944 & 0.3017 \\
+    Large Infix (774M)  & \texttt{gpt2\_large\_infix\_682k}  &  8 &  9{,}500 &  76K (11.1\%) & 0.2884 & 0.2928 \\
+    Large Prefix (774M) & \texttt{gpt2\_large\_prefix\_682k} &  8 & 10{,}000 &  80K (11.7\%) & 0.2996 & 0.3060 \\
     \bottomrule
     \end{tabular}
 \end{table}

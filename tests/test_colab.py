@@ -96,7 +96,7 @@ def test_run_campaign_end_to_end_downloads_and_stops(tmp_path, monkeypatch):
     assert res["outcome"] == "complete" and res["spent_cu"] == pytest.approx(1.5)
     assert res["active_after_stop"] == 0
     assert (tmp_path / "results" / "v3" / "mini" / "marker.json").exists()
-    # Confere que --timeout 0 foi passado ao colab exec e que stop rodou no fim
-    exec_call = next(c for c in calls if c[0] == "exec")
-    assert "--timeout" in exec_call and "0" in exec_call
+    # Confere que --timeout 0 foi passado ao driver principal e que stop rodou no fim
+    exec_calls = [c for c in calls if c[0] == "exec"]
+    assert any("--timeout" in c and "0" in c for c in exec_calls)
     assert any(c[:3] == ["stop", "-s", colab.SESSION_DEFAULT] for c in calls)
