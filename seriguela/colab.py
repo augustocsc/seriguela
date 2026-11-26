@@ -103,7 +103,11 @@ def log(msg: str) -> None:
 def run_checked(cmd, cwd=None, timeout=900, stream=False):
     log("exec: " + " ".join(str(x) for x in cmd))
     if stream:
-        p = subprocess.run(cmd, cwd=cwd, timeout=timeout)
+        p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        assert p.stdout is not None
+        for ln in p.stdout:
+            print(ln, end="", flush=True)
+        p.wait(timeout=timeout)
         if p.returncode != 0:
             raise RuntimeError(f"comando falhou ({{p.returncode}}): {{cmd[0]}}")
         return ""
