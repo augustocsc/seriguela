@@ -1,0 +1,9 @@
+{
+ "name": "g2a_r2",
+ "description": "Piloto G2-A (reward=r2): compara bon, ppo+elite e rspg+elite em nguyen_5 e nguyen_9 (2 seeds, 100 passos) para decidir reward (r2 vs nrmse) e checar velocidade de aprendizado.",
+ "common": {"steps": 100, "batch": 1024, "update_mb": 32, "reward": "r2"},
+ "cells": [
+  {"problems": ["nguyen_5", "nguyen_9"], "algos": ["bon"], "replays": ["none"], "seeds": [42, 123]},
+  {"problems": ["nguyen_5", "nguyen_9"], "algos": ["ppo", "rspg"], "replays": ["elite"], "seeds": [42, 123]}
+ ]
+}

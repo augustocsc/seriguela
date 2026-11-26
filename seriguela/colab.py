@@ -145,6 +145,7 @@ try:
                  "transformers>=4.51", "peft>=0.15", "sympy>=1.13.1",
                  "scipy>=1.11", "pandas>=2.2", "pytest>=8"],
                 cwd=REPO_DIR, timeout=900)
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
     os.environ["HF_HOME"] = str(Path(DRIVE_MIRROR) / "_hf_cache" if DRIVE_MIRROR else WORK / "hf_cache")
     gpu_out = run_checked([sys.executable, "-c",
                            "import torch; assert torch.cuda.is_available(); print(torch.cuda.get_device_name(0))"],

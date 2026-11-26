@@ -1,0 +1,9 @@
+{
+ "name": "g2a_nrmse",
+ "description": "Piloto G2-A (reward=nrmse): mesmo painel do g2a_r2 sob recompensa NRMSE do DSR para decidir o item 6 do Plano v3 (fração de recompensa zero e desempenho).",
+ "common": {"steps": 100, "batch": 1024, "update_mb": 32, "reward": "nrmse"},
+ "cells": [
+  {"problems": ["nguyen_5", "nguyen_9"], "algos": ["bon"], "replays": ["none"], "seeds": [42, 123]},
+  {"problems": ["nguyen_5", "nguyen_9"], "algos": ["ppo", "rspg"], "replays": ["elite"], "seeds": [42, 123]}
+ ]
+}

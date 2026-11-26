@@ -86,7 +86,7 @@ class RunConfig:
     max_kl: float = 0.02
     max_grad_norm: float = 0.5
     risk_epsilon: float = 0.05
-    update_mb: int = 64
+    update_mb: int = 32
     # replay
     replay_ratio: float = 0.2
     buffer_size: int = 1000
