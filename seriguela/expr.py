@@ -97,11 +97,13 @@ class Expression:
         _check_guards(source)
         try:
             self.sympy_expr = sympy.sympify(source, evaluate=False)
-        except Exception as exc:  # sympy levanta de tudo
+            if not isinstance(self.sympy_expr, sympy.Expr):
+                raise InvalidExpression("não é uma expressão algébrica")
+            code = str(self.sympy_expr)
+        except InvalidExpression:
+            raise
+        except Exception as exc:  # sympy levanta de tudo (incl. Not/Tuple em str())
             raise InvalidExpression(f"parse falhou: {exc}") from exc
-        if not isinstance(self.sympy_expr, sympy.Basic):
-            raise InvalidExpression("não é uma expressão")
-        code = str(self.sympy_expr)
         self.variables = sorted({int(i) for i in _VAR.findall(code)})
         self.max_var = max(self.variables, default=0)
         self.n_const = len(_CONST.findall(code))

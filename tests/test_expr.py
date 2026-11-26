@@ -25,7 +25,7 @@ def test_c_is_matched_as_a_whole_word():
 
 
 @pytest.mark.parametrize("text", ["", "x_1 +", "x_1**(9**9)", "x_1**2**3", "x_1**999", "__import__(1)",
-                                  "x_1; 1", "x_1 + " * 60 + "x_1"])
+                                  "x_1; 1", "x_1 + " * 60 + "x_1", "Not(x_1) + x_1", "(x_1, x_2)"])
 def test_unsafe_or_malformed_is_rejected(text):
     with pytest.raises(InvalidExpression):
         Expression(text)
