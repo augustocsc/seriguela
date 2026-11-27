@@ -68,9 +68,9 @@ def test_run_campaign_detached_poll_survives_websocket_drop_and_resumes_local(tm
         "cells": [{"problems": ["nguyen_1"], "algos": ["bon"], "seeds": [0, 1]}],
     }), encoding="utf-8")
     # Simula 1 run já concluído localmente antes da retomada
-    prev_run = tmp_path / "results" / "v3" / "mini" / "nguyen_1" / "bon" / "seed_0"
+    prev_run = tmp_path / "results" / "v3" / "mini" / "nguyen_1" / "bon"
     prev_run.mkdir(parents=True)
-    (prev_run / "summary.json").write_text('{"done": true}', encoding="utf-8")
+    (prev_run / "seed_0.json").write_text('{"done": true}', encoding="utf-8")
 
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
     subprocess.run(["git", "config", "user.email", "t@t"], cwd=tmp_path, check=True)

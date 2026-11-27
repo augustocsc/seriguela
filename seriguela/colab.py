@@ -380,7 +380,7 @@ def _upload_seed_results(session: str, out_rel: str, tmp_dir: Path, runner: Runn
     local_out = REPO / out_rel
     if not local_out.exists():
         return 0
-    existing = list(local_out.rglob("summary.json"))
+    existing = list(local_out.rglob("seed_*.json"))
     if not existing:
         return 0
     seed_tgz = tmp_dir / "seed_results.tgz"
