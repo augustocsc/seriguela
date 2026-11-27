@@ -1,0 +1,22 @@
+{
+  "name": "g2b_lr3e5",
+  "description": "G2-B: calibração de learning rate (lr=3e-5 vs 5e-6 de g2a_nrmse) em nguyen_5 e nguyen_9 com reward=nrmse (bon já medido em g2a_nrmse nas mesmas seeds 42, 123).",
+  "out": "results/v3/g2b_lr3e5",
+  "common": {
+    "steps": 100,
+    "batch": 1024,
+    "update_mb": 32,
+    "reward": "nrmse",
+    "lr": 3e-5,
+    "const_mode": "one",
+    "nguyen_variant": "canonical"
+  },
+  "cells": [
+    {
+      "problems": ["nguyen_5", "nguyen_9"],
+      "algos": ["ppo", "rspg"],
+      "replays": ["elite"],
+      "seeds": [42, 123]
+    }
+  ]
+}
