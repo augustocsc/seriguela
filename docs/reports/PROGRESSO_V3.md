@@ -15,7 +15,7 @@ Saldo inicial: **`600.00 CU`** (L4 medida a **`2.33 CU/h`**).
 | 2026-11-27 | `g2a_r2` (parte 1: 4/12 antes de queda de websocket) | `4d4cdd6` | Interrompido | `4.77` | `591.13` | Motivou refatoração de `seriguela/colab.py` |
 | 2026-11-27 | `g2a_r2` (execução desacoplada 8/12 + retomada 12/12) | `d73c6e2` → `0ce25ca` | **12/12 concluído** | `16.61` | `574.52` | Zero falhas de tripwire; sync incremental funcionou em todas as quedas de websocket |
 | 2026-11-27 | `g2a_nrmse` (12/12 numa sessão) | `0ce25ca` | **12/12 concluído** | `11.76` | `562.76` | 5,08h de L4, 0 falhas |
-| 2026-11-27 | `g2b_lr3e5` (`lr=3e-5`, `nrmse`, 8 runs) | `c947922` | **Em curso (6/8 salvos)** | teto `14.00` | — | Faltam apenas `nguyen_9/rspg+elite` (seeds `42, 123`), ETA ~1,2h |
+| 2026-11-27 | `g2b_lr3e5` (`lr=3e-5`, `nrmse`, 8 runs) | `c947922` | **8/8 concluído** | `9.63` | **`552.94`** | 4,14h de L4, 0 falhas (`Active assignments: 0`) |
 
 ---
 
@@ -40,7 +40,7 @@ Campanhas: [g2a_r2.json](../../campaigns/g2a_r2.json) vs [g2a_nrmse.json](../../
 - **Decisão 6 fechada:** **`nrmse` adotado**. `r2` zerava 99,6%–100% do batch em `nguyen_5`; `nrmse` reduziu `zero_reward_frac` para `12,8%` e aumentou `mean_reward` em `+21%` a `+42%` sobre `bon`.
 - **Gargalo identificado:** `lr=5e-6` moveu pouco a política em 100 passos (`kl ≈ 0.025–0.036` no PPO e `~0.003` no RSPG).
 
-### G2-B — Calibração de `lr=3e-5` com `nrmse` ([g2b_lr3e5.json](../../campaigns/g2b_lr3e5.json), parcial 6/8)
+### G2-B — Calibração de `lr=3e-5` com `nrmse` ([g2b_lr3e5.json](../../campaigns/g2b_lr3e5.json), 8/8 completo)
 
 | Problema | Braço | Seed | `test_r2` | `symbolic_match` | `zero_reward_frac` | `mean_reward` | `kl_from_prior` | Tempo | Expressão |
 |---|---|---|---|---|---|---|---|---|---|
@@ -50,14 +50,19 @@ Campanhas: [g2a_r2.json](../../campaigns/g2a_r2.json) vs [g2a_nrmse.json](../../
 | `nguyen_5` | `rspg+elite` | `123` | **0.9923** | False | 0.530 → 0.046 | 0.0401 → 0.2352 | 0.3245 | 26.7m | `x_1*sin(x_1*cos(x_1)) - C` |
 | `nguyen_9` | `ppo+elite` | `42` | 0.9747 | False | 0.298 → 0.000 | 0.2003 → 0.8134 | 1.0554 | 96.4m | `x_1**C + C*x_2*sin(sin(x_2))` |
 | `nguyen_9` | `ppo+elite` | `123` | **1.0000** | **True** | 0.286 → 0.001 | 0.1963 → 0.8231 | 0.9385 | 97.1m | `sin(x_2**C*x_2) + sin(x_1)` |
-| `nguyen_9` | `rspg+elite` | `42, 123` | — | — | — | — | — | — | *em execução na Colab L4* |
+| `nguyen_9` | `rspg+elite` | `42` | 0.9770 | False | 0.298 → 0.002 | 0.2003 → 0.4471 | 0.1560 | 26.5m | `x_1 + x_2*sin(x_2)` |
+| `nguyen_9` | `rspg+elite` | `123` | **1.0000** | **True** | 0.286 → 0.012 | 0.1963 → 0.4619 | 0.1598 | 26.6m | `C*sin(x_2*x_2**C) + sin(x_1)` |
 
-- **Leitura parcial de G2-B:** `lr=3e-5` desbloqueou o aprendizado de RL (**3/4 matches simbólicos exatos no `ppo+elite`** vs `0/4` no `bon` e `0/4` em `lr=5e-6`). `kl_from_prior ≈ 0.82–1.06` no PPO sugere avaliar se `lr=1.5e-5` ou `2e-5` reduz convergência prematura (como em `nguyen_9/seed_42`) mantendo a descoberta exata, antes de congelar o protocolo do G3.
+- **Leitura de G2-B:** `lr=3e-5` desbloqueou a descoberta simbólica (**4/8 matches simbólicos exatos**: `3/4` no `ppo+elite`, `1/4` no `rspg+elite`, contra `0/4` no `bon` e `0/8` em `lr=5e-6`).
+- **Perfil de custo medido na L4 (`parallel=2`):**
+  - `bon`: ~22–24 min/run (~0,45 CU/run)
+  - `rspg+elite`: **~26,5 min/run** (~0,52 CU/run — 3,6× mais rápido que `ppo+elite`, por `epochs=1` e atualização restrita ao quantil de risco de 5%)
+  - `ppo+elite`: ~95–97 min/run (~1,86 CU/run)
 
 ---
 
 ## 3. Próximos passos
-1. Aguardar conclusão dos últimos 2/8 runs de `g2b_lr3e5` (`nguyen_9/rspg+elite`) e atualizar este log com o fechamento 8/8 + saldo exato de CUs.
-2. Avaliar necessidade de ponto intermediário (`lr=2e-5` ou `steps=100` vs `150`) / fechar G2 no painel completo de desenvolvimento (Nguyen) com `nrmse` e `lr` calibrado.
-3. Congelar commit do protocolo → dimensionar `M` via `seriguela.analysis.required_problems()` → executar **G3 confirmatório** (Feynman/Strogatz estratificado, `>=5` seeds pareadas, `--const_mode fit`) → executar `seriguela.analysis` (`H1`–`H5`) e **G4** (SRBench 130 + PySR CPU).
-4. Finalizar Capítulos 3–5 da dissertação e fazer merge de `claude/parecer-academico-analise-d028ed` em `main`.
+1. **G2 completo (painel de desenvolvimento Nguyen):** rodar [g2_dev_panel.json](../../campaigns/g2_dev_panel.json) (`nguyen_1, 4, 5, 7, 9, 10` × `bon, ppo, ppo+elite, rspg, rspg+elite` × 2 seeds = 60 runs com `nrmse` e `lr=3e-5`) para medir a variância entre problemas via `seriguela.analysis.required_problems()` e dimensionar o G3 sem desperdício de CUs.
+2. **Congelamento do protocolo:** travar commit e hiperparâmetros após o G2 e sortear o painel confirmatório estratificado (`Feynman`/`Strogatz`).
+3. **G3 confirmatório (`--const_mode fit`, `>=5` seeds pareadas) + `seriguela.analysis` (`H1`–`H5`) + G4 (SRBench 130 + PySR CPU).**
+4. **Dissertação:** finalizar Capítulos 3–5 e fazer merge de `claude/parecer-academico-analise-d028ed` em `main`.

@@ -1,0 +1,28 @@
+{
+  "name": "g2_dev_panel",
+  "description": "G2 completo no painel de desenvolvimento Nguyen (6 problemas representativos x 5 braços principais x 2 seeds = 60 runs) com reward=nrmse e lr=3e-5 para medir variância e dimensionar M do G3 via analysis.required_problems().",
+  "out": "results/v3/g2_dev_panel",
+  "common": {
+    "steps": 100,
+    "batch": 1024,
+    "update_mb": 32,
+    "reward": "nrmse",
+    "lr": 3e-5,
+    "const_mode": "one",
+    "nguyen_variant": "canonical"
+  },
+  "cells": [
+    {
+      "problems": ["nguyen_1", "nguyen_4", "nguyen_5", "nguyen_7", "nguyen_9", "nguyen_10"],
+      "algos": ["bon"],
+      "replays": ["none"],
+      "seeds": [42, 123]
+    },
+    {
+      "problems": ["nguyen_1", "nguyen_4", "nguyen_5", "nguyen_7", "nguyen_9", "nguyen_10"],
+      "algos": ["ppo", "rspg"],
+      "replays": ["none", "elite"],
+      "seeds": [42, 123]
+    }
+  ]
+}
