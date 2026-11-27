@@ -172,6 +172,14 @@ try:
         run_checked([sys.executable, "-m", "seriguela.canary", "--steps", "4", "--batch", "128"],
                     cwd=REPO_DIR, timeout=900, stream=True)
 
+    if DRIVE_MIRROR:
+        prev = Path(DRIVE_MIRROR) / OUT_REL
+        if prev.exists():
+            dst_local = REPO_DIR / OUT_REL
+            dst_local.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(prev, dst_local, dirs_exist_ok=True)
+            log(f"retomando runs salvos no Drive: {{prev}}")
+
     log(f"Iniciando campanha {{CAMPAIGN}} (parallel={{PARALLEL}}, max_hours={{MAX_HOURS}})")
     proc = subprocess.Popen(
         [sys.executable, "-m", "seriguela.campaign", "work", CAMPAIGN,
