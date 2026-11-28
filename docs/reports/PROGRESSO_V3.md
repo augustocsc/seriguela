@@ -16,6 +16,7 @@ Saldo inicial: **`600.00 CU`** (L4 medida a **`2.33 CU/h`**).
 | 2026-11-27 | `g2a_r2` (execução desacoplada 8/12 + retomada 12/12) | `d73c6e2` → `0ce25ca` | **12/12 concluído** | `16.61` | `574.52` | Zero falhas de tripwire; sync incremental funcionou em todas as quedas de websocket |
 | 2026-11-27 | `g2a_nrmse` (12/12 numa sessão) | `0ce25ca` | **12/12 concluído** | `11.76` | `562.76` | 5,08h de L4, 0 falhas |
 | 2026-11-27 | `g2b_lr3e5` (`lr=3e-5`, `nrmse`, 8 runs) | `c947922` | **8/8 concluído** | `9.63` | **`552.94`** | 4,14h de L4, 0 falhas (`Active assignments: 0`) |
+| 2026-11-27/28 | `g2_dev_panel` (bloco 1: 12 reaproveitados + 26 novos) | `0ee8f66` | **Em curso (38/60 salvos)** | `23.41` | **`529.33`** | 10,05h de L4, 0 falhas (`Active assignments: 0`); retomando os 22 finais |
 
 ---
 
@@ -62,7 +63,7 @@ Campanhas: [g2a_r2.json](../../campaigns/g2a_r2.json) vs [g2a_nrmse.json](../../
 ---
 
 ## 3. Próximos passos
-1. **G2 completo (painel de desenvolvimento Nguyen):** rodar [g2_dev_panel.json](../../campaigns/g2_dev_panel.json) (`nguyen_1, 4, 5, 7, 9, 10` × `bon, ppo, ppo+elite, rspg, rspg+elite` × 2 seeds = 60 runs com `nrmse` e `lr=3e-5`) para medir a variância entre problemas via `seriguela.analysis.required_problems()` e dimensionar o G3 sem desperdício de CUs.
+1. **G2 completo (`g2_dev_panel`, 38/60 salvos):** já com sinal forte de **H1** dentro do PPO (`nguyen_1` + `nguyen_5`: `ppo` sem replay `0/4` vs `ppo+elite` **`4/4`** exatos). Concluindo os **22/60 runs finais** (`nguyen_5/rspg`, `nguyen_7`, `nguyen_9` sem replay, `nguyen_10`) para fechar o cálculo de `M` via `seriguela.analysis.required_problems()`.
 2. **Congelamento do protocolo:** travar commit e hiperparâmetros após o G2 e sortear o painel confirmatório estratificado (`Feynman`/`Strogatz`).
 3. **G3 confirmatório (`--const_mode fit`, `>=5` seeds pareadas) + `seriguela.analysis` (`H1`–`H5`) + G4 (SRBench 130 + PySR CPU).**
 4. **Dissertação:** finalizar Capítulos 3–5 e fazer merge de `claude/parecer-academico-analise-d028ed` em `main`.
